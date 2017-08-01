@@ -2,7 +2,7 @@
 import requests, json
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.3"
+A_VERSION = "0.0.4"
 
 # auth app.splatoon2.nintendo.net
 # grab data from https://app.splatoon2.nintendo.net/api/results
@@ -33,18 +33,19 @@ with open(filename) as data_file:
 results = data["results"] # all we care about
 
 # Weapon database
+# https://stat.ink/api/v2/weapon
 translate_weapons = {
 	'.52 Gal': '52gal',
 	'.96 Gal': '96gal',
 	'Clash Blaster': 'clashblaster',
-	'Dualie Squelchers': 'dualsweeper', # check
+	'Dualie Squelchers': 'dualsweeper',
 	'H-3 Nozzlenose': 'h3reelgun',
 	'Custom Blaster': 'hotblaster_custom',
 	'Blaster': 'hotblaster',
 	'Jet Squelcher': 'jetsweeper',
 	'L-3 Nozzlenose': 'l3reelgun',
-	'Enperry Splat Dualies': 'manueuver_collabo',
-	'Splat Dualies': 'manueuver',
+	'Enperry Splat Dualies': 'maneuver_collabo',
+	'Splat Dualies': 'maneuver',
 	'Luna Blaster': 'nova',
 	'N-ZAP \'85': 'nzap85',
 	'Splattershot Pro': 'prime',
@@ -107,9 +108,9 @@ for i in range (0, n):
 	kill_or_assist = kill + results[i]["player_result"]["assist_count"] # integer
 	special        = results[i]["player_result"]["special_count"]       # integer
 	death          = results[i]["player_result"]["death_count"]         # integer
-	level          = results[i]["player_rank"]
-	# rank       = results[i]["player"]["udemae"]["name"]       # e.g. C+
-	# rank_after = ...
+	level_after       = results[i]["player_rank"] # or just level?
+	# rank_after       = results[i]["player"]["udemae"]["name"]       # e.g. C+ - or is this just rank?
+	start_at = results[i]["start_time"]
 
 	# lobby
 	if lobby == "regular":
@@ -159,9 +160,11 @@ for i in range (0, n):
 	if mode == "regular":
 		payload["my_team_percent"] = results[i]["my_team_percentage"]
 		payload["his_team_percent"] = results[i]["other_team_percentage"]
-	elif mode == "league": # add solo ranked later
+	elif mode == "league":
 		payload["my_team_count"] = results[i]["my_team_count"]
 		payload["his_team_count"] = results[i]["other_team_count"]
+	# solo ranked...
+	# private...
 
 	# my_point
 	if result == "victory":
@@ -175,9 +178,11 @@ for i in range (0, n):
 	payload["special"] = special
 	payload["death"] = death
 
-	payload["level"] = level
+	# level
+	payload["level_after"] = level_after
 
-	payload["start_at"] = results[i]["start_time"]
+	# start_time
+	payload["start_at"] = start_at
 
 	# debugging
 	# print payload
