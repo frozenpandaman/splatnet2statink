@@ -37,7 +37,7 @@ translate_weapons = {
 	'.52 Gal': '52gal',
 	'.96 Gal': '96gal',
 	'Clash Blaster': 'clashblaster',
-	'Dualie Squelchers': 'dualsweeper', #check
+	'Dualie Squelchers': 'dualsweeper', # check
 	'H-3 Nozzlenose': 'h3reelgun',
 	'Custom Blaster': 'hotblaster_custom',
 	'Blaster': 'hotblaster',
@@ -88,10 +88,10 @@ translate_stages = {
 	4: 'ama', # Inkblot Art Academy
 	5: 'combu', # Humpback Pump Track
 	6: 'hokke', # Port Mackerel
-	7:  'tachiuo' # Moray Towers
+	7: 'tachiuo' # Moray Towers
 }
 
-#Prepare to POST to stat.ink
+# Prepare to POST to stat.ink
 url     = 'https://stat.ink/api/v2/battle'
 auth    = {'Authorization': 'Bearer emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4'} # testing account API key
 
@@ -107,6 +107,7 @@ for i in range (0, n):
 	kill_or_assist = kill + results[i]["player_result"]["assist_count"] # integer
 	special        = results[i]["player_result"]["special_count"]       # integer
 	death          = results[i]["player_result"]["death_count"]         # integer
+	level          = results[i]["player_rank"]
 	# rank       = results[i]["player"]["udemae"]["name"]       # e.g. C+
 	# rank_after = ...
 
@@ -117,7 +118,7 @@ for i in range (0, n):
 		payload["lobby"] = "squad_2"
 	elif lobby == "league_team":
 		payload["lobby"] = "squad_4"
-	#elif lobby = private battle:
+	# elif lobby = private battle:
 	#	payload["lobby"] = "private"
 
 	# mode
@@ -154,6 +155,14 @@ for i in range (0, n):
 	elif result == "defeat":
 		payload["result"] = "lose"
 
+	# team percents/counts
+	if mode == "regular":
+		payload["my_team_percent"] = results[i]["my_team_percentage"]
+		payload["his_team_percent"] = results[i]["other_team_percentage"]
+	elif mode == "league": # add solo ranked later
+		payload["my_team_count"] = results[i]["my_team_count"]
+		payload["his_team_count"] = results[i]["other_team_count"]
+
 	# my_point
 	if result == "victory":
 		payload["my_point"] = turfinked + 1000 # win bonus
@@ -165,6 +174,10 @@ for i in range (0, n):
 	payload["kill_or_assist"] = kill_or_assist
 	payload["special"] = special
 	payload["death"] = death
+
+	payload["level"] = level
+
+	payload["start_at"] = results[i]["start_time"]
 
 	# debugging
 	# print payload
