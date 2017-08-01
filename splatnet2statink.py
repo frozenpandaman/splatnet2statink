@@ -88,8 +88,8 @@ translate_stages = {
 	3: 'chozame', # Sturgeon Shipyard
 	4: 'ama', # Inkblot Art Academy
 	5: 'combu', # Humpback Pump Track
-	6: 'hokke', # Port Mackerel
-	7: 'tachiuo' # Moray Towers
+	7: 'hokke', # Port Mackerel
+	8: 'tachiuo' # Moray Towers
 }
 
 # Prepare to POST to stat.ink
@@ -108,9 +108,11 @@ for i in range (0, n):
 	kill_or_assist = kill + results[i]["player_result"]["assist_count"] # integer
 	special        = results[i]["player_result"]["special_count"]       # integer
 	death          = results[i]["player_result"]["death_count"]         # integer
-	level_after       = results[i]["player_rank"] # or just level?
-	# rank_after       = results[i]["player"]["udemae"]["name"]       # e.g. C+ - or is this just rank?
-	start_at = results[i]["start_time"]
+	level_after    = results[i]["player_rank"]
+	level_before   = results[i]["player_result"]["player"]["player_rank"]
+	rank_before    = results[i]["udemae"]["name"]
+	rank_after     = results[i]["player_result"]["player"]["udemae"]["name"]       # e.g. C+ - or is this just rank?
+	start_at       = results[i]["start_time"]
 
 	# lobby
 	if lobby == "regular":
@@ -160,7 +162,7 @@ for i in range (0, n):
 	if mode == "regular":
 		payload["my_team_percent"] = results[i]["my_team_percentage"]
 		payload["his_team_percent"] = results[i]["other_team_percentage"]
-	elif mode == "league":
+	elif mode == "league": # add solo ranked later
 		payload["my_team_count"] = results[i]["my_team_count"]
 		payload["his_team_count"] = results[i]["other_team_count"]
 	# solo ranked...
@@ -179,7 +181,12 @@ for i in range (0, n):
 	payload["death"] = death
 
 	# level
+	payload["level"] = level_before
 	payload["level_after"] = level_after
+
+	# rank
+	payload["rank"] = rank_before
+	payload["rank_after"] = rank_after
 
 	# start_time
 	payload["start_at"] = start_at
