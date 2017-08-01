@@ -1,8 +1,10 @@
 # eli fessler
-import requests, json
+import requests, json, pprint
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.4"
+A_VERSION = "0.0.5"
+
+API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4"
 
 # auth app.splatoon2.nintendo.net
 # grab data from https://app.splatoon2.nintendo.net/api/results
@@ -88,31 +90,37 @@ translate_stages = {
 	3: 'chozame', # Sturgeon Shipyard
 	4: 'ama', # Inkblot Art Academy
 	5: 'combu', # Humpback Pump Track
+	# wtf nintendo
 	7: 'hokke', # Port Mackerel
-	8: 'tachiuo' # Moray Towers
+	8: 'tachiuo', # Moray Towers
+	9999: 'mystery' # Shifty Station (Splatfest only)
 }
 
 # Prepare to POST to stat.ink
 url     = 'https://stat.ink/api/v2/battle'
-auth    = {'Authorization': 'Bearer emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4'} # testing account API key
+auth    = {'Authorization': 'Bearer ' + API_KEY} # testing account API key
 
 for i in range (0, n):
-	lobby     = results[i]["game_mode"]["key"]      # regular, league_team, league_pair, ???
-	mode      = results[i]["type"]                  # regular, league, ???
-	rule      = results[i]["rule"]["key"]           # turf_war, rainmaker, splat_zones, tower_control
-	stage     = results[i]["stage"]["id"]           # string (see above)
-	weapon    = results[i]["player_result"]["player"]["weapon"]["name"] # string (see above)
-	result    = results[i]["my_team_result"]["key"]             # victory, defeat
-	turfinked = results[i]["player_result"]["game_paint_point"] # integer (WITHOUT bonus)
-	kill           = results[i]["player_result"]["kill_count"]          # integer
-	kill_or_assist = kill + results[i]["player_result"]["assist_count"] # integer
-	special        = results[i]["player_result"]["special_count"]       # integer
-	death          = results[i]["player_result"]["death_count"]         # integer
+	lobby          = results[i]["game_mode"]["key"]      # regular, league_team, league_pair, private
+	mode           = results[i]["type"]                  # regular, gachi, league, ???
+	rule           = results[i]["rule"]["key"]           # turf_war, rainmaker, splat_zones, tower_control
+	stage          = results[i]["stage"]["id"]                               # string (see above)
+	weapon         = results[i]["player_result"]["player"]["weapon"]["name"] # string (see above)
+	result         = results[i]["my_team_result"]["key"]                # victory, defeat
+	turfinked      = results[i]["player_result"]["game_paint_point"]    # WITHOUT bonus
+	kill           = results[i]["player_result"]["kill_count"]
+	kill_or_assist = kill + results[i]["player_result"]["assist_count"]
+	special        = results[i]["player_result"]["special_count"]
+	death          = results[i]["player_result"]["death_count"]
 	level_after    = results[i]["player_rank"]
 	level_before   = results[i]["player_result"]["player"]["player_rank"]
-	rank_before    = results[i]["udemae"]["name"]
-	rank_after     = results[i]["player_result"]["player"]["udemae"]["name"]       # e.g. C+ - or is this just rank?
-	start_at       = results[i]["start_time"]
+	start_time     = results[i]["start_time"]
+	elapsed_time   = results[i]["elapsed_time"]
+	try:
+		rank_before    = results[i]["udemae"]["name"]
+		rank_after     = results[i]["player_result"]["player"]["udemae"]["name"]
+	except KeyError:
+		pass # don't need to handle - won't be put into the payload unless relevant
 
 	# lobby
 	if lobby == "regular":
@@ -121,20 +129,17 @@ for i in range (0, n):
 		payload["lobby"] = "squad_2"
 	elif lobby == "league_team":
 		payload["lobby"] = "squad_4"
-	# elif lobby = private battle:
-	#	payload["lobby"] = "private"
+	elif lobby == "private":
+		payload["lobby"] = "private"
+		payload["mode"] = "private"
 
 	# mode
 	if mode == "regular":
 		payload["mode"] = "regular"
-	elif mode == "league":
+	elif mode == "gachi" or mode == "league":
 		payload["mode"] = "gachi"
-	# elif mode = solo ranked:
-	# 	payload["mode"] = "gachi"
-	# elif mode = splatfest: - may be the same as regular, since splatfests are turf wars
-	# 	payload["mode"] = "fest"
-	# elif mode = private:
-	# 	payload["mode"] = "private"
+	# to do - splatfest
+	# private handled above
 
 	# rule
 	if rule == "turf_war":
@@ -162,17 +167,17 @@ for i in range (0, n):
 	if mode == "regular":
 		payload["my_team_percent"] = results[i]["my_team_percentage"]
 		payload["his_team_percent"] = results[i]["other_team_percentage"]
-	elif mode == "league": # add solo ranked later
+	elif mode == "gachi" or mode == "league":
 		payload["my_team_count"] = results[i]["my_team_count"]
 		payload["his_team_count"] = results[i]["other_team_count"]
-	# solo ranked...
 	# private...
 
 	# my_point
-	if result == "victory":
-		payload["my_point"] = turfinked + 1000 # win bonus
-	else:
-		payload["my_point"] = turfinked
+	if rule == "turf_war": # only upload if TW
+		if result == "victory":
+			payload["my_point"] = turfinked + 1000 # win bonus
+		else:
+			payload["my_point"] = turfinked
 
 	# kills, etc.
 	payload["kill"] = kill
@@ -185,11 +190,17 @@ for i in range (0, n):
 	payload["level_after"] = level_after
 
 	# rank
-	payload["rank"] = rank_before
-	payload["rank_after"] = rank_after
+	if rule != "turf_war": # only upload if Ranked
+		payload["rank"] = rank_before.lower()
+		payload["rank_after"] = rank_after.lower()
 
-	# start_time
-	payload["start_at"] = start_at
+	# battle times
+	payload["start_at"] = start_time
+	payload["end_at"] = start_time + elapsed_time
+
+	# gear
+	# ...
+
 
 	# debugging
 	# print payload
@@ -197,5 +208,9 @@ for i in range (0, n):
 	# POST request
 	r = requests.post(url, headers=auth, data=payload)
 
-	# Response (assuming success for now)
-	print "Battle uploaded to " + r.headers.get('location') # url of uploaded battle
+	# Response
+	try:
+		print "Battle #" + str(i+1) + " uploaded to " + r.headers.get('location') # display url
+	except TypeError: # r.headers.get is likely NoneType, i.e. we received an error
+		print "Error uploading battle #" + str(i+1) + "."
+		print r.content
