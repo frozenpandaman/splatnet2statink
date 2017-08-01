@@ -1,5 +1,5 @@
 # eli fessler
-import requests, json, pprint
+import requests, json
 
 A_NAME = "splatnet2statink"
 A_VERSION = "0.0.5"
