@@ -2,6 +2,11 @@
 
 A script that works to upload JSON data from the SplatNet 2 app ("Nintendo Switch Online", for use with *Splatoon 2*) to [http://stat.ink/](http://stat.ink/), a site for visualizing and aggregating statistics from *Splatoon* and *Splatoon 2*.
 
+## Usage
+```
+python splatnet2statink.py /path/to/results.json
+```
+
 ## Working features
 - [x] Lobby/Mode
 - [x] Stage
@@ -12,8 +17,9 @@ A script that works to upload JSON data from the SplatNet 2 app ("Nintendo Switc
 - [x] Battle start & end times
 
 ## To implement
-- [ ] Gear recognition
+- [ ] Gear + ability recognition (waiting on stat.ink API v2)
 - [ ] Splatfest support
+- [ ] Private battles (partially)
 - [ ] Automating SplatNet cookie generation/acquisition + JSON download
 - [ ] Support for non-en_NA regions
 
