@@ -1,29 +1,40 @@
 # eli fessler
-import requests, json, sys, os.path
+import os.path, argparse
+import requests, json
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.6"
+A_VERSION = "0.0.7"
 
-API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please use your own!
+API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please replace with your own!
 
+YOUR_COOKIE = "" # keep this secret!
 
-# auth app.splatoon2.nintendo.net
-# grab data from https://app.splatoon2.nintendo.net/api/results
-# ...
-
+# auth app.splatoon2.nintendo.net, generate cookie
+# ???
 
 # I/O
-if (len(sys.argv) > 2) or (len(sys.argv) == 2 and (sys.argv[1] in ["--help", "-help", "--h", "-h"])):
-	print "usage: python splatnet2statink.py /path/to/results.json\n(if no file path provided, defaults to results.json)"
-	exit(1);
-else:
-	try:
-		filename = sys.argv[1]
-	except:
-		filename = "results.json"
-	if not os.path.isfile(filename):
-		print "File " + filename + " does not exist."
-		exit(1);
+parser = argparse.ArgumentParser()
+parser.add_argument("-i", dest="filename", required=False,
+					help="path to results JSON", metavar="/path/to/results.json")
+result = parser.parse_args()
+
+if result.filename != None: # local file provided
+	if not os.path.exists(result.filename):
+		parser.error("File %s does not exist!" % result.filename) # exit
+	with open(result.filename) as data_file:
+		data = json.load(data_file)
+else: # no argument
+	print "Pulling data from online..." # grab data from SplatNet
+	url = "https://app.splatoon2.nintendo.net/api/results"
+	r = requests.get(url, cookies=dict(iksm_session=YOUR_COOKIE))
+	data = json.loads(r.text)
+
+try:
+	results = data["results"] # all we care about
+except KeyError: # no 'results' key, which means...
+	print "Bad cookie."
+	exit(1)
+
 
 try:
 	n = int(raw_input("Number of recent battles to upload (0-50)? "))
@@ -41,10 +52,6 @@ else:
 # JSON parsing, fill out payload
 # https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md
 payload = {'agent': A_NAME, 'agent_version': A_VERSION}
-
-with open(filename) as data_file:
-	data = json.load(data_file)
-results = data["results"] # all we care about
 
 # Weapon database
 # https://stat.ink/api/v2/weapon
@@ -150,7 +157,7 @@ for i in range (0, n):
 	try:
 		elapsed_time   = results[i]["elapsed_time"] # apparently only a thing in ranked
 	except KeyError:
-		elapsed_time   = 180; # turf war - 3 minutes in seconds
+		elapsed_time   = 180 # turf war - 3 minutes in seconds
 
 	# headgear_id  = results[i]["player_result"]["player"]["head"]["id"]
 	# clothing_id  = results[i]["player_result"]["player"]["clothes"]["id"]
@@ -243,8 +250,7 @@ for i in range (0, n):
 	# ...
 
 	# debugging
-	print payload
-	exit(0);
+	#print payload
 
 	# POST request
 	r = requests.post(url, headers=auth, data=payload)
