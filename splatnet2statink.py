@@ -1,8 +1,8 @@
 # eli fessler
-import requests, json
+import requests, json, sys, os.path
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.5"
+A_VERSION = "0.0.6"
 
 API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please use your own!
 
@@ -13,6 +13,18 @@ API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API ke
 
 
 # I/O
+if (len(sys.argv) > 2) or (len(sys.argv) == 2 and (sys.argv[1] in ["--help", "-help", "--h", "-h"])):
+	print "usage: python splatnet2statink.py /path/to/results.json\n(if no file path provided, defaults to results.json)"
+	exit(1);
+else:
+	try:
+		filename = sys.argv[1]
+	except:
+		filename = "results.json"
+	if not os.path.isfile(filename):
+		print "File " + filename + " does not exist."
+		exit(1);
+
 try:
 	n = int(raw_input("Number of recent battles to upload (0-50)? "))
 except ValueError, ex:
@@ -30,7 +42,6 @@ else:
 # https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md
 payload = {'agent': A_NAME, 'agent_version': A_VERSION}
 
-filename = "results.json" # for now
 with open(filename) as data_file:
 	data = json.load(data_file)
 results = data["results"] # all we care about
@@ -113,26 +124,33 @@ url     = 'https://stat.ink/api/v2/battle'
 auth    = {'Authorization': 'Bearer ' + API_KEY}
 
 for i in range (0, n):
-	lobby          = results[i]["game_mode"]["key"]      # regular, league_team, league_pair, private
-	mode           = results[i]["type"]                  # regular, gachi, league, ???
-	rule           = results[i]["rule"]["key"]           # turf_war, rainmaker, splat_zones, tower_control
+	# regular, league_team, league_pair, private
+	lobby          = results[i]["game_mode"]["key"]
+	# regular, gachi, league, ???
+	mode           = results[i]["type"]
+	# turf_war, rainmaker, splat_zones, tower_control
+	rule           = results[i]["rule"]["key"]
 	stage          = results[i]["stage"]["id"]                               # string (see above)
 	weapon         = results[i]["player_result"]["player"]["weapon"]["name"] # string (see above)
-	result         = results[i]["my_team_result"]["key"]                # victory, defeat
-	turfinked      = results[i]["player_result"]["game_paint_point"]    # WITHOUT bonus
+	# victory, defeat
+	result         = results[i]["my_team_result"]["key"]
+	turfinked      = results[i]["player_result"]["game_paint_point"]         # WITHOUT bonus
 	kill           = results[i]["player_result"]["kill_count"]
-	kill_or_assist = kill + results[i]["player_result"]["assist_count"]
+	kill_or_assist = results[i]["player_result"]["assist_count"] + kill
 	special        = results[i]["player_result"]["special_count"]
 	death          = results[i]["player_result"]["death_count"]
 	level_after    = results[i]["player_rank"]
 	level_before   = results[i]["player_result"]["player"]["player_rank"]
 	start_time     = results[i]["start_time"]
-	elapsed_time   = results[i]["elapsed_time"]
 	try:
 		rank_before    = results[i]["udemae"]["name"]
 		rank_after     = results[i]["player_result"]["player"]["udemae"]["name"]
 	except KeyError:
 		pass # don't need to handle - won't be put into the payload unless relevant
+	try:
+		elapsed_time   = results[i]["elapsed_time"] # apparently only a thing in ranked
+	except KeyError:
+		elapsed_time   = 180; # turf war - 3 minutes in seconds
 
 	# headgear_id  = results[i]["player_result"]["player"]["head"]["id"]
 	# clothing_id  = results[i]["player_result"]["player"]["clothes"]["id"]
@@ -214,13 +232,19 @@ for i in range (0, n):
 	payload["start_at"] = start_time
 	payload["end_at"] = start_time + elapsed_time
 
-	# gear
+	# gear - not implemented in stat.ink API v2 yet
+	# API v1: https://github.com/fetus-hina/stat.ink/blob/master/doc/api-1/constant/gear.md
 	# payload["headgear"] = translate_headgear[int(headgear_id)]
 	# payload["clothing"] = translate_clothing[int(clothing_id)]
 	# payload["shoes"] = translate_shoes[int(shoes_id)]
 
+	# abilities
+	# API v1: https://github.com/fetus-hina/stat.ink/blob/master/doc/api-1/constant/ability.md
+	# ...
+
 	# debugging
-	# print payload
+	print payload
+	exit(0);
 
 	# POST request
 	r = requests.post(url, headers=auth, data=payload)
@@ -229,5 +253,5 @@ for i in range (0, n):
 	try:
 		print "Battle #" + str(i+1) + " uploaded to " + r.headers.get('location') # display url
 	except TypeError: # r.headers.get is likely NoneType, i.e. we received an error
-		print "Error uploading battle #" + str(i+1) + "."
+		print "Error uploading battle #" + str(i+1) + ". Message from server:"
 		print r.content
