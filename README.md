@@ -4,8 +4,10 @@ A script that works to upload JSON data from the SplatNet 2 app ("Nintendo Switc
 
 ## Usage
 ```
-python splatnet2statink.py /path/to/results.json
+python splatnet2statink.py [-i /path/to/results.json]
 ```
+
+If no input file is provided, the JSON is pulled from [https://app.splatoon2.nintendo.net/api/results](https://app.splatoon2.nintendo.net/api/results), given your cookie.
 
 ## Working features
 - [x] Lobby/Mode
