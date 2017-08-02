@@ -4,7 +4,8 @@ import requests, json
 A_NAME = "splatnet2statink"
 A_VERSION = "0.0.5"
 
-API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4"
+API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please use your own!
+
 
 # auth app.splatoon2.nintendo.net
 # grab data from https://app.splatoon2.nintendo.net/api/results
@@ -43,15 +44,15 @@ translate_weapons = {
 	'Dualie Squelchers': 'dualsweeper',
 	'H-3 Nozzlenose': 'h3reelgun',
 	'Custom Blaster': 'hotblaster_custom',
-	'Blaster': 'hotblaster',
+	'Blaster': 'hotblaster', # 210
 	'Jet Squelcher': 'jetsweeper',
-	'L-3 Nozzlenose': 'l3reelgun',
+	'L-3 Nozzlenose': 'l3reelgun', # 300
 	'Enperry Splat Dualies': 'maneuver_collabo',
 	'Splat Dualies': 'maneuver',
 	'Luna Blaster': 'nova',
 	'N-ZAP \'85': 'nzap85',
-	'Splattershot Pro': 'prime',
-	'Aerospray MG': 'promodeler_mg',
+	'Splattershot Pro': 'prime', # 70
+	'Aerospray MG': 'promodeler_mg', # 30
 	'Aerospray RG': 'promodeler_rg',
 	'Rapid Blaster': 'rapid',
 	'Splash-o-matic': 'sharp',
@@ -59,9 +60,9 @@ translate_weapons = {
 	'Tentatek Splattershot': 'sshooter_collabo',
 	'Splattershot': 'sshooter',
 	'Splattershot Jr.': 'wakaba',
-	'Carbon Roller': 'carbon',
+	'Carbon Roller': 'carbon', # 1000
 	'Dynamo Roller': 'dynamo',
-	'Octobrush': 'hokusai',
+	'Octobrush': 'hokusai', # 1110
 	'Inkbrush': 'pablo',
 	'Krak-On Splat Roller': 'splatroller_collabo',
 	'Splat Roller': 'splatroller',
@@ -75,8 +76,8 @@ translate_weapons = {
 	'Splat Charger': 'splatcharger',
 	'Firefin Splatterscope': 'splatscope_collabo',
 	'Splatterscope': 'splatscope',
-	'Slosher': 'bucketslosher',
-	'Tri-Slosher': 'hissen',
+	'Slosher': 'bucketslosher', # 3000
+	'Tri-Slosher': 'hissen', # 3010
 	'Heavy Splatling': 'barrelspinner',
 	'Mini Splatling': 'splatspinner'
 }
@@ -96,21 +97,20 @@ translate_stages = {
 	9999: 'mystery' # Shifty Station (Splatfest only)
 }
 
-# Gear databases
-# Gathered by hand
-translate_headgear = {
-	5000: 'Studio Headphones',
-}
-translate_clothing = {
-	5018: 'Takoroka Windcrusher',
-}
-translate_shoes = {
-	4009: 'Snow Delta Straps',
-}
+# # Gear database
+# translate_headgear = {
+# 	5000: 'Studio Headphones',
+# }
+# translate_clothing = {
+# 	5018: 'Takoroka Windcrusher',
+# }
+# translate_shoes = {
+# 	4009: 'Snow Delta Straps',
+# }
 
 # Prepare to POST to stat.ink
 url     = 'https://stat.ink/api/v2/battle'
-auth    = {'Authorization': 'Bearer ' + API_KEY} # testing account API key
+auth    = {'Authorization': 'Bearer ' + API_KEY}
 
 for i in range (0, n):
 	lobby          = results[i]["game_mode"]["key"]      # regular, league_team, league_pair, private
@@ -134,9 +134,9 @@ for i in range (0, n):
 	except KeyError:
 		pass # don't need to handle - won't be put into the payload unless relevant
 
-	headgear_id  = results[i]["player_result"]["player"]["head"]["id"]
-	clothing_id  = results[i]["player_result"]["player"]["clothes"]["id"]
-	shoes_id     = results[i]["player_result"]["player"]["shoes"]["id"]
+	# headgear_id  = results[i]["player_result"]["player"]["head"]["id"]
+	# clothing_id  = results[i]["player_result"]["player"]["clothes"]["id"]
+	# shoes_id     = results[i]["player_result"]["player"]["shoes"]["id"]
 
 	# lobby
 	if lobby == "regular":
@@ -214,13 +214,10 @@ for i in range (0, n):
 	payload["start_at"] = start_time
 	payload["end_at"] = start_time + elapsed_time
 
-	# gear names
-	payload["headgear"] = translate_headgear[int(headgear_id)]
-	payload["clothing"] = translate_clothing[int(clothing_id)]
-	payload["shoes"] = translate_shoes[int(shoes_id)]
-
-	# gear abilities
-	# ...
+	# gear
+	# payload["headgear"] = translate_headgear[int(headgear_id)]
+	# payload["clothing"] = translate_clothing[int(clothing_id)]
+	# payload["shoes"] = translate_shoes[int(shoes_id)]
 
 	# debugging
 	# print payload
