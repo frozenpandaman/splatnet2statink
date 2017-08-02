@@ -23,6 +23,8 @@ python splatnet2statink.py /path/to/results.json
 - [ ] Automating SplatNet cookie generation/acquisition + JSON download
 - [ ] Support for non-en_NA regions
 
+## Setup instructions
+
 ### Getting your SplatNet cookie (manual – this process will hopefully be automated in the future)
 
 1. Install the Python 3 package `mitmproxy`. For me this is `pip3 install mitmproxy` in Terminal.
