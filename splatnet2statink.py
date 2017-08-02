@@ -96,6 +96,18 @@ translate_stages = {
 	9999: 'mystery' # Shifty Station (Splatfest only)
 }
 
+# Gear databases
+# Gathered by hand
+translate_headgear = {
+	5000: 'Studio Headphones',
+}
+translate_clothing = {
+	5018: 'Takoroka Windcrusher',
+}
+translate_shoes = {
+	4009: 'Snow Delta Straps',
+}
+
 # Prepare to POST to stat.ink
 url     = 'https://stat.ink/api/v2/battle'
 auth    = {'Authorization': 'Bearer ' + API_KEY} # testing account API key
@@ -121,6 +133,10 @@ for i in range (0, n):
 		rank_after     = results[i]["player_result"]["player"]["udemae"]["name"]
 	except KeyError:
 		pass # don't need to handle - won't be put into the payload unless relevant
+
+	headgear_id  = results[i]["player_result"]["player"]["head"]["id"]
+	clothing_id  = results[i]["player_result"]["player"]["clothes"]["id"]
+	shoes_id     = results[i]["player_result"]["player"]["shoes"]["id"]
 
 	# lobby
 	if lobby == "regular":
@@ -198,9 +214,13 @@ for i in range (0, n):
 	payload["start_at"] = start_time
 	payload["end_at"] = start_time + elapsed_time
 
-	# gear
-	# ...
+	# gear names
+	payload["headgear"] = translate_headgear[int(headgear_id)]
+	payload["clothing"] = translate_clothing[int(clothing_id)]
+	payload["shoes"] = translate_shoes[int(shoes_id)]
 
+	# gear abilities
+	# ...
 
 	# debugging
 	# print payload
