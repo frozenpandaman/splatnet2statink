@@ -15,7 +15,7 @@ YOUR_COOKIE = "" # keep this secret!
 # I/O
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", dest="filename", required=False,
-					help="path to results JSON", metavar="/path/to/results.json")
+help="path to results JSON", metavar="/path/to/results.json")
 result = parser.parse_args()
 
 if result.filename != None: # local file provided
@@ -34,7 +34,6 @@ try:
 except KeyError: # no 'results' key, which means...
 	print "Bad cookie."
 	exit(1)
-
 
 try:
 	n = int(raw_input("Number of recent battles to upload (0-50)? "))
@@ -57,16 +56,16 @@ payload = {'agent': A_NAME, 'agent_version': A_VERSION}
 # https://stat.ink/api/v2/weapon
 translate_weapons = {
 	'.52 Gal': '52gal',
-	'.96 Gal': '96gal',
-	'Clash Blaster': 'clashblaster',
-	'Dualie Squelchers': 'dualsweeper',
+	'.96 Gal': '96gal', # 50
+	'Clash Blaster': 'clashblaster', # 230
+	'Dualie Squelchers': 'dualsweeper', # 5030
 	'H-3 Nozzlenose': 'h3reelgun',
 	'Custom Blaster': 'hotblaster_custom',
 	'Blaster': 'hotblaster', # 210
 	'Jet Squelcher': 'jetsweeper',
 	'L-3 Nozzlenose': 'l3reelgun', # 300
 	'Enperry Splat Dualies': 'maneuver_collabo',
-	'Splat Dualies': 'maneuver',
+	'Splat Dualies': 'maneuver', # 5010
 	'Luna Blaster': 'nova',
 	'N-ZAP \'85': 'nzap85',
 	'Splattershot Pro': 'prime', # 70
@@ -97,7 +96,7 @@ translate_weapons = {
 	'Slosher': 'bucketslosher', # 3000
 	'Tri-Slosher': 'hissen', # 3010
 	'Heavy Splatling': 'barrelspinner',
-	'Mini Splatling': 'splatspinner'
+	'Mini Splatling': 'splatspinner' # 4000
 }
 
 # Stage database
@@ -125,6 +124,38 @@ translate_stages = {
 # translate_shoes = {
 # 	4009: 'Snow Delta Straps',
 # }
+
+# Ability database
+# Still missing a few abilities (100 - 111), I think I know what they are but need confirmation
+translate_ability = {
+	-1:  'Not Unlocked', # The slot is either waiting to be levelled (?) or not unlocked yet
+	0:   'Ink Saver (Main)',
+	1:   'Ink Saver (Sub)',
+	2:   'Ink Recovery Up',
+	3:   'Run Speed Up',
+	4:   'Swim Speed Up',
+	5:   'Special Charge Up',
+	6:   'Special Saver',
+	7:   'Special Power Up',
+	8:   'Quick Respawn',
+	9:   'Quick Super Jump',
+	10:  'Sub Power Up',
+	11:  'Ink Resistance Up',
+	12:  'Bomb Defense Up',
+	13:  'Cold-Blooded',
+	100: 'Opening Gambit',
+	101: 'UNKNOWN', # Last-Ditch Effort?
+	102: 'Tenacity',
+	103: 'UNKNOWN', # Comeback?
+	104: 'UNKNOWN', # Ninja Squid
+	105: 'UNKNOWN', # Thermal Ink
+	106: 'UNKNOWN', # Haunt
+	107: 'UNKNOWN', # Respawn Punisher
+	108: 'Ability Doubler',
+	109: 'UNKNOWN', # Stealth Jump?
+	110: 'UNKNOWN', # Object Shredder?
+	111: 'UNKNOWN' # Drop Roller?
+}
 
 # Prepare to POST to stat.ink
 url     = 'https://stat.ink/api/v2/battle'
@@ -162,6 +193,31 @@ for i in range (0, n):
 	# headgear_id  = results[i]["player_result"]["player"]["head"]["id"]
 	# clothing_id  = results[i]["player_result"]["player"]["clothes"]["id"]
 	# shoes_id     = results[i]["player_result"]["player"]["shoes"]["id"]
+
+	headgear_main  = results[i]["player_result"]["player"]["head_skills"]["main"]["id"]
+	clothing_main  = results[i]["player_result"]["player"]["clothes_skills"]["main"]["id"]
+	shoes_main     = results[i]["player_result"]["player"]["shoes_skills"]["main"]["id"]
+
+	headgear_subs = [-1,-1,-1]
+	for j in range (0, 3):
+		try:
+			headgear_subs[j] = results[i]["player_result"]["player"]["head_skills"]["subs"][j]["id"]
+		except TypeError:
+			headgear_subs[j] = '-1'
+
+	clothing_subs = [-1,-1,-1]
+	for j in range (0, 3):
+		try:
+			clothing_subs[j] = results[i]["player_result"]["player"]["clothes_skills"]["subs"][j]["id"]
+		except TypeError:
+			clothing_subs[j] = '-1'
+
+	shoes_subs = [-1,-1,-1]
+	for j in range (0, 3):
+		try:
+			shoes_subs[j] = results[i]["player_result"]["player"]["shoes_skills"]["subs"][j]["id"]
+		except TypeError:
+			shoes_subs[j] = '-1'
 
 	# lobby
 	if lobby == "regular":
@@ -245,12 +301,23 @@ for i in range (0, n):
 	# payload["clothing"] = translate_clothing[int(clothing_id)]
 	# payload["shoes"] = translate_shoes[int(shoes_id)]
 
-	# abilities
+	# abilities - also not implemented in stat.ink API v2 (yet)
 	# API v1: https://github.com/fetus-hina/stat.ink/blob/master/doc/api-1/constant/ability.md
-	# ...
+	# payload["headgear_main"] = translate_ability[int(headgear_main)]
+	# payload["clothing_main"] = translate_ability[int(clothing_main)]
+	# payload["shoes_main_name"] = translate_ability[int(shoes_main)]
+	# payload["headgear_sub1"] = translate_ability[int(headgear_subs[0])]
+	# payload["headgear_sub2"] = translate_ability[int(headgear_subs[1])]
+	# payload["headgear_sub3"] = translate_ability[int(headgear_subs[2])]
+	# payload["clothing_sub1"] = translate_ability[int(clothing_subs[0])]
+	# payload["clothing_sub2"] = translate_ability[int(clothing_subs[1])]
+	# payload["clothing_sub3"] = translate_ability[int(clothing_subs[2])]
+	# payload["shoes_sub1"] = translate_ability[int(shoes_subs[0])]
+	# payload["shoes_sub2"] = translate_ability[int(shoes_subs[1])]
+	# payload["shoes_sub3"] = translate_ability[int(shoes_subs[2])]
 
 	# debugging
-	#print payload
+	# print payload
 
 	# POST request
 	r = requests.post(url, headers=auth, data=payload)
