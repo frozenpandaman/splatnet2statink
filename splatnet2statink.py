@@ -3,7 +3,7 @@ import os.path, argparse
 import requests, json
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.7"
+A_VERSION = "0.0.8"
 
 API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please replace with your own!
 
@@ -15,7 +15,7 @@ YOUR_COOKIE = "" # keep this secret!
 # I/O
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", dest="filename", required=False,
-help="path to results JSON", metavar="/path/to/results.json")
+					help="path to results JSON", metavar="/path/to/results.json")
 result = parser.parse_args()
 
 if result.filename != None: # local file provided
@@ -116,19 +116,18 @@ translate_stages = {
 
 # # Gear database
 # translate_headgear = {
-# 	5000: 'Studio Headphones',
+# 	5000: 'Studio Headphones'
 # }
 # translate_clothing = {
-# 	5018: 'Takoroka Windcrusher',
+# 	5018: 'Takoroka Windcrusher'
 # }
 # translate_shoes = {
-# 	4009: 'Snow Delta Straps',
+# 	4009: 'Snow Delta Straps'
 # }
 
 # Ability database
-# Still missing a few abilities (100 - 111), I think I know what they are but need confirmation
 translate_ability = {
-	-1:  'Not Unlocked', # The slot is either waiting to be levelled (?) or not unlocked yet
+	-1:  'Locked', # locked ("?") or does not exist
 	0:   'Ink Saver (Main)',
 	1:   'Ink Saver (Sub)',
 	2:   'Ink Recovery Up',
@@ -147,10 +146,10 @@ translate_ability = {
 	101: 'UNKNOWN', # Last-Ditch Effort?
 	102: 'Tenacity',
 	103: 'UNKNOWN', # Comeback?
-	104: 'UNKNOWN', # Ninja Squid
-	105: 'UNKNOWN', # Thermal Ink
-	106: 'UNKNOWN', # Haunt
-	107: 'UNKNOWN', # Respawn Punisher
+	104: 'Ninja Squid',
+	105: 'UNKNOWN', # Haunt?
+	106: 'Thermal Ink',
+	107: 'UNKNOWN', # Respawn Punisher?
 	108: 'Ability Doubler',
 	109: 'UNKNOWN', # Stealth Jump?
 	110: 'UNKNOWN', # Object Shredder?
@@ -161,7 +160,7 @@ translate_ability = {
 url     = 'https://stat.ink/api/v2/battle'
 auth    = {'Authorization': 'Bearer ' + API_KEY}
 
-for i in range (0, n):
+for i in reversed(xrange(n)):
 	# regular, league_team, league_pair, private
 	lobby          = results[i]["game_mode"]["key"]
 	# regular, gachi, league, ???
@@ -194,30 +193,24 @@ for i in range (0, n):
 	# clothing_id  = results[i]["player_result"]["player"]["clothes"]["id"]
 	# shoes_id     = results[i]["player_result"]["player"]["shoes"]["id"]
 
-	headgear_main  = results[i]["player_result"]["player"]["head_skills"]["main"]["id"]
-	clothing_main  = results[i]["player_result"]["player"]["clothes_skills"]["main"]["id"]
-	shoes_main     = results[i]["player_result"]["player"]["shoes_skills"]["main"]["id"]
+	# headgear_main  = results[i]["player_result"]["player"]["head_skills"]["main"]["id"]
+	# clothing_main  = results[i]["player_result"]["player"]["clothes_skills"]["main"]["id"]
+	# shoes_main     = results[i]["player_result"]["player"]["shoes_skills"]["main"]["id"]
 
-	headgear_subs = [-1,-1,-1]
-	for j in range (0, 3):
-		try:
-			headgear_subs[j] = results[i]["player_result"]["player"]["head_skills"]["subs"][j]["id"]
-		except TypeError:
-			headgear_subs[j] = '-1'
-
-	clothing_subs = [-1,-1,-1]
-	for j in range (0, 3):
-		try:
-			clothing_subs[j] = results[i]["player_result"]["player"]["clothes_skills"]["subs"][j]["id"]
-		except TypeError:
-			clothing_subs[j] = '-1'
-
-	shoes_subs = [-1,-1,-1]
-	for j in range (0, 3):
-		try:
-			shoes_subs[j] = results[i]["player_result"]["player"]["shoes_skills"]["subs"][j]["id"]
-		except TypeError:
-			shoes_subs[j] = '-1'
+	# headgear_subs, clothing_subs, shoes_subs = ([-1,-1,-1] for i in range(3))
+	# for j in range (0, 3):
+	# 	try:
+	# 		headgear_subs[j] = results[i]["player_result"]["player"]["head_skills"]["subs"][j]["id"]
+	# 	except:
+	# 		headgear_subs[j] = '-1'
+	# 	try:
+	# 		clothing_subs[j] = results[i]["player_result"]["player"]["clothes_skills"]["subs"][j]["id"]
+	# 	except:
+	# 		clothing_subs[j] = '-1'
+	# 	try:
+	# 		shoes_subs[j] = results[i]["player_result"]["player"]["shoes_skills"]["subs"][j]["id"]
+	# 	except:
+	# 		shoes_subs[j] = '-1'
 
 	# lobby
 	if lobby == "regular":
@@ -297,11 +290,12 @@ for i in range (0, n):
 
 	# gear - not implemented in stat.ink API v2 yet
 	# API v1: https://github.com/fetus-hina/stat.ink/blob/master/doc/api-1/constant/gear.md
+	#         https://github.com/fetus-hina/stat.ink/blob/master/API.md#gears
 	# payload["headgear"] = translate_headgear[int(headgear_id)]
 	# payload["clothing"] = translate_clothing[int(clothing_id)]
 	# payload["shoes"] = translate_shoes[int(shoes_id)]
 
-	# abilities - also not implemented in stat.ink API v2 (yet)
+	# abilities - not implemented in stat.ink API v2 yet
 	# API v1: https://github.com/fetus-hina/stat.ink/blob/master/doc/api-1/constant/ability.md
 	# payload["headgear_main"] = translate_ability[int(headgear_main)]
 	# payload["clothing_main"] = translate_ability[int(clothing_main)]
@@ -320,11 +314,11 @@ for i in range (0, n):
 	# print payload
 
 	# POST request
-	r = requests.post(url, headers=auth, data=payload)
+	r2 = requests.post(url, headers=auth, data=payload)
 
 	# Response
 	try:
-		print "Battle #" + str(i+1) + " uploaded to " + r.headers.get('location') # display url
+		print "Battle #" + str(i+1) + " uploaded to " + r2.headers.get('location') # display url
 	except TypeError: # r.headers.get is likely NoneType, i.e. we received an error
 		print "Error uploading battle #" + str(i+1) + ". Message from server:"
-		print r.content
+		print r2.content
