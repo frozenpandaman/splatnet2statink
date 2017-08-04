@@ -162,32 +162,32 @@ auth    = {'Authorization': 'Bearer ' + API_KEY}
 
 for i in reversed(xrange(n)):
 	# regular, league_team, league_pair, private
-	lobby          = results[i]["game_mode"]["key"]
+	lobby        = results[i]["game_mode"]["key"]
 	# regular, gachi, league, ???
-	mode           = results[i]["type"]
+	mode         = results[i]["type"] # getting uploaded as ? for some reason. did api change?
 	# turf_war, rainmaker, splat_zones, tower_control
-	rule           = results[i]["rule"]["key"]
-	stage          = results[i]["stage"]["id"]                               # string (see above)
-	weapon         = results[i]["player_result"]["player"]["weapon"]["name"] # string (see above)
+	rule         = results[i]["rule"]["key"]
+	stage        = results[i]["stage"]["id"]                               # string (see above)
+	weapon       = results[i]["player_result"]["player"]["weapon"]["name"] # string (see above)
 	# victory, defeat
-	result         = results[i]["my_team_result"]["key"]
-	turfinked      = results[i]["player_result"]["game_paint_point"]         # WITHOUT bonus
-	kill           = results[i]["player_result"]["kill_count"]
-	kill_or_assist = results[i]["player_result"]["assist_count"] + kill
-	special        = results[i]["player_result"]["special_count"]
-	death          = results[i]["player_result"]["death_count"]
-	level_after    = results[i]["player_rank"]
-	level_before   = results[i]["player_result"]["player"]["player_rank"]
-	start_time     = results[i]["start_time"]
+	result       = results[i]["my_team_result"]["key"]
+	turfinked    = results[i]["player_result"]["game_paint_point"]         # WITHOUT bonus
+	kill         = results[i]["player_result"]["kill_count"]
+	k_or_a       = results[i]["player_result"]["assist_count"] + kill
+	special      = results[i]["player_result"]["special_count"]
+	death        = results[i]["player_result"]["death_count"]
+	level_after  = results[i]["player_rank"]
+	level_before = results[i]["player_result"]["player"]["player_rank"]
+	start_time   = results[i]["start_time"]
 	try:
-		rank_before    = results[i]["udemae"]["name"]
-		rank_after     = results[i]["player_result"]["player"]["udemae"]["name"]
+		rank_before = results[i]["player_result"]["player"]["udemae"]["name"]
+		rank_after  = results[i]["udemae"]["name"]
 	except KeyError:
 		pass # don't need to handle - won't be put into the payload unless relevant
 	try:
-		elapsed_time   = results[i]["elapsed_time"] # apparently only a thing in ranked
+		elapsed_time = results[i]["elapsed_time"] # apparently only a thing in ranked
 	except KeyError:
-		elapsed_time   = 180 # turf war - 3 minutes in seconds
+		elapsed_time = 180 # turf war - 3 minutes in seconds
 
 	# headgear_id  = results[i]["player_result"]["player"]["head"]["id"]
 	# clothing_id  = results[i]["player_result"]["player"]["clothes"]["id"]
@@ -271,7 +271,7 @@ for i in reversed(xrange(n)):
 
 	# kills, etc.
 	payload["kill"] = kill
-	payload["kill_or_assist"] = kill_or_assist
+	payload["kill_or_assist"] = k_or_a
 	payload["special"] = special
 	payload["death"] = death
 
