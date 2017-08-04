@@ -3,7 +3,7 @@ import os.path, argparse
 import requests, json
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.10"
+A_VERSION = "0.0.11"
 
 API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please replace with your own!
 
@@ -173,28 +173,37 @@ auth    = {'Authorization': 'Bearer ' + API_KEY}
 
 for i in reversed(xrange(n)):
 	# regular, league_team, league_pair, private
-	lobby        = results[i]["game_mode"]["key"]
+	lobby  = results[i]["game_mode"]["key"]
 	# regular, gachi, league, ???
-	mode         = results[i]["type"] # getting uploaded as ? for some reason. did api change?
+	mode   = results[i]["type"] # doesn't work for solo ranked currently
 	# turf_war, rainmaker, splat_zones, tower_control
-	rule         = results[i]["rule"]["key"]
-	stage        = results[i]["stage"]["id"]                               # string (see above)
-	weapon       = results[i]["player_result"]["player"]["weapon"]["name"] # string (see above)
+	rule   = results[i]["rule"]["key"]
+	stage  = results[i]["stage"]["id"]                               # string (see above)
+	weapon = results[i]["player_result"]["player"]["weapon"]["name"] # string (see above)
+
 	# victory, defeat
-	result       = results[i]["my_team_result"]["key"]
-	turfinked    = results[i]["player_result"]["game_paint_point"]         # WITHOUT bonus
-	kill         = results[i]["player_result"]["kill_count"]
-	k_or_a       = results[i]["player_result"]["assist_count"] + kill
-	special      = results[i]["player_result"]["special_count"]
-	death        = results[i]["player_result"]["death_count"]
+	result    = results[i]["my_team_result"]["key"]
+	turfinked = results[i]["player_result"]["game_paint_point"]         # WITHOUT bonus
+	kill      = results[i]["player_result"]["kill_count"]
+	k_or_a    = results[i]["player_result"]["assist_count"] + kill
+	special   = results[i]["player_result"]["special_count"]
+	death     = results[i]["player_result"]["death_count"]
+
 	level_after  = results[i]["player_rank"]
 	level_before = results[i]["player_result"]["player"]["player_rank"]
-	start_time   = results[i]["start_time"]
-	try:
+
+	start_time = results[i]["start_time"]
+
+	try: # only occur in either TW xor ranked
 		rank_before = results[i]["player_result"]["player"]["udemae"]["name"]
 		rank_after  = results[i]["udemae"]["name"]
+		my_count      = results[i]["my_team_count"]
+		their_count   = results[i]["other_team_count"]
+		my_percent    = results[i]["my_team_percentage"]
+		their_percent = results[i]["other_team_percentage"]
 	except KeyError:
 		pass # don't need to handle - won't be put into the payload unless relevant
+
 	try:
 		elapsed_time = results[i]["elapsed_time"] # apparently only a thing in ranked
 	except KeyError:
@@ -266,14 +275,18 @@ for i in reversed(xrange(n)):
 
 	# team percents/counts
 	if mode == "regular":
-		payload["my_team_percent"] = results[i]["my_team_percentage"]
-		payload["his_team_percent"] = results[i]["other_team_percentage"]
+		payload["my_team_percent"] = my_percent
+		payload["his_team_percent"] = their_percent
 	elif mode == "gachi" or mode == "league":
-		payload["my_team_count"] = results[i]["my_team_count"]
-		payload["his_team_count"] = results[i]["other_team_count"]
-	# private...
+		payload["my_team_count"] = my_count
+		payload["his_team_count"] = their_count
+		if my_count == 100 or their_count == 100:
+			payload["knock_out"] = "yes"
+		else:
+			payload["knock_out"] = "no"
+	# private...?
 
-	# my_point
+	# turf inked
 	if rule == "turf_war": # only upload if TW
 		if result == "victory":
 			payload["my_point"] = turfinked + 1000 # win bonus
