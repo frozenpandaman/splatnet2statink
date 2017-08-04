@@ -3,7 +3,7 @@ import os.path, argparse
 import requests, json
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.11"
+A_VERSION = "0.0.12"
 
 API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please replace with your own!
 
@@ -64,49 +64,57 @@ else:
 payload = {'agent': A_NAME, 'agent_version': A_VERSION}
 
 # Weapon database
+# https://stat.ink/api-info/weapon2?_lang_=en-US
 # https://stat.ink/api/v2/weapon
 translate_weapons = {
 	'.52 Gal': '52gal',
 	'.96 Gal': '96gal', # 50
-	'Clash Blaster': 'clashblaster', # 230
-	'Dualie Squelchers': 'dualsweeper', # 5030
+	'Sploosh-o-matic': 'bold',
 	'H-3 Nozzlenose': 'h3reelgun',
-	'Custom Blaster': 'hotblaster_custom',
-	'Blaster': 'hotblaster', # 210
+	'Hero Shot Replica': 'heroshooter_replica',
 	'Jet Squelcher': 'jetsweeper',
 	'L-3 Nozzlenose': 'l3reelgun', # 300
-	'Enperry Splat Dualies': 'maneuver_collabo',
-	'Splat Dualies': 'maneuver', # 5010
-	'Luna Blaster': 'nova',
 	'N-ZAP \'85': 'nzap85',
 	'Splattershot Pro': 'prime', # 70
 	'Aerospray MG': 'promodeler_mg', # 30
 	'Aerospray RG': 'promodeler_rg',
-	'Rapid Blaster': 'rapid',
 	'Splash-o-matic': 'sharp',
-	'Dapple Dualies': 'sputtery',
-	'Tentatek Splattershot': 'sshooter_collabo',
 	'Splattershot': 'sshooter',
+	'Tentatek Splattershot': 'sshooter_collabo',
 	'Splattershot Jr.': 'wakaba',
+	'Clash Blaster': 'clashblaster', # 230
+	'Hero Blaster Replica': 'heroblaster_replica',
+	'Blaster': 'hotblaster', # 210
+	'Custom Blaster': 'hotblaster_custom',
+	'Luna Blaster': 'nova',
+	'Rapid Blaster': 'rapid',
+	'Dualie Squelchers': 'dualsweeper', # 5030
+	'Hero Dualies Replica': 'heromaneuver_replica',
+	'Splat Dualies': 'maneuver', # 5010
+	'Enperry Splat Dualies': 'maneuver_collabo',
+	'Dapple Dualies': 'sputtery',
 	'Carbon Roller': 'carbon', # 1000
 	'Dynamo Roller': 'dynamo',
+	'Hero Roller Replica': 'heroroller_replica',
+	'Splat Roller': 'splatroller',
+	'Krak-On Splat Roller': 'splatroller_collabo',
+	'Flingza Roller': 'variableroller',
+	'Hero Brush Replica': 'herobrush_replica',
 	'Octobrush': 'hokusai', # 1110
 	'Inkbrush': 'pablo',
-	'Krak-On Splat Roller': 'splatroller_collabo',
-	'Splat Roller': 'splatroller',
-	'Flingza Roller': 'variableroller',
-	'E-liter 4K Scope': 'liter4k_scope', # check capitalization, en_GB spelling
-	'E-litre 4K Scope': 'liter4k_scope',
+	'Hero Charger Replica', 'herocharger_replica',
 	'E-liter 4K ': 'liter4k',
-	'E-litre 4K ': 'liter4k',
+	'E-liter 4K Scope': 'liter4k_scope',
 	'Goo Tuber': 'soytuber',
-	'Firefin Splat Charger': 'splatcharger_collabo',
 	'Splat Charger': 'splatcharger',
-	'Firefin Splatterscope': 'splatscope_collabo',
+	'Firefin Splat Charger': 'splatcharger_collabo',
 	'Splatterscope': 'splatscope',
+	'Firefin Splatterscope': 'splatscope_collabo',
 	'Slosher': 'bucketslosher', # 3000
+	'Hero Slosher Replica': 'heroslosher_replica',
 	'Tri-Slosher': 'hissen', # 3010
 	'Heavy Splatling': 'barrelspinner',
+	'Hero Splatling Replica': 'herospinner_replica',
 	'Mini Splatling': 'splatspinner' # 4000
 }
 
