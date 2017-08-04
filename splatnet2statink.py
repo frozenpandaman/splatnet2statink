@@ -3,7 +3,7 @@ import os.path, argparse
 import requests, json
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.9"
+A_VERSION = "0.0.10"
 
 API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please replace with your own!
 
@@ -26,7 +26,18 @@ if result.filename != None: # local file provided
 else: # no argument
 	print "Pulling data from online..." # grab data from SplatNet
 	url = "https://app.splatoon2.nintendo.net/api/results"
-	r = requests.get(url, cookies=dict(iksm_session=YOUR_COOKIE))
+	app_head = {
+		'Host': 'app.splatoon2.nintendo.net',
+		'x-unique-id': '32449507786579989234', # random 19-20 digit num
+		'x-requested-with': 'XMLHttpRequest',
+		'x-timezone-offset': '0',
+		'User-Agent': 'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36',
+		'Accept': '*/*',
+		'Referer': 'https://app.splatoon2.nintendo.net/home',
+		'Accept-Encoding': 'gzip, deflate',
+		'Accept-Language': 'en-US'
+	}
+	r = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
 	data = json.loads(r.text)
 
 try:
