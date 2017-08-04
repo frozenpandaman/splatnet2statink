@@ -3,7 +3,7 @@ import os.path, argparse
 import requests, json
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.8"
+A_VERSION = "0.0.9"
 
 API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please replace with your own!
 
