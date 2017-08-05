@@ -26,7 +26,7 @@ If no input file is provided, the JSON is pulled from [https://app.splatoon2.nin
 
 ## Setup instructions
 
-Download the script and change the `API_KEY` and `YOUR_COOKIE` variables as the top.
+Download the script and change the `API_KEY` and `YOUR_COOKIE` variables at the top.
 
 ### Getting your SplatNet cookie (manual – this process will hopefully be automated in the future)
 
