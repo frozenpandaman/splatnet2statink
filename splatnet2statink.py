@@ -3,7 +3,7 @@ import os.path, argparse
 import requests, json
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.14"
+A_VERSION = "0.0.15"
 
 API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please replace with your own!
 
@@ -325,6 +325,24 @@ for i in reversed(xrange(n)):
 	if rule != "turf_war": # only upload if Ranked
 		payload["rank"] = rank_before.lower()
 		payload["rank_after"] = rank_after.lower()
+
+	# splatfest titles/power - only in API v1 for now
+	# https://github.com/fetus-hina/stat.ink/blob/master/API.md
+	if mode == "fes":
+		title = results[i]["fes_grade"]["rank"]
+		payload["fest_power"] = results[i]["fes_power"]
+		payload["my_team_power"] = results[i]["my_estimate_fes_power"]
+		payload["his_team_power"] = results[i]["other_estimate_fes_power"]
+		if title == 0: # ___ fangirl/boy
+			payload["fest_title"] = "fanboy"
+		elif title == 1: # ___ fiend
+			payload["fest_title"] = "fiend"
+		elif title == 2: # ___ defender
+			payload["fest_title"] = "defender"
+		elif title == 3: # ___ champion
+			payload["fest_title"] = "champion"
+		elif title == 4: # ___ queen/king
+			payload["fest_title"] = "king"
 
 	# battle times
 	payload["start_at"] = start_time
