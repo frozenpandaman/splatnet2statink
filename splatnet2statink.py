@@ -3,7 +3,7 @@ import os.path, argparse
 import requests, json
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.13"
+A_VERSION = "0.0.14"
 
 API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please replace with your own!
 
@@ -180,7 +180,7 @@ url     = 'https://stat.ink/api/v2/battle'
 auth    = {'Authorization': 'Bearer ' + API_KEY}
 
 for i in reversed(xrange(n)):
-	# regular, league_team, league_pair, private
+	# regular, league_team, league_pair, private, fes_solo, fes_team
 	lobby  = results[i]["game_mode"]["key"]
 	# regular, gachi, league, fes
 	mode   = results[i]["type"]
@@ -246,26 +246,28 @@ for i in reversed(xrange(n)):
 	# 	except:
 	# 		shoes_subs[j] = '-1'
 
-	# lobby
+	# lobby + mode
 	if lobby == "regular":
 		payload["lobby"] = "standard"
+		if mode == "regular":
+			payload["mode"] = "regular" # turf war solo
+		elif mode == "gachi":
+			payload["mode"] = "gachi" # ranked solo
 	elif lobby == "league_pair":
-		payload["lobby"] = "squad_2"
-	elif lobby == "league_team":
-		payload["lobby"] = "squad_4"
-	elif lobby == "private":
-		payload["lobby"] = "private"
-		payload["mode"] = "private"
-
-	# mode
-	# stat.ink displays solo ranked or splatfest as ? currently
-	if mode == "regular":
-		payload["mode"] = "regular"
-	elif mode == "gachi" or mode == "league":
+		payload["lobby"] = "squad_2" # squad pair
 		payload["mode"] = "gachi"
-	if mode == "fes":
+	elif lobby == "league_team":
+		payload["lobby"] = "squad_4" # squad team
+		payload["mode"] = "gachi"
+	elif lobby == "private":
+		payload["lobby"] = "private" # private battle
+		payload["mode"] = "private"
+	elif lobby == "fes_solo":
+		payload["lobby"] = "standard" # splatfest solo
 		payload["mode"] = "fest"
-	# private handled above
+	elif lobby == "fes_team":
+		payload["lobby"] = "squad_4" # splatfest team
+		payload["mode"] = "fest"
 
 	# rule
 	if rule == "turf_war":
