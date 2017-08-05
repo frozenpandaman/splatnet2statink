@@ -3,7 +3,7 @@ import os.path, argparse
 import requests, json
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.12"
+A_VERSION = "0.0.13"
 
 API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please replace with your own!
 
@@ -102,7 +102,7 @@ translate_weapons = {
 	'Hero Brush Replica': 'herobrush_replica',
 	'Octobrush': 'hokusai', # 1110
 	'Inkbrush': 'pablo',
-	'Hero Charger Replica', 'herocharger_replica',
+	'Hero Charger Replica': 'herocharger_replica',
 	'E-liter 4K ': 'liter4k',
 	'E-liter 4K Scope': 'liter4k_scope',
 	'Goo Tuber': 'soytuber',
@@ -182,8 +182,8 @@ auth    = {'Authorization': 'Bearer ' + API_KEY}
 for i in reversed(xrange(n)):
 	# regular, league_team, league_pair, private
 	lobby  = results[i]["game_mode"]["key"]
-	# regular, gachi, league, ???
-	mode   = results[i]["type"] # doesn't work for solo ranked currently
+	# regular, gachi, league, fes
+	mode   = results[i]["type"]
 	# turf_war, rainmaker, splat_zones, tower_control
 	rule   = results[i]["rule"]["key"]
 	stage  = results[i]["stage"]["id"]                               # string (see above)
@@ -205,8 +205,14 @@ for i in reversed(xrange(n)):
 	try: # only occur in either TW xor ranked
 		rank_before = results[i]["player_result"]["player"]["udemae"]["name"]
 		rank_after  = results[i]["udemae"]["name"]
+	except:
+		pass
+	try:
 		my_count      = results[i]["my_team_count"]
 		their_count   = results[i]["other_team_count"]
+	except:
+		pass
+	try:
 		my_percent    = results[i]["my_team_percentage"]
 		their_percent = results[i]["other_team_percentage"]
 	except KeyError:
@@ -252,11 +258,13 @@ for i in reversed(xrange(n)):
 		payload["mode"] = "private"
 
 	# mode
+	# stat.ink displays solo ranked or splatfest as ? currently
 	if mode == "regular":
 		payload["mode"] = "regular"
 	elif mode == "gachi" or mode == "league":
 		payload["mode"] = "gachi"
-	# to do - splatfest
+	if mode == "fes":
+		payload["mode"] = "fest"
 	# private handled above
 
 	# rule
@@ -282,7 +290,7 @@ for i in reversed(xrange(n)):
 		payload["result"] = "lose"
 
 	# team percents/counts
-	if mode == "regular":
+	if mode == "regular" or mode == "fes":
 		payload["my_team_percent"] = my_percent
 		payload["his_team_percent"] = their_percent
 	elif mode == "gachi" or mode == "league":
