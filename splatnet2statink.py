@@ -302,7 +302,6 @@ for i in reversed(xrange(n)):
 			payload["knock_out"] = "yes"
 		else:
 			payload["knock_out"] = "no"
-	# private...?
 
 	# turf inked
 	if rule == "turf_war": # only upload if TW
