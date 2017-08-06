@@ -3,7 +3,7 @@ import os.path, argparse
 import requests, json
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.15"
+A_VERSION = "0.0.16"
 
 API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please replace with your own!
 
@@ -247,26 +247,26 @@ for i in reversed(xrange(n)):
 	# 		shoes_subs[j] = '-1'
 
 	# lobby + mode
-	if lobby == "regular":
+	if lobby == "regular": # turf war solo
 		payload["lobby"] = "standard"
-		if mode == "regular":
-			payload["mode"] = "regular" # turf war solo
-		elif mode == "gachi":
-			payload["mode"] = "gachi" # ranked solo
-	elif lobby == "league_pair":
-		payload["lobby"] = "squad_2" # squad pair
+		payload["mode"] = "regular"
+	elif lobby == "gachi": # ranked solo
+		payload["lobby"] = "standard"
 		payload["mode"] = "gachi"
-	elif lobby == "league_team":
-		payload["lobby"] = "squad_4" # squad team
+	elif lobby == "league_pair": # league pair
+		payload["lobby"] = "squad_2"
 		payload["mode"] = "gachi"
-	elif lobby == "private":
-		payload["lobby"] = "private" # private battle
+	elif lobby == "league_team": # league team
+		payload["lobby"] = "squad_4"
+		payload["mode"] = "gachi"
+	elif lobby == "private": # private battle
+		payload["lobby"] = "private"
 		payload["mode"] = "private"
-	elif lobby == "fes_solo":
-		payload["lobby"] = "standard" # splatfest solo
+	elif lobby == "fes_solo": # splatfest solo
+		payload["lobby"] = "standard"
 		payload["mode"] = "fest"
-	elif lobby == "fes_team":
-		payload["lobby"] = "squad_4" # splatfest team
+	elif lobby == "fes_team":# splatfest team
+		payload["lobby"] = "squad_4"
 		payload["mode"] = "fest"
 
 	# rule
