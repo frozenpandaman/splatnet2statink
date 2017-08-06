@@ -67,54 +67,54 @@ payload = {'agent': A_NAME, 'agent_version': A_VERSION}
 # https://stat.ink/api-info/weapon2?_lang_=en-US
 # https://stat.ink/api/v2/weapon
 translate_weapons = {
-	'.52 Gal': '52gal',
-	'.96 Gal': '96gal', # 50
-	'Sploosh-o-matic': 'bold',
-	'H-3 Nozzlenose': 'h3reelgun',
-	'Hero Shot Replica': 'heroshooter_replica',
-	'Jet Squelcher': 'jetsweeper',
+	'.52 Gal': '52gal', # 50
+	'.96 Gal': '96gal', # 80
+	'Sploosh-o-matic': 'bold', # 0
+	'H-3 Nozzlenose': 'h3reelgun', # 310
+	'Hero Shot Replica': 'heroshooter_replica', # 45
+	'Jet Squelcher': 'jetsweeper', # 90
 	'L-3 Nozzlenose': 'l3reelgun', # 300
-	'N-ZAP \'85': 'nzap85',
+	'N-ZAP \'85': 'nzap85', # 60
 	'Splattershot Pro': 'prime', # 70
 	'Aerospray MG': 'promodeler_mg', # 30
-	'Aerospray RG': 'promodeler_rg',
-	'Splash-o-matic': 'sharp',
-	'Splattershot': 'sshooter',
-	'Tentatek Splattershot': 'sshooter_collabo',
-	'Splattershot Jr.': 'wakaba',
+	'Aerospray RG': 'promodeler_rg', # 31
+	'Splash-o-matic': 'sharp', # 20
+	'Splattershot': 'sshooter', # 40
+	'Tentatek Splattershot': 'sshooter_collabo', # 41
+	'Splattershot Jr.': 'wakaba', # 10
 	'Clash Blaster': 'clashblaster', # 230
 	'Hero Blaster Replica': 'heroblaster_replica',
 	'Blaster': 'hotblaster', # 210
 	'Custom Blaster': 'hotblaster_custom',
 	'Luna Blaster': 'nova',
-	'Rapid Blaster': 'rapid',
+	'Rapid Blaster': 'rapid', # 240
 	'Dualie Squelchers': 'dualsweeper', # 5030
-	'Hero Dualies Replica': 'heromaneuver_replica',
+	'Hero Dualie Replicas': 'heromaneuver_replica', # 5050
 	'Splat Dualies': 'maneuver', # 5010
-	'Enperry Splat Dualies': 'maneuver_collabo',
-	'Dapple Dualies': 'sputtery',
+	'Enperry Splat Dualies': 'maneuver_collabo', #5051
+	'Dapple Dualies': 'sputtery', # 5000
 	'Carbon Roller': 'carbon', # 1000
-	'Dynamo Roller': 'dynamo',
-	'Hero Roller Replica': 'heroroller_replica',
-	'Splat Roller': 'splatroller',
-	'Krak-On Splat Roller': 'splatroller_collabo',
-	'Flingza Roller': 'variableroller',
+	'Dynamo Roller': 'dynamo', # 1020
+	'Hero Roller Replica': 'heroroller_replica', # 1015
+	'Splat Roller': 'splatroller', # 1010
+	'Krak-On Splat Roller': 'splatroller_collabo', # 1011
+	'Flingza Roller': 'variableroller', # 1030
 	'Hero Brush Replica': 'herobrush_replica',
 	'Octobrush': 'hokusai', # 1110
-	'Inkbrush': 'pablo',
+	'Inkbrush': 'pablo', # 1100
 	'Hero Charger Replica': 'herocharger_replica',
 	'E-liter 4K ': 'liter4k',
 	'E-liter 4K Scope': 'liter4k_scope',
 	'Goo Tuber': 'soytuber',
 	'Splat Charger': 'splatcharger',
 	'Firefin Splat Charger': 'splatcharger_collabo',
-	'Splatterscope': 'splatscope',
-	'Firefin Splatterscope': 'splatscope_collabo',
+	'Splatterscope': 'splatscope', # 2020
+	'Firefin Splatterscope': 'splatscope_collabo', # 2021
 	'Slosher': 'bucketslosher', # 3000
 	'Hero Slosher Replica': 'heroslosher_replica',
 	'Tri-Slosher': 'hissen', # 3010
-	'Heavy Splatling': 'barrelspinner',
-	'Hero Splatling Replica': 'herospinner_replica',
+	'Heavy Splatling': 'barrelspinner', # 4010
+	'Hero Splatling Replica': 'herospinner_replica', # 4015
 	'Mini Splatling': 'splatspinner' # 4000
 }
 
