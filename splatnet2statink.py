@@ -99,11 +99,11 @@ translate_weapons = {
 	'Splat Roller': 'splatroller', # 1010
 	'Krak-On Splat Roller': 'splatroller_collabo', # 1011
 	'Flingza Roller': 'variableroller', # 1030
-	'Hero Brush Replica': 'herobrush_replica',
+	'Herobrush Replica': 'herobrush_replica',
 	'Octobrush': 'hokusai', # 1110
 	'Inkbrush': 'pablo', # 1100
 	'Hero Charger Replica': 'herocharger_replica',
-	'E-liter 4K ': 'liter4k',
+	'E-liter 4K': 'liter4k',
 	'E-liter 4K Scope': 'liter4k_scope',
 	'Goo Tuber': 'soytuber',
 	'Splat Charger': 'splatcharger',

@@ -23,6 +23,7 @@ If no input file is provided, the JSON is pulled from [https://app.splatoon2.nin
 - [ ] Gear + ability recognition (waiting on stat.ink API v2)
 - [ ] Automating SplatNet cookie generation/acquisition + JSON download
 - [ ] Support for non-en_NA regions
+- [ ] Scoreboard stats and player ranking
 
 ## Setup instructions
 
