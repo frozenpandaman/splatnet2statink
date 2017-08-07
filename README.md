@@ -18,12 +18,12 @@ If no input file is provided, the JSON is pulled from [https://app.splatoon2.nin
 - [x] Rank + rank after, level + level after
 - [x] Battle start & end times
 - [x] Splatfest title + power
+- [x] Scoreboard stats and player ranking (implemented in stat.ink API v2, but not shown on battle pages yet)
 
 ## To implement
 - [ ] Gear + ability recognition (waiting on stat.ink API v2)
 - [ ] Automating SplatNet cookie generation/acquisition + JSON download
 - [ ] Support for non-en_NA regions
-- [ ] Scoreboard stats and player ranking
 
 ## Setup instructions
 
