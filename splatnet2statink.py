@@ -17,7 +17,9 @@ YOUR_COOKIE = "" # keep this secret!
 # I/O
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", dest="filename", required=False,
-					help="path to results JSON", metavar="/path/to/results.json")
+					help="results JSON file", metavar="file.json")
+parser.add_argument("-p", required=False, action="store_true",
+					help="don't upload battle # as private note")
 result = parser.parse_args()
 
 app_head = {
@@ -202,16 +204,16 @@ for i in reversed(xrange(n)):
 	start_time = results[i]["start_time"]
 
 	try: # only occur in either TW xor ranked
-		rank_before = results[i]["player_result"]["player"]["udemae"]["name"]
-		rank_after  = results[i]["udemae"]["name"]
+		rank_before = results[i]["player_result"]["player"]["udemae"]["name"].lower()
+		rank_after  = results[i]["udemae"]["name"].lower()
 		if rank_before == None: # in case of private battles where a player has never played ranked before
 			rank_before = "c-"
 			rank_after = "c-"
 	except:
 		pass
 	try:
-		my_count      = results[i]["my_team_count"]
-		their_count   = results[i]["other_team_count"]
+		my_count    = results[i]["my_team_count"]
+		their_count = results[i]["other_team_count"]
 	except:
 		pass
 	try:
@@ -225,111 +227,115 @@ for i in reversed(xrange(n)):
 	except KeyError:
 		elapsed_time = 180 # turf war - 3 minutes in seconds
 
-	# scoreboard stats and player ranking (no stat.ink support yet)
-	battle_number = results[i]["battle_number"]
-	url = "https://app.splatoon2.nintendo.net/api/results/" + battle_number
-	battle = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
-	battledata = json.loads(battle.text)
+	# scoreboard stats and player ranking
+	if YOUR_COOKIE != "": # in case using local file/no cookie set
+		battle_number = results[i]["battle_number"]
+		url = "https://app.splatoon2.nintendo.net/api/results/" + battle_number
+		battle = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
+		battledata = json.loads(battle.text)
 
-	# necessary check? will this ever happen?
-	try:
-		battledata["battle_number"]
-	except KeyError:
-		print "Problem retrieving that battle."
-		exit(1)
+		try:
+			battledata["battle_number"]
+		except KeyError:
+			print "Problem retrieving battle."
+			exit(1) # in future, should return (without setting scoreboard data)
 
-	ally_scoreboard = []
-	for n in xrange(len(battledata["my_team_members"])):
-		ally_stats = []
-		ally_stats.append(battledata["my_team_members"][n]["sort_score"])
-		ally_stats.append(battledata["my_team_members"][n]["kill_count"] + battledata["my_team_members"][n]["assist_count"])
-		ally_stats.append(battledata["my_team_members"][n]["assist_count"])
-		ally_stats.append(battledata["my_team_members"][n]["death_count"])
-		ally_stats.append(battledata["my_team_members"][n]["special_count"])
-		ally_stats.append(translate_weapons[battledata["my_team_members"][n]["player"]["weapon"]["name"]])
-		ally_stats.append(battledata["my_team_members"][n]["player"]["player_rank"])
+		ally_scoreboard = []
+		for n in xrange(len(battledata["my_team_members"])):
+			ally_stats = []
+			ally_stats.append(battledata["my_team_members"][n]["sort_score"])
+			ally_stats.append(battledata["my_team_members"][n]["kill_count"] + battledata["my_team_members"][n]["assist_count"])
+			ally_stats.append(battledata["my_team_members"][n]["assist_count"])
+			ally_stats.append(battledata["my_team_members"][n]["death_count"])
+			ally_stats.append(battledata["my_team_members"][n]["special_count"])
+			ally_stats.append(translate_weapons[battledata["my_team_members"][n]["player"]["weapon"]["name"]])
+			ally_stats.append(battledata["my_team_members"][n]["player"]["player_rank"])
+			if mode == "gachi":
+				ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower())
+				ally_stats.append(None) # points of turf inked is null if ranked battle
+			elif mode == "regular" or mode == "fest":
+				ally_stats.append(None) # udemae (rank) is null if turf war
+				if result == "victory":
+					ally_stats.append(battledata["my_team_members"][n]["game_paint_point"] + 1000)
+				else:
+					ally_stats.append(battledata["my_team_members"][n]["game_paint_point"])
+			ally_stats.append(1) # my team? (yes)
+			ally_stats.append(0) # is me? (no)
+			ally_scoreboard.append(ally_stats)
+
+		my_stats = []
+		my_stats.append(battledata["player_result"]["sort_score"])
+		my_stats.append(k_or_a)
+		my_stats.append(battledata["player_result"]["assist_count"])
+		my_stats.append(death)
+		my_stats.append(special)
+		my_stats.append(translate_weapons[weapon])
+		my_stats.append(level_before)
 		if mode == "gachi":
-			ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower())
-			ally_stats.append(None)
+			my_stats.append(rank_before)
+			my_stats.append(None) # points of turf inked is null if ranked battle
 		elif mode == "regular" or mode == "fest":
-			ally_stats.append(None)
+			my_stats.append(None) # udemae (rank) is null if turf war
 			if result == "victory":
-				ally_stats.append(battledata["my_team_members"][n]["game_paint_point"] + 1000)
+				my_stats.append(turfinked + 1000)
 			else:
-				ally_stats.append(battledata["my_team_members"][n]["game_paint_point"])
-		ally_stats.append(1) # my team
-		ally_stats.append(0) # this isn't me
-		ally_scoreboard.append(ally_stats)
+				my_stats.append(turfinked)
+		my_stats.append(1) # my team? (yes)
+		my_stats.append(1) # is me? (yes)
+		ally_scoreboard.append(my_stats)
 
-	my_stats = []
-	my_stats.append(battledata["player_result"]["sort_score"])
-	my_stats.append(k_or_a)
-	my_stats.append(battledata["player_result"]["assist_count"])
-	my_stats.append(death)
-	my_stats.append(special)
-	my_stats.append(translate_weapons[weapon])
-	my_stats.append(level_before)
-	if mode == "gachi":
-		my_stats.append(rank_before.lower())
-		my_stats.append(None)
-	elif mode == "regular" or mode == "fest":
-		my_stats.append(None)
-		if result == "victory":
-			my_stats.append(turfinked + 1000)
-		else:
-			my_stats.append(turfinked)
-	my_stats.append(1) # my team
-	my_stats.append(1) # this is me
-	ally_scoreboard.append(my_stats)
+		# scoreboard sorted by sort_score, then kills + assists, assists, deaths (reverse order), & finally specials
+		sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 2), reverse=True)
+		sorted_ally_scoreboard.sort(ally_scoreboard, key=itemgetter(3))
+		sorted_ally_scoreboard.sort(ally_scoreboard, key=itemgetter(4), reverse=True)
 
-	# the scoreboard is sorted by the sort_score, then by kills + assists, assists, deaths, and finally specials
-	sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 2, 3, 4), reverse=True)
+		enemy_scoreboard = []
+		for n in xrange(len(battledata["other_team_members"])):
+			enemy_stats = []
+			enemy_stats.append(battledata["other_team_members"][n]["sort_score"])
+			enemy_stats.append(battledata["other_team_members"][n]["kill_count"] +
+							   battledata["other_team_members"][n]["assist_count"])
+			enemy_stats.append(battledata["other_team_members"][n]["assist_count"])
+			enemy_stats.append(battledata["other_team_members"][n]["death_count"])
+			enemy_stats.append(battledata["other_team_members"][n]["special_count"])
+			enemy_stats.append(translate_weapons[battledata["other_team_members"][n]["player"]["weapon"]["name"]])
+			enemy_stats.append(battledata["other_team_members"][n]["player"]["player_rank"])
+			if mode == "gachi":
+				enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower())
+				enemy_stats.append(None)
+			elif mode == "regular" or mode == "fest":
+				enemy_stats.append(None)
+				if result == "defeat":
+					enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"] + 1000)
+				else:
+					enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"])
+			enemy_stats.append(0) # my team? (no)
+			enemy_stats.append(0) # is me? (no)
+			enemy_scoreboard.append(enemy_stats)
 
-	enemy_scoreboard = []
-	for n in xrange(len(battledata["other_team_members"])):
-		enemy_stats = []
-		enemy_stats.append(battledata["other_team_members"][n]["sort_score"])
-		enemy_stats.append(battledata["other_team_members"][n]["kill_count"] +
-						   battledata["other_team_members"][n]["assist_count"])
-		enemy_stats.append(battledata["other_team_members"][n]["assist_count"])
-		enemy_stats.append(battledata["other_team_members"][n]["death_count"])
-		enemy_stats.append(battledata["other_team_members"][n]["special_count"])
-		enemy_stats.append(translate_weapons[battledata["other_team_members"][n]["player"]["weapon"]["name"]])
-		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_rank"])
-		if mode == "gachi":
-			enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower())
-			enemy_stats.append(None)
-		elif mode == "regular" or mode == "fest":
-			enemy_stats.append(None)
-			if result == "defeat":
-				enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"] + 1000)
-			else:
-				enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"])
-		enemy_stats.append(0) # enemy team
-		enemy_stats.append(0) # this definitely isn't me
-		enemy_scoreboard.append(enemy_stats)
+		sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(0, 1, 2), reverse=True)
+		sorted_enemy_scoreboard.sort(enemy_scoreboard, key=itemgetter(3))
+		sorted_enemy_scoreboard.sort(enemy_scoreboard, key=itemgetter(4), reverse=True)
 
-	sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(0, 1, 2, 3, 4), reverse=True)
+		full_scoreboard = sorted_ally_scoreboard + sorted_enemy_scoreboard
 
-	full_scoreboard = sorted_ally_scoreboard + sorted_enemy_scoreboard
-
-	payload["players"] = []
-	for n in xrange(len(full_scoreboard)):
-		detail = {
-			"team": "my" if full_scoreboard[n][-2] == 1 else "his",
-			"is_me": "yes" if full_scoreboard[n][-1] == 1 else "no",
-			"weapon": full_scoreboard[n][5],
-			"level": full_scoreboard[n][6],
-			"rank_in_team": n + 1 if n < 4 else n - 3,
-			"kill": full_scoreboard[n][1] - full_scoreboard[n][2],
-			"death": full_scoreboard[n][3],
-			"kill_or_assist": full_scoreboard[n][1],
-			"special": full_scoreboard[n][4],
-			"point": full_scoreboard[n][-3]
-		}
-		if mode == "gachi":
-			detail["rank"] = full_scoreboard[n][-4]
-		payload["players"].append(detail)
+		payload["players"] = []
+		for n in xrange(len(full_scoreboard)):
+			detail = {
+				"team": "my" if full_scoreboard[n][-2] == 1 else "his",
+				"is_me": "yes" if full_scoreboard[n][-1] == 1 else "no",
+				"weapon": full_scoreboard[n][5],
+				"level": full_scoreboard[n][6],
+				"rank_in_team": n + 1 if n < 4 else n - 3,
+				"kill": full_scoreboard[n][1] - full_scoreboard[n][2],
+				"death": full_scoreboard[n][3],
+				"kill_or_assist": full_scoreboard[n][1],
+				"special": full_scoreboard[n][4],
+				"point": full_scoreboard[n][-3]
+			}
+			if mode == "gachi":
+				detail["rank"] = full_scoreboard[n][-4]
+			payload["players"].append(detail)
 
 	# headgear_id  = results[i]["player_result"]["player"]["head"]["id"]
 	# clothing_id  = results[i]["player_result"]["player"]["clothes"]["id"]
@@ -339,8 +345,8 @@ for i in reversed(xrange(n)):
 	# clothing_main  = results[i]["player_result"]["player"]["clothes_skills"]["main"]["id"]
 	# shoes_main     = results[i]["player_result"]["player"]["shoes_skills"]["main"]["id"]
 
-	# headgear_subs, clothing_subs, shoes_subs = ([-1,-1,-1] for i in range(3))
-	# for j in range (0, 3):
+	# headgear_subs, clothing_subs, shoes_subs = ([-1,-1,-1] for i in xrange(3))
+	# for j in xrange(3):
 	# 	try:
 	# 		headgear_subs[j] = results[i]["player_result"]["player"]["head_skills"]["subs"][j]["id"]
 	# 	except:
@@ -430,8 +436,8 @@ for i in reversed(xrange(n)):
 
 	# rank
 	if rule != "turf_war": # only upload if Ranked
-		payload["rank"] = rank_before.lower()
-		payload["rank_after"] = rank_after.lower()
+		payload["rank"] = rank_before
+		payload["rank_after"] = rank_after
 
 	# splatfest titles/power - only in API v1 for now
 	# https://github.com/fetus-hina/stat.ink/blob/master/API.md
@@ -456,7 +462,8 @@ for i in reversed(xrange(n)):
 	payload["end_at"] = start_time + elapsed_time
 
 	# battle number
-	payload["private_note"] = "Battle #" + battle_number
+	if not result.p: # -p not provided
+		payload["private_note"] = "Battle #" + battle_number
 
 	# gear - not implemented in stat.ink API v2 yet
 	# API v1: https://github.com/fetus-hina/stat.ink/blob/master/doc/api-1/constant/gear.md
@@ -485,7 +492,7 @@ for i in reversed(xrange(n)):
 
 	# POST to stat.ink
 	url     = 'https://stat.ink/api/v2/battle'
-	auth    = {'Authorization': 'Bearer ' + API_KEY, "Content-Type": "application/json"}
+	auth    = {'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/json'}
 
 	r2 = requests.post(url, headers=auth, data=json.dumps(payload))
 
@@ -495,3 +502,6 @@ for i in reversed(xrange(n)):
 	except TypeError: # r.headers.get is likely NoneType, i.e. we received an error
 		print "Error uploading battle #" + str(i+1) + ". Message from server:"
 		print r2.content
+		cont = raw_input('Continue (y/n)? ')
+		if cont in ['n', 'N', 'no', 'No', 'NO']:
+			exit(1)
