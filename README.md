@@ -4,10 +4,12 @@ A script that works to upload JSON data from the SplatNet 2 app ("Nintendo Switc
 
 ## Usage
 ```
-python splatnet2statink.py [-i /path/to/results.json]
+python splatnet2statink.py [-i path/to/results.json] [-p]
 ```
 
-If no input file is provided, the JSON is pulled from [https://app.splatoon2.nintendo.net/api/results](https://app.splatoon2.nintendo.net/api/results), given your cookie.
+If no input file (`-i`) is provided, the JSON is pulled from [https://app.splatoon2.nintendo.net/api/results](https://app.splatoon2.nintendo.net/api/results), given your cookie.
+
+The `-p` flag supresses uploading the battle number as a private note.
 
 ## Working features
 - [x] Lobby/Mode
@@ -15,10 +17,10 @@ If no input file is provided, the JSON is pulled from [https://app.splatoon2.nin
 - [x] Weapon
 - [x] Result, final count/percent, turf inked
 - [x] Kills, deaths, assists, specials
-- [x] Rank + rank after, level + level after
+- [x] Rank & rank after, level & level after
 - [x] Battle start & end times
-- [x] Splatfest title + power
-- [x] Scoreboard stats and player ranking (implemented in stat.ink API v2, but not shown on battle pages yet)
+- [x] Splatfest title & power
+- [x] Scoreboard stats & player ranking
 
 ## To implement
 - [ ] Gear + ability recognition (waiting on stat.ink API v2)
