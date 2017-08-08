@@ -20,7 +20,7 @@ parser.add_argument("-i", dest="filename", required=False,
 					help="results JSON file", metavar="file.json")
 parser.add_argument("-p", required=False, action="store_true",
 					help="don't upload battle # as private note")
-result = parser.parse_args()
+parser_result = parser.parse_args()
 
 app_head = {
 	'Host': 'app.splatoon2.nintendo.net',
@@ -34,10 +34,10 @@ app_head = {
 	'Accept-Language': 'en-US'
 }
 
-if result.filename != None: # local file provided
-	if not os.path.exists(result.filename):
-		parser.error("File %s does not exist!" % result.filename) # exit
-	with open(result.filename) as data_file:
+if parser_result.filename != None: # local file provided
+	if not os.path.exists(parser_result.filename):
+		parser.error("File %s does not exist!" % parser_result.filename) # exit
+	with open(parser_result.filename) as data_file:
 		data = json.load(data_file)
 else: # no argument
 	print "Pulling data from online..." # grab data from SplatNet
@@ -189,7 +189,6 @@ for i in reversed(xrange(n)):
 	rule   = results[i]["rule"]["key"]
 	stage  = results[i]["stage"]["id"]                               # string (see above)
 	weapon = results[i]["player_result"]["player"]["weapon"]["name"] # string (see above)
-
 	# victory, defeat
 	result    = results[i]["my_team_result"]["key"]
 	turfinked = results[i]["player_result"]["game_paint_point"]         # WITHOUT bonus
@@ -285,9 +284,8 @@ for i in reversed(xrange(n)):
 		ally_scoreboard.append(my_stats)
 
 		# scoreboard sorted by sort_score, then kills + assists, assists, deaths (reverse order), & finally specials
-		sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 2), reverse=True)
-		sorted_ally_scoreboard.sort(ally_scoreboard, key=itemgetter(3))
-		sorted_ally_scoreboard.sort(ally_scoreboard, key=itemgetter(4), reverse=True)
+		sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(3))
+		sorted_ally_scoreboard.sort(key=itemgetter(0, 1, 2, 4), reverse=True)
 
 		enemy_scoreboard = []
 		for n in xrange(len(battledata["other_team_members"])):
@@ -313,9 +311,8 @@ for i in reversed(xrange(n)):
 			enemy_stats.append(0) # is me? (no)
 			enemy_scoreboard.append(enemy_stats)
 
-		sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(0, 1, 2), reverse=True)
-		sorted_enemy_scoreboard.sort(enemy_scoreboard, key=itemgetter(3))
-		sorted_enemy_scoreboard.sort(enemy_scoreboard, key=itemgetter(4), reverse=True)
+		sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(3))
+		sorted_enemy_scoreboard.sort(key=itemgetter(0, 1, 2, 4), reverse=True)
 
 		full_scoreboard = sorted_ally_scoreboard + sorted_enemy_scoreboard
 
@@ -462,7 +459,7 @@ for i in reversed(xrange(n)):
 	payload["end_at"] = start_time + elapsed_time
 
 	# battle number
-	if not result.p: # -p not provided
+	if not parser_result.p: # -p not provided
 		payload["private_note"] = "Battle #" + battle_number
 
 	# gear - not implemented in stat.ink API v2 yet
