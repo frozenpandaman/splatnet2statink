@@ -4,7 +4,7 @@ A script that works to upload JSON data from the SplatNet 2 app ("Nintendo Switc
 
 ## Usage
 ```
-python splatnet2statink.py [-i path/to/results.json] [-p]
+$ python splatnet2statink.py [-i path/to/results.json] [-p]
 ```
 
 If no input file (`-i`) is provided, the JSON is pulled from [https://app.splatoon2.nintendo.net/api/results](https://app.splatoon2.nintendo.net/api/results), given your cookie.
@@ -48,10 +48,10 @@ Download the script and change the `API_KEY` and `YOUR_COOKIE` variables at the 
 
 7. Navigate to [https://app.splatoon2.nintendo.net/home](https://app.splatoon2.nintendo.net/home) in your browser (shows a forbidden error for now). Use a cookie editor (such as [EditThisCookie](https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg?hl=en) for Chrome) to edit the `iksm_session` cookie to be `xxxxx` from before. Refresh, and you should be able to access SplatNet from your [browser](https://i.imgur.com/UUoxEJS.png).
 
-### Downloading the JSON
-
-1. Save the webpage at [https://app.splatoon2.nintendo.net/api/results](https://app.splatoon2.nintendo.net/api/results) as a JSON file after following the steps above.
-
 ### Getting your stat.ink API key
 
 1. Viewable at [https://stat.ink/profile](https://stat.ink/profile) after [registering](https://stat.ink/register) and logging in.
+
+### Downloading the JSON
+
+1. Save the webpage at [https://app.splatoon2.nintendo.net/api/results](https://app.splatoon2.nintendo.net/api/results) as a JSON file after following the steps above.
