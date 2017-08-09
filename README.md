@@ -21,11 +21,11 @@ The `-p` flag supresses uploading the battle number as a private note.
 - [x] Battle start & end times
 - [x] Splatfest title & power
 - [x] Scoreboard stats & player ranking
+- [x] Non-English language game support
 
 ## To implement
 - [ ] Gear + ability recognition (waiting on stat.ink API v2)
 - [ ] Automating SplatNet cookie generation/acquisition + JSON download
-- [ ] Support for non-en_NA regions
 
 ## Setup instructions
 
