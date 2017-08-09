@@ -26,6 +26,7 @@ The `-p` flag supresses uploading the battle number as a private note.
 ## To implement
 - [ ] Gear + ability recognition (waiting on stat.ink API v2)
 - [ ] Automating SplatNet cookie generation/acquisition + JSON download
+- [ ] Monitoring for new battles/updates in real-time
 
 ## Setup instructions
 
