@@ -5,7 +5,7 @@ import requests, json
 from operator import itemgetter
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.18"
+A_VERSION = "0.0.19"
 
 API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please replace with your own!
 
@@ -72,55 +72,55 @@ payload = {'agent': A_NAME, 'agent_version': A_VERSION}
 # https://stat.ink/api-info/weapon2?_lang_=en-US
 # https://stat.ink/api/v2/weapon
 translate_weapons = {
-	'.52 Gal': '52gal', # 50
-	'.96 Gal': '96gal', # 80
-	'Sploosh-o-matic': 'bold', # 0
-	'H-3 Nozzlenose': 'h3reelgun', # 310
-	'Hero Shot Replica': 'heroshooter_replica', # 45
-	'Jet Squelcher': 'jetsweeper', # 90
-	'L-3 Nozzlenose': 'l3reelgun', # 300
-	'N-ZAP \'85': 'nzap85', # 60
-	'Splattershot Pro': 'prime', # 70
-	'Aerospray MG': 'promodeler_mg', # 30
-	'Aerospray RG': 'promodeler_rg', # 31
-	'Splash-o-matic': 'sharp', # 20
-	'Splattershot': 'sshooter', # 40
-	'Tentatek Splattershot': 'sshooter_collabo', # 41
-	'Splattershot Jr.': 'wakaba', # 10
-	'Clash Blaster': 'clashblaster', # 230
-	'Hero Blaster Replica': 'heroblaster_replica',
-	'Blaster': 'hotblaster', # 210
-	'Custom Blaster': 'hotblaster_custom',
-	'Luna Blaster': 'nova',
-	'Rapid Blaster': 'rapid', # 240
-	'Dualie Squelchers': 'dualsweeper', # 5030
-	'Hero Dualie Replicas': 'heromaneuver_replica', # 5050
-	'Splat Dualies': 'maneuver', # 5010
-	'Enperry Splat Dualies': 'maneuver_collabo', #5051
-	'Dapple Dualies': 'sputtery', # 5000
-	'Carbon Roller': 'carbon', # 1000
-	'Dynamo Roller': 'dynamo', # 1020
-	'Hero Roller Replica': 'heroroller_replica', # 1015
-	'Splat Roller': 'splatroller', # 1010
-	'Krak-On Splat Roller': 'splatroller_collabo', # 1011
-	'Flingza Roller': 'variableroller', # 1030
-	'Herobrush Replica': 'herobrush_replica',
-	'Octobrush': 'hokusai', # 1110
-	'Inkbrush': 'pablo', # 1100
-	'Hero Charger Replica': 'herocharger_replica',
-	'E-liter 4K': 'liter4k',
-	'E-liter 4K Scope': 'liter4k_scope',
-	'Goo Tuber': 'soytuber',
-	'Splat Charger': 'splatcharger',
-	'Firefin Splat Charger': 'splatcharger_collabo',
-	'Splatterscope': 'splatscope', # 2020
-	'Firefin Splatterscope': 'splatscope_collabo', # 2021
-	'Slosher': 'bucketslosher', # 3000
-	'Hero Slosher Replica': 'heroslosher_replica',
-	'Tri-Slosher': 'hissen', # 3010
-	'Heavy Splatling': 'barrelspinner', # 4010
-	'Hero Splatling Replica': 'herospinner_replica', # 4015
-	'Mini Splatling': 'splatspinner' # 4000
+	0:    'bold', # Sploosh-o-matic
+	10:   'wakaba', # Splattershot Jr.
+	20:   'sharp', # Splash-o-matic
+	30:   'promodeler_mg', # Aerospray MG
+	31:   'promodeler_rg', # Aerospray RG
+	40:   'sshooter', # Splattershot
+	41:   'sshooter_collabo', # Tentatek Splattershot
+	45:   'heroshooter_replica', # Hero Shot Replica
+	50:   '52gal', # .52 Gal
+	60:   'nzap85', # N-ZAP '85
+	70:   'prime', # Splattershot Pro
+	80:   '96gal', # .96 Gal
+	90:   'jetsweeper', # Jet Squelcher
+	200:  'nova', # Luna Blaster
+	210:  'hotblaster', # Blaster
+	211:  'hotblaster_custom', # Custom Blaster
+	215:  'heroblaster_replica', # Hero Blaster Replica
+	230:  'clashblaster', # Clash Blaster
+	240:  'rapid', # Rapid Blaster
+	300:  'l3reelgun', # L-3 Nozzlenose
+	310:  'h3reelgun', # H-3 Nozzlenose
+	1000: 'carbon', # Carbon Roller
+	1010: 'splatroller', # Splat Roller
+	1011: 'splatroller_collabo', # Krak-On Splat Roller
+	1015: 'heroroller_replica', # Hero Roller Replica
+	1020: 'dynamo', # Dynamo Roller
+	1030: 'variableroller', # Flingza Roller
+	1100: 'pablo', # Inkbrush
+	1110: 'hokusai', # Octobrush
+	1115: 'herobrush_replica', # Herobrush Replica
+	2010: 'splatcharger', # Splat Charger
+	2011: 'splatcharger_collabo', # Firefin Splat Charger
+	2015: 'herocharger_replica', # Hero Charger Replica
+	2020: 'splatscope', # Splatterscope
+	2021: 'splatscope_collabo', # Firefin Splatterscope
+	2030: 'liter4k', # E-liter 4K
+	2040: 'liter4k_scope', # E-liter 4K Scope
+	2060: 'soytuber', # Goo Tuber
+	3000: 'bucketslosher', # Slosher
+	3005: 'heroslosher_replica', # Hero Slosher Replica
+	3010: 'hissen', # Tri-Slosher
+	4000: 'splatspinner', # Mini Splatling
+	4010: 'barrelspinner', # Heavy Splatling
+	4015: 'herospinner_replica', # Hero Splatling Replica
+	5000: 'sputtery', # Dapple Dualies
+	5010: 'maneuver', # Splat Dualies
+	5030: 'dualsweeper', # Dualie Squelchers
+	5040: 'heromaneuver_replica', # Hero Dualie Replicas
+	5051: 'maneuver_collabo' # Enperry Splat Dualies
 }
 
 # Stage database
@@ -150,35 +150,35 @@ translate_stages = {
 # }
 
 # Ability database
-translate_ability = {
-	-1:  'Locked', # locked ("?") or does not exist
-	0:   'Ink Saver (Main)',
-	1:   'Ink Saver (Sub)',
-	2:   'Ink Recovery Up',
-	3:   'Run Speed Up',
-	4:   'Swim Speed Up',
-	5:   'Special Charge Up',
-	6:   'Special Saver',
-	7:   'Special Power Up',
-	8:   'Quick Respawn',
-	9:   'Quick Super Jump',
-	10:  'Sub Power Up',
-	11:  'Ink Resistance Up',
-	12:  'Bomb Defense Up',
-	13:  'Cold-Blooded',
-	100: 'Opening Gambit',
-	101: 'UNKNOWN', # Last-Ditch Effort?
-	102: 'Tenacity',
-	103: 'UNKNOWN', # Comeback?
-	104: 'Ninja Squid',
-	105: 'UNKNOWN', # Haunt?
-	106: 'Thermal Ink',
-	107: 'UNKNOWN', # Respawn Punisher?
-	108: 'Ability Doubler',
-	109: 'UNKNOWN', # Stealth Jump?
-	110: 'UNKNOWN', # Object Shredder?
-	111: 'UNKNOWN' # Drop Roller?
-}
+# translate_ability = {
+# 	-1:  'Locked', # locked ("?") or does not exist
+# 	0:   'Ink Saver (Main)',
+# 	1:   'Ink Saver (Sub)',
+# 	2:   'Ink Recovery Up',
+# 	3:   'Run Speed Up',
+# 	4:   'Swim Speed Up',
+# 	5:   'Special Charge Up',
+# 	6:   'Special Saver',
+# 	7:   'Special Power Up',
+# 	8:   'Quick Respawn',
+# 	9:   'Quick Super Jump',
+# 	10:  'Sub Power Up',
+# 	11:  'Ink Resistance Up',
+# 	12:  'Bomb Defense Up',
+# 	13:  'Cold-Blooded',
+# 	100: 'Opening Gambit',
+# 	101: 'Last-Ditch Effort',
+# 	102: 'Tenacity',
+# 	103: 'Comeback',
+# 	104: 'Ninja Squid',
+# 	105: 'Haunt',
+# 	106: 'Thermal Ink',
+# 	107: 'Respawn Punisher',
+# 	108: 'Ability Doubler',
+# 	109: 'Stealth Jump',
+# 	110: 'Object Shredder',
+# 	111: 'Drop Roller'
+# }
 
 for i in reversed(xrange(n)):
 	# regular, league_team, league_pair, private, fes_solo, fes_team
@@ -187,8 +187,8 @@ for i in reversed(xrange(n)):
 	mode   = results[i]["type"]
 	# turf_war, rainmaker, splat_zones, tower_control
 	rule   = results[i]["rule"]["key"]
-	stage  = results[i]["stage"]["id"]                               # string (see above)
-	weapon = results[i]["player_result"]["player"]["weapon"]["name"] # string (see above)
+	stage  = results[i]["stage"]["id"] # string (see above)
+	weapon = results[i]["player_result"]["player"]["weapon"]["id"]
 	# victory, defeat
 	result    = results[i]["my_team_result"]["key"]
 	turfinked = results[i]["player_result"]["game_paint_point"]         # WITHOUT bonus
@@ -247,7 +247,7 @@ for i in reversed(xrange(n)):
 			ally_stats.append(battledata["my_team_members"][n]["assist_count"])
 			ally_stats.append(battledata["my_team_members"][n]["death_count"])
 			ally_stats.append(battledata["my_team_members"][n]["special_count"])
-			ally_stats.append(translate_weapons[battledata["my_team_members"][n]["player"]["weapon"]["name"]])
+			ally_stats.append(translate_weapons[int(battledata["my_team_members"][n]["player"]["weapon"]["id"])])
 			ally_stats.append(battledata["my_team_members"][n]["player"]["player_rank"])
 			if mode == "gachi":
 				ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower())
@@ -268,7 +268,7 @@ for i in reversed(xrange(n)):
 		my_stats.append(battledata["player_result"]["assist_count"])
 		my_stats.append(death)
 		my_stats.append(special)
-		my_stats.append(translate_weapons[weapon])
+		my_stats.append(translate_weapons[int(weapon)])
 		my_stats.append(level_before)
 		if mode == "gachi":
 			my_stats.append(rank_before)
@@ -295,7 +295,7 @@ for i in reversed(xrange(n)):
 			enemy_stats.append(battledata["other_team_members"][n]["assist_count"])
 			enemy_stats.append(battledata["other_team_members"][n]["death_count"])
 			enemy_stats.append(battledata["other_team_members"][n]["special_count"])
-			enemy_stats.append(translate_weapons[battledata["other_team_members"][n]["player"]["weapon"]["name"]])
+			enemy_stats.append(translate_weapons[int(battledata["other_team_members"][n]["player"]["weapon"]["id"])])
 			enemy_stats.append(battledata["other_team_members"][n]["player"]["player_rank"])
 			if mode == "gachi":
 				enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower())
@@ -392,7 +392,7 @@ for i in reversed(xrange(n)):
 	payload["stage"] = translate_stages[int(stage)]
 
 	# weapon
-	payload["weapon"] = translate_weapons[weapon]
+	payload["weapon"] = translate_weapons[int(weapon)]
 
 	# result
 	if result == "victory":
