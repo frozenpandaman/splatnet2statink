@@ -5,7 +5,7 @@ import requests, json
 from operator import itemgetter
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.17"
+A_VERSION = "0.0.18"
 
 API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please replace with your own!
 
@@ -283,9 +283,8 @@ for i in reversed(xrange(n)):
 		my_stats.append(1) # is me? (yes)
 		ally_scoreboard.append(my_stats)
 
-		# scoreboard sorted by sort_score, then kills + assists, assists, deaths (reverse order), & finally specials
-		sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(3))
-		sorted_ally_scoreboard.sort(key=itemgetter(0, 1, 2, 4), reverse=True)
+		# scoreboard sorted by sort_score, then kills + assists, assists, deaths (higher = better, for some reason), & finally specials
+		sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 2, 3, 4), reverse=True)
 
 		enemy_scoreboard = []
 		for n in xrange(len(battledata["other_team_members"])):
@@ -311,8 +310,7 @@ for i in reversed(xrange(n)):
 			enemy_stats.append(0) # is me? (no)
 			enemy_scoreboard.append(enemy_stats)
 
-		sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(3))
-		sorted_enemy_scoreboard.sort(key=itemgetter(0, 1, 2, 4), reverse=True)
+		sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(0, 1, 2, 3, 4), reverse=True)
 
 		full_scoreboard = sorted_ally_scoreboard + sorted_enemy_scoreboard
 
