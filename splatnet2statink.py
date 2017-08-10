@@ -5,7 +5,7 @@ import requests, json
 from operator import itemgetter
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.19"
+A_VERSION = "0.0.20"
 
 API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please replace with your own!
 
