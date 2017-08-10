@@ -118,9 +118,9 @@ translate_weapons = {
 	4015: 'herospinner_replica', # Hero Splatling Replica
 	5000: 'sputtery', # Dapple Dualies
 	5010: 'maneuver', # Splat Dualies
+	5011: 'maneuver_collabo', # Enperry Splat Dualies
 	5030: 'dualsweeper', # Dualie Squelchers
-	5040: 'heromaneuver_replica', # Hero Dualie Replicas
-	5051: 'maneuver_collabo' # Enperry Splat Dualies
+	5040: 'heromaneuver_replica' # Hero Dualie Replicas
 }
 
 # Stage database
