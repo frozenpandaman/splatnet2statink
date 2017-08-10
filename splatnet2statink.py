@@ -243,7 +243,8 @@ for i in reversed(xrange(n)):
 		for n in xrange(len(battledata["my_team_members"])):
 			ally_stats = []
 			ally_stats.append(battledata["my_team_members"][n]["sort_score"])
-			ally_stats.append(battledata["my_team_members"][n]["kill_count"] + battledata["my_team_members"][n]["assist_count"])
+			ally_stats.append(battledata["my_team_members"][n]["kill_count"] +
+							  battledata["my_team_members"][n]["assist_count"])
 			ally_stats.append(battledata["my_team_members"][n]["assist_count"])
 			ally_stats.append(battledata["my_team_members"][n]["death_count"])
 			ally_stats.append(battledata["my_team_members"][n]["special_count"])
@@ -285,6 +286,11 @@ for i in reversed(xrange(n)):
 
 		# scoreboard sorted by sort_score, then kills + assists, assists, deaths (higher = better, for some reason), & finally specials
 		sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 2, 3, 4), reverse=True)
+		
+		for n in xrange(len(sorted_ally_scoreboard)):
+			if sorted_ally_scoreboard[n][-1] == 1:
+				payload["rank_in_team"] = n + 1
+				break
 
 		enemy_scoreboard = []
 		for n in xrange(len(battledata["other_team_members"])):
