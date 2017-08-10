@@ -5,7 +5,7 @@ import requests, json
 from operator import itemgetter
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.20"
+A_VERSION = "0.0.21"
 
 API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please replace with your own!
 
@@ -253,7 +253,7 @@ for i in reversed(xrange(n)):
 			if mode == "gachi":
 				ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower())
 				ally_stats.append(None) # points of turf inked is null if ranked battle
-			elif mode == "regular" or mode == "fest":
+			elif rule == "turf_war":
 				ally_stats.append(None) # udemae (rank) is null if turf war
 				if result == "victory":
 					ally_stats.append(battledata["my_team_members"][n]["game_paint_point"] + 1000)
@@ -286,7 +286,7 @@ for i in reversed(xrange(n)):
 
 		# scoreboard sorted by sort_score, then kills + assists, assists, deaths (higher = better, for some reason), & finally specials
 		sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 2, 3, 4), reverse=True)
-		
+
 		for n in xrange(len(sorted_ally_scoreboard)):
 			if sorted_ally_scoreboard[n][-1] == 1:
 				payload["rank_in_team"] = n + 1
@@ -306,7 +306,7 @@ for i in reversed(xrange(n)):
 			if mode == "gachi":
 				enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower())
 				enemy_stats.append(None)
-			elif mode == "regular" or mode == "fest":
+			elif rule == "turf_war":
 				enemy_stats.append(None)
 				if result == "defeat":
 					enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"] + 1000)
