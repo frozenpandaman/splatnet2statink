@@ -5,7 +5,7 @@ import requests, json
 from operator import itemgetter
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.21"
+A_VERSION = "0.0.22"
 
 API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please replace with your own!
 
@@ -119,8 +119,8 @@ translate_weapons = {
 	5000: 'sputtery', # Dapple Dualies
 	5010: 'maneuver', # Splat Dualies
 	5011: 'maneuver_collabo', # Enperry Splat Dualies
+	5015: 'heromaneuver_replica' # Hero Dualie Replicas
 	5030: 'dualsweeper', # Dualie Squelchers
-	5040: 'heromaneuver_replica' # Hero Dualie Replicas
 }
 
 # Stage database
