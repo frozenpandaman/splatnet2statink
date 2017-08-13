@@ -207,11 +207,12 @@ for i in reversed(xrange(n)):
 	try: # only occur in either TW xor ranked
 		rank_before = results[i]["player_result"]["player"]["udemae"]["name"].lower()
 		rank_after  = results[i]["udemae"]["name"].lower()
-		if rank_before == None: # in case of private battles where a player has never played ranked before
+		if rank_before == None:
 			rank_before = "c-"
 			rank_after = "c-"
-	except:
-		pass
+	except: # in case of private battles where a player has never played ranked before
+		rank_before = "c-"
+		rank_after = "c-"
 	try:
 		my_count    = results[i]["my_team_count"]
 		their_count = results[i]["other_team_count"]
@@ -253,7 +254,7 @@ for i in reversed(xrange(n)):
 			ally_stats.append(translate_weapons[int(battledata["my_team_members"][n]["player"]["weapon"]["id"])])
 			ally_stats.append(battledata["my_team_members"][n]["player"]["player_rank"])
 			if mode == "gachi":
-				ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower())
+				ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower()) # might have to apply a forced C- if no rank in a private battle
 				ally_stats.append(None) # points of turf inked is null if ranked battle
 			elif rule == "turf_war":
 				ally_stats.append(None) # udemae (rank) is null if turf war
@@ -306,7 +307,7 @@ for i in reversed(xrange(n)):
 			enemy_stats.append(translate_weapons[int(battledata["other_team_members"][n]["player"]["weapon"]["id"])])
 			enemy_stats.append(battledata["other_team_members"][n]["player"]["player_rank"])
 			if mode == "gachi":
-				enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower())
+				enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower())  # might have to apply a forced C- if no rank in a private battle
 				enemy_stats.append(None)
 			elif rule == "turf_war":
 				enemy_stats.append(None)
