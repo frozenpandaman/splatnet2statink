@@ -3,13 +3,14 @@
 import os.path, argparse
 import requests, json
 from operator import itemgetter
+import iksm
 
 A_NAME = "splatnet2statink"
-A_VERSION = "0.0.23"
+A_VERSION = "0.0.24"
 
 API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please replace with your own!
 
-YOUR_COOKIE = "" # keep this secret!
+YOUR_COOKIE = iksm.getIDToken()
 
 # auth app.splatoon2.nintendo.net, generate cookie
 # ???
