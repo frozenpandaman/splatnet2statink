@@ -4,35 +4,36 @@ A script that uploads JSON data from the SplatNet 2 app ("Nintendo Switch Online
 
 ## Usage
 ```
-$ python splatnet2statink.py [-i path/to/results.json] [-p]
+$ python splatnet2statink.py [-i path/to/results.json] [-t] [-p]
 ```
 
-If no input file (`-i`) is provided, the JSON is pulled from [https://app.splatoon2.nintendo.net/api/results](https://app.splatoon2.nintendo.net/api/results), given your cookie.
+The `-i` flag allows users to specify the path to a JSON file to be used as input. Without this, the file is pulled from [https://app.splatoon2.nintendo.net/api/results](https://app.splatoon2.nintendo.net/api/results), given a valid cookie.
+
+The `-t` flag sends the data to stat.ink as a dry run, without uploading, for testing/validation purposes.
 
 The `-p` flag suppresses uploading the battle number as a private note.
 
 ## Working features
-- [x] Lobby/Mode
-- [x] Stage
-- [x] Weapon
+- [x] Lobby/Mode, Stage, Weapon
 - [x] Result, final count/percent, turf inked
 - [x] Kills, deaths, assists, specials
 - [x] Rank & rank after, level & level after
 - [x] Battle start & end times
 - [x] Splatfest title & power
 - [x] Scoreboard stats & player ranking
+- [x] Cookie generation using user's session token (must be manually acquired for now)
 - [x] Non-English language game support
 
 ## To implement
 - [ ] Gear + ability recognition (waiting on stat.ink API v2)
-- [ ] Automating SplatNet cookie generation/acquisition, e.g. via user log-in (partially implemented using user's session token from app)
 - [ ] Monitoring for new battles/updates in real-time
+- [ ] Full automation of SplatNet cookie generation/acquisition, e.g. via user log-in
 
 ## Setup instructions
 
-Download the script and put your stat.ink API key into the `API_KEY` variable at the top of splatnet2statink.py. In iksm.py, put your session token into the `SESSION_TOKEN` variable.
+Download the script and change the `API_KEY`, `YOUR_COOKIE`, and `SESSION_TOKEN` variables at the top.
 
-### Getting your SplatNet cookie and session token (manual – this process will hopefully be automated in the future)
+### Obtaining your SplatNet cookie and session token
 
 1. Install the Python 3 package `mitmproxy`. For me this is `pip3 install mitmproxy` in Terminal. (Python 3 can be installed via [Homebrew](https://python-guide-pt-br.readthedocs.io/en/latest/starting/install3/osx/).)
 
@@ -45,15 +46,14 @@ Download the script and put your stat.ink API key into the `API_KEY` variable at
 
 5. Go to [http://mitm.it/](http://mitm.it/) on your phone and download/install the certificate.
 
-6. Open [SplatNet 2](https://play.google.com/store/apps/details?id=com.nintendo.znca&hl=en) on your phone. In the mitmweb tab that opened before, look for the line that says `https://app.splatoon2.nintendo.net/?lang=en-US`. Grab the `cookie` value from the Request tab (should be something like `iksm_session=xxxxx` where `xxxxx` is your cookie). This cookie can be used to access SplatNet 2 from your browser.  
-For the session token, look for `https://accounts.nintendo.com/connect/1.0.0/api/token`, and there will be a `session_token` in the Request tab. It will start with `eyJhbGciOiJIUzI1NiJ9`, followed by a period `.`, then a long series of characters. This is used by the script to generate cookies without having to run the app through mitmproxy every time a cookie expires.
+6. Open [Nintendo Switch Online](https://play.google.com/store/apps/details?id=com.nintendo.znca&hl=en) on your phone and log in if you have not done so previously. Click on "Splatoon 2" under "Game-Specific Services."
 
-7. Navigate to [https://app.splatoon2.nintendo.net/home](https://app.splatoon2.nintendo.net/home) in your browser (shows a forbidden error for now). Use a cookie editor (such as [EditThisCookie](https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg?hl=en) for Chrome) to edit the `iksm_session` cookie to be `xxxxx` from before. Refresh, and you should be able to access SplatNet 2 from your [browser](https://i.imgur.com/UUoxEJS.png).
+7. In the mitmweb tab that opened before, look for the line that says `https://app.splatoon2.nintendo.net/?lang=en-US`. Grab the `cookie` value from the Request tab (should be something like `iksm_session=xxxxx` where `xxxxx` is your cookie). This cookie can be used to access SplatNet 2 from your browser.
 
-### Getting your stat.ink API key
+8. Look for the `session_token` value under `https://accounts.nintendo.com/connect/1.0.0/api/token`. It should begin with `eyJhbGciOiJIUzI1NiJ9.`. This value is long; make sure to copy it all. The script uses `session_token` to generate new `iksm_session` cookies once previous ones expire, eliminating the need to use mitmproxy in the future.
+
+9. If you wish to access SplatNet 2 from your [browser](https://i.imgur.com/UUoxEJS.png), navigate to [https://app.splatoon2.nintendo.net/home](https://app.splatoon2.nintendo.net/home) (shows a forbidden error for now). Use a cookie editor (such as [EditThisCookie](https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg?hl=en) for Chrome) to edit the `iksm_session` cookie to be `xxxxx` from before, and refresh. If at any time you wish to download the results JSON listing your past 50 battles, save the webpage at [https://app.splatoon2.nintendo.net/api/results](https://app.splatoon2.nintendo.net/api/results) as a JSON.
+
+### Obtaining your stat.ink API key
 
 1. Viewable at [https://stat.ink/profile](https://stat.ink/profile) after [registering](https://stat.ink/register) and logging in.
-
-### Downloading the JSON
-
-1. Save the webpage at [https://app.splatoon2.nintendo.net/api/results](https://app.splatoon2.nintendo.net/api/results) as a JSON file after following the steps above.
