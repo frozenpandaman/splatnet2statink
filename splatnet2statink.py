@@ -390,20 +390,31 @@ def post_battle(i, results, payload, p_flag, t_flag, debug):
 	## SPLATFEST TITLES/POWER ##
 	############################ https://github.com/fetus-hina/stat.ink/blob/master/API.md
 	if mode == "fes":
-		title = results[i]["fes_grade"]["rank"]
+		title_before = results[i]["player_result"]["player"]["fes_grade"]["rank"]
+		title_after = results[i]["fes_grade"]["rank"]
 		payload["fest_power"] = results[i]["fes_power"]
 		payload["my_team_power"] = results[i]["my_estimate_fes_power"]
 		payload["his_team_power"] = results[i]["other_estimate_fes_power"]
-		if title == 0: # ___ fangirl/boy
+		if title_before == 0:
 			payload["fest_title"] = "fanboy"
-		elif title == 1: # ___ fiend
+		elif title_before == 1:
 			payload["fest_title"] = "fiend"
-		elif title == 2: # ___ defender
+		elif title_before == 2:
 			payload["fest_title"] = "defender"
-		elif title == 3: # ___ champion
+		elif title_before == 3:
 			payload["fest_title"] = "champion"
-		elif title == 4: # ___ queen/king
+		elif title_before == 4:
 			payload["fest_title"] = "king"
+		if title_after == 0:
+			payload["fest_title_after"] = "fanboy"
+		elif title_after == 1:
+			payload["fest_title_after"] = "fiend"
+		elif title_after == 2:
+			payload["fest_title_after"] = "defender"
+		elif title_after == 3:
+			payload["fest_title_after"] = "champion"
+		elif title_after == 4:
+			payload["fest_title_after"] = "king"
 
 	################
 	## SCOREBOARD ##
