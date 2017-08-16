@@ -1,17 +1,9 @@
+# eli fessler
 # clovervidia
 import requests, json
 
-CLIENT_ID = "71b963c1b7b6d119" # should be the same for everyone
-SESSION_TOKEN = "" # put your session_token here, and keep it secret
-
-def main():
-	getIDToken()
-
-def getIDToken():
-	if SESSION_TOKEN == "":
-		print "Please enter your session token in iksm.py."
-		return None
-
+def get_cookie(session_token):
+	'''Returns a new cookie provided the session_token.'''
 	app_head = {
 		'Host': 'accounts.nintendo.com',
 		'Accept-Encoding': 'gzip, deflate',
@@ -24,8 +16,8 @@ def getIDToken():
 	}
 
 	body = {
-		'client_id': CLIENT_ID,
-		'session_token': SESSION_TOKEN,
+		'client_id': '71b963c1b7b6d119', # should always be the same
+		'session_token': session_token,
 		'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer-session-token'
 	}
 
@@ -34,9 +26,7 @@ def getIDToken():
 	r = requests.post(url, headers=app_head, json=body)
 	id_response = json.loads(r.text)
 
-	return getUserInfo(id_response)
-
-def getUserInfo(id_response):
+	# get user info
 	app_head = {
 		'User-Agent': 'OnlineLounge/1.0.4 NASDKAPI Android',
 		'Accept-Language': 'en-US',
@@ -44,17 +34,14 @@ def getUserInfo(id_response):
 		'Authorization': 'Bearer ' + id_response["access_token"],
 		'Host': 'api.accounts.nintendo.com',
 		'Connection': 'Keep-Alive',
-		'Accept-Encoding': 'gzip',
+		'Accept-Encoding': 'gzip'
 	}
-
 	url = "https://api.accounts.nintendo.com/2.0.0/users/me"
 
 	r = requests.get(url, headers=app_head)
 	user_info = json.loads(r.text)
 
-	return getAccessToken(id_response, user_info)
-
-def getAccessToken(id_response, user_info):
+	# get access token
 	app_head = {
 		'Host': 'api-lp1.znc.srv.nintendo.net',
 		'Accept-Language': 'en-us',
@@ -66,7 +53,7 @@ def getAccessToken(id_response, user_info):
 		'Authorization': 'Bearer',
 		'Content-Length': '906',
 		'X-Platform': 'Android',
-		'Accept-Encoding': 'gzip, deflate',
+		'Accept-Encoding': 'gzip, deflate'
 	}
 
 	body = {}
@@ -74,7 +61,7 @@ def getAccessToken(id_response, user_info):
 		'naIdToken': id_response["id_token"],
 		'naCountry': user_info["country"],
 		'naBirthday': user_info["birthday"],
-		'language': user_info["language"],
+		'language': user_info["language"]
 	}
 	body["parameter"] = parameter
 
@@ -83,9 +70,7 @@ def getAccessToken(id_response, user_info):
 	r = requests.post(url, headers=app_head, json=body)
 	splatoon_token = json.loads(r.text)
 
-	return getSplatoonAccessToken(splatoon_token)
-
-def getSplatoonAccessToken(splatoon_token):
+	# get splatoon access token
 	app_head = {
 		'Host': 'api-lp1.znc.srv.nintendo.net',
 		'Accept-Language': 'en-us',
@@ -97,12 +82,12 @@ def getSplatoonAccessToken(splatoon_token):
 		'Authorization': 'Bearer ' + splatoon_token["result"]["webApiServerCredential"]["accessToken"],
 		'Content-Length': '37',
 		'X-Platform': 'Android',
-		'Accept-Encoding': 'gzip, deflate',
+		'Accept-Encoding': 'gzip, deflate'
 	}
 
 	body = {}
 	parameter = {
-		"id": 5741031244955648,
+		"id": 5741031244955648
 	}
 	body["parameter"] = parameter
 
@@ -111,9 +96,7 @@ def getSplatoonAccessToken(splatoon_token):
 	r = requests.post(url, headers=app_head, json=body)
 	splatoon_access_token = json.loads(r.text)
 
-	return getCookie(splatoon_access_token)
-
-def getCookie(splatoon_access_token):
+	# get cookie
 	app_head = {
 		'Host': 'app.splatoon2.nintendo.net',
 		'X-IsAppAnalyticsOptedIn': 'true',
@@ -124,7 +107,7 @@ def getCookie(splatoon_access_token):
 		'X-IsAnalyticsOptedIn': 'true',
 		'Connection': 'keep-alive',
 		'DNT': '0',
-		'User-Agent': 'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36',
+		'User-Agent': 'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36'
 	}
 
 	url = "https://app.splatoon2.nintendo.net/?lang=en-US"
@@ -132,6 +115,3 @@ def getCookie(splatoon_access_token):
 	r = requests.get(url, headers=app_head)
 
 	return r.cookies["iksm_session"]
-
-if __name__ == "__main__":
-	main()

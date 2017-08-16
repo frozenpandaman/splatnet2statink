@@ -1,27 +1,21 @@
 # eli fessler
 # clovervidia
-import os.path, argparse
+import os.path, argparse, sys
 import requests, json
+import iksm, dbs
 from operator import itemgetter
-import iksm
 
-A_NAME = "splatnet2statink"
-A_VERSION = "0.0.24"
+A_VERSION = "0.0.25"
 
-API_KEY = "emITHTtDtIaCjdtPQ0s78qGWfxzj3JogYZqXhRnoIF4" # testing account API key. please replace with your own!
+##############################
+######## CHANGE BELOW ######## (Keep these secret!)
+API_KEY       = "" # for splat.ink
+YOUR_COOKIE   = "" # iksm_session
+SESSION_TOKEN = "" # to generate new cookies in the future
+######## CHANGE ABOVE ########
+##############################
 
-YOUR_COOKIE = iksm.getIDToken()
-
-# auth app.splatoon2.nintendo.net, generate cookie
-# ???
-
-# I/O
-parser = argparse.ArgumentParser()
-parser.add_argument("-i", dest="filename", required=False,
-					help="results JSON file", metavar="file.json")
-parser.add_argument("-p", required=False, action="store_true",
-					help="don't upload battle # as private note")
-parser_result = parser.parse_args()
+debug = False
 
 app_head = {
 	'Host': 'app.splatoon2.nintendo.net',
@@ -34,338 +28,218 @@ app_head = {
 	'Accept-Encoding': 'gzip, deflate',
 	'Accept-Language': 'en-US'
 }
+payload = {'agent': 'splatnet2statink', 'agent_version': A_VERSION}
 
-if parser_result.filename != None: # local file provided
-	if not os.path.exists(parser_result.filename):
-		parser.error("File %s does not exist!" % parser_result.filename) # exit
-	with open(parser_result.filename) as data_file:
-		data = json.load(data_file)
-else: # no argument
+translate_weapons = dbs.weapons
+translate_stages = dbs.stages
+# translate_headgear = dbs.headgears
+# translate_clothing = dbs.clothes
+# translate_shoes = dbs.shoes
+# translate_ability = dbs.abilities
+
+
+def gen_new_cookie(reason):
+	'''Attempts to generate new cookie in case provided one is invalid.'''
+	if reason == "blank":
+		print "Blank cookie. Trying to generate one given your session_token..."
+	else: # auth, error
+		print "Bad cookie. Trying to generate a new one given your session_token..."
+	if SESSION_TOKEN == "":
+		print "session_token is blank. Could not generate cookie."
+		exit(1)
+	else:
+		NEW_COOKIE = iksm.get_cookie(SESSION_TOKEN)
+		print "New cookie: " + NEW_COOKIE + ".\nPlease set this as YOUR_COOKIE and run the script again."
+		exit(0)
+
+def load_json():
+	'''Returns results JSON from online.'''
+
 	print "Pulling data from online..." # grab data from SplatNet
 	url = "https://app.splatoon2.nintendo.net/api/results"
 	r = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
-	data = json.loads(r.text)
+	return json.loads(r.text)
 
-try:
-	results = data["results"] # all we care about
-except KeyError: # no 'results' key, which means...
-	print "Bad cookie."
-	exit(1)
+def get_num_battles():
+	'''I/O and setup. Returns number of battles to upload along with results json.'''
 
-try:
-	n = int(raw_input("Number of recent battles to upload (0-50)? "))
-except ValueError, ex:
-	print "Please enter an integer between 0 and 50."
-	exit(1)
-if n == 0:
-	print "Exiting without uploading anything."
-	exit(0)
-elif n > 50:
-	print "Cannot upload battle #" + str(n) + ". SplatNet 2 only stores the 50 most recent battles."
-else:
-	pass
+	parser = argparse.ArgumentParser()
+	parser.add_argument("-i", dest="filename", required=False,
+						help="results JSON file", metavar="file.json")
+	parser.add_argument("-t", required=False, action="store_true",
+						help="dry run for testing (don't upload to stat.ink)")
+	parser.add_argument("-p", required=False, action="store_true",
+						help="don't upload battle # as private note")
+	parser_result = parser.parse_args()
 
-# JSON parsing, fill out payload
-# https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md
-payload = {'agent': A_NAME, 'agent_version': A_VERSION}
+	if parser_result.filename != None: # local file provided
+		if not os.path.exists(parser_result.filename):
+			parser.error("File %s does not exist!" % parser_result.filename) # exit
+		with open(parser_result.filename) as data_file:
+			data = json.load(data_file)
+	else: # no argument
+		data = load_json()
 
-# Weapon database
-# https://stat.ink/api-info/weapon2?_lang_=en-US
-# https://stat.ink/api/v2/weapon
-translate_weapons = {
-	0:    'bold', # Sploosh-o-matic
-	10:   'wakaba', # Splattershot Jr.
-	20:   'sharp', # Splash-o-matic
-	30:   'promodeler_mg', # Aerospray MG
-	31:   'promodeler_rg', # Aerospray RG
-	40:   'sshooter', # Splattershot
-	41:   'sshooter_collabo', # Tentatek Splattershot
-	45:   'heroshooter_replica', # Hero Shot Replica
-	50:   '52gal', # .52 Gal
-	60:   'nzap85', # N-ZAP '85
-	70:   'prime', # Splattershot Pro
-	80:   '96gal', # .96 Gal
-	90:   'jetsweeper', # Jet Squelcher
-	200:  'nova', # Luna Blaster
-	210:  'hotblaster', # Blaster
-	211:  'hotblaster_custom', # Custom Blaster
-	215:  'heroblaster_replica', # Hero Blaster Replica
-	230:  'clashblaster', # Clash Blaster
-	240:  'rapid', # Rapid Blaster
-	300:  'l3reelgun', # L-3 Nozzlenose
-	310:  'h3reelgun', # H-3 Nozzlenose
-	1000: 'carbon', # Carbon Roller
-	1010: 'splatroller', # Splat Roller
-	1011: 'splatroller_collabo', # Krak-On Splat Roller
-	1015: 'heroroller_replica', # Hero Roller Replica
-	1020: 'dynamo', # Dynamo Roller
-	1030: 'variableroller', # Flingza Roller
-	1100: 'pablo', # Inkbrush
-	1110: 'hokusai', # Octobrush
-	1115: 'herobrush_replica', # Herobrush Replica
-	2010: 'splatcharger', # Splat Charger
-	2011: 'splatcharger_collabo', # Firefin Splat Charger
-	2015: 'herocharger_replica', # Hero Charger Replica
-	2020: 'splatscope', # Splatterscope
-	2021: 'splatscope_collabo', # Firefin Splatterscope
-	2030: 'liter4k', # E-liter 4K
-	2040: 'liter4k_scope', # E-liter 4K Scope
-	2060: 'soytuber', # Goo Tuber
-	3000: 'bucketslosher', # Slosher
-	3005: 'heroslosher_replica', # Hero Slosher Replica
-	3010: 'hissen', # Tri-Slosher
-	4000: 'splatspinner', # Mini Splatling
-	4010: 'barrelspinner', # Heavy Splatling
-	4015: 'herospinner_replica', # Hero Splatling Replica
-	5000: 'sputtery', # Dapple Dualies
-	5010: 'maneuver', # Splat Dualies
-	5011: 'maneuver_collabo', # Enperry Splat Dualies
-	5015: 'heromaneuver_replica', # Hero Dualie Replicas
-	5030: 'dualsweeper', # Dualie Squelchers
-	6000: 'parashelter', # Splat Brella
-	6005: 'heroshelter_replica', # Hero Brella Replica
-}
-
-# Stage database
-# codes @ https://app.splatoon2.nintendo.net/api/data/stages (needs auth)
-translate_stages = {
-	0: 'battera', # The Reef
-	1: 'fujitsubo', # Musselforge Fitness
-	2: 'gangaze', # Starfish Mainstage
-	3: 'chozame', # Sturgeon Shipyard
-	4: 'ama', # Inkblot Art Academy
-	5: 'combu', # Humpback Pump Track
-	# wtf nintendo
-	7: 'hokke', # Port Mackerel
-	8: 'tachiuo', # Moray Towers
-	9999: 'mystery' # Shifty Station (Splatfest only)
-}
-
-# # Gear database
-# translate_headgear = {
-# 	5000: 'Studio Headphones'
-# }
-# translate_clothing = {
-# 	5018: 'Takoroka Windcrusher'
-# }
-# translate_shoes = {
-# 	4009: 'Snow Delta Straps'
-# }
-
-# Ability database
-# translate_ability = {
-# 	-1:  'Locked', # locked ("?") or does not exist
-# 	0:   'Ink Saver (Main)',
-# 	1:   'Ink Saver (Sub)',
-# 	2:   'Ink Recovery Up',
-# 	3:   'Run Speed Up',
-# 	4:   'Swim Speed Up',
-# 	5:   'Special Charge Up',
-# 	6:   'Special Saver',
-# 	7:   'Special Power Up',
-# 	8:   'Quick Respawn',
-# 	9:   'Quick Super Jump',
-# 	10:  'Sub Power Up',
-# 	11:  'Ink Resistance Up',
-# 	12:  'Bomb Defense Up',
-# 	13:  'Cold-Blooded',
-# 	100: 'Opening Gambit',
-# 	101: 'Last-Ditch Effort',
-# 	102: 'Tenacity',
-# 	103: 'Comeback',
-# 	104: 'Ninja Squid',
-# 	105: 'Haunt',
-# 	106: 'Thermal Ink',
-# 	107: 'Respawn Punisher',
-# 	108: 'Ability Doubler',
-# 	109: 'Stealth Jump',
-# 	110: 'Object Shredder',
-# 	111: 'Drop Roller'
-# }
-
-for i in reversed(xrange(n)):
-	# regular, league_team, league_pair, private, fes_solo, fes_team
-	lobby  = results[i]["game_mode"]["key"]
-	# regular, gachi, league, fes
-	mode   = results[i]["type"]
-	# turf_war, rainmaker, splat_zones, tower_control
-	rule   = results[i]["rule"]["key"]
-	stage  = results[i]["stage"]["id"] # string (see above)
-	weapon = results[i]["player_result"]["player"]["weapon"]["id"]
-	# victory, defeat
-	result    = results[i]["my_team_result"]["key"]
-	turfinked = results[i]["player_result"]["game_paint_point"]         # WITHOUT bonus
-	kill      = results[i]["player_result"]["kill_count"]
-	k_or_a    = results[i]["player_result"]["assist_count"] + kill
-	special   = results[i]["player_result"]["special_count"]
-	death     = results[i]["player_result"]["death_count"]
-
-	level_after  = results[i]["player_rank"]
-	level_before = results[i]["player_result"]["player"]["player_rank"]
-
-	start_time = results[i]["start_time"]
-
-	try: # only occur in either TW xor ranked
-		rank_before = results[i]["player_result"]["player"]["udemae"]["name"].lower()
-		rank_after  = results[i]["udemae"]["name"].lower()
-		if rank_before == None:
-			rank_before = "c-"
-			rank_after = "c-"
-	except: # in case of private battles where a player has never played ranked before
-		rank_before = "c-"
-		rank_after = "c-"
 	try:
-		my_count    = results[i]["my_team_count"]
-		their_count = results[i]["other_team_count"]
-	except:
-		pass
+		results = data["results"] # all we care about
+	except KeyError: # no 'results' key, which means...
+		if YOUR_COOKIE == "":
+			reason = "blank"
+		elif data["code"] == "AUTHENTICATION_ERROR":
+			reason = "auth"
+		else:
+			reason = "other"
+		gen_new_cookie(reason)
+
 	try:
-		my_percent    = results[i]["my_team_percentage"]
-		their_percent = results[i]["other_team_percentage"]
+		n = int(raw_input("Number of recent battles to upload (0-50)? "))
+	except ValueError, ex:
+		print "Please enter an integer between 0 and 50."
+		exit(1)
+	if n == 0:
+		print "Exiting without uploading anything."
+		exit(0)
+	elif n > 50:
+		print "SplatNet 2 only stores the 50 most recent battles. Exiting."
+		exit(0)
+	else:
+		is_p = parser_result.p
+		is_t = parser_result.t
+		return n, results, is_p, is_t
+
+def set_scoreboard(payload, battle_number, mystats):
+	'''Returns a new payload with the players key (scoreboard) present.'''
+	url = "https://app.splatoon2.nintendo.net/api/results/" + battle_number
+	battle = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
+	battledata = json.loads(battle.text)
+
+	try:
+		battledata["battle_number"]
 	except KeyError:
-		pass # don't need to handle - won't be put into the payload unless relevant
+		print "Problem retrieving battle. Continuing without scoreboard statistics."
+		return payload # same payload as passed in, no modifications
 
-	try:
-		elapsed_time = results[i]["elapsed_time"] # apparently only a thing in ranked
-	except KeyError:
-		elapsed_time = 180 # turf war - 3 minutes in seconds
+	# common definitions from the mystats payload
+	mode         = mystats[0]
+	rule         = mystats[1]
+	result       = mystats[2]
+	k_or_a       = mystats[3]
+	death        = mystats[4]
+	special      = mystats[5]
+	weapon       = mystats[6]
+	level_before = mystats[7]
+	rank_before  = mystats[8]
+	turfinked    = mystats[9]
 
-	# scoreboard stats and player ranking
-	if YOUR_COOKIE != "": # in case using local file/no cookie set
-		battle_number = results[i]["battle_number"]
-		url = "https://app.splatoon2.nintendo.net/api/results/" + battle_number
-		battle = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
-		battledata = json.loads(battle.text)
-
-		try:
-			battledata["battle_number"]
-		except KeyError:
-			print "Problem retrieving battle."
-			exit(1) # in future, should return (without setting scoreboard data)
-
-		ally_scoreboard = []
-		for n in xrange(len(battledata["my_team_members"])):
-			ally_stats = []
-			ally_stats.append(battledata["my_team_members"][n]["sort_score"])
-			ally_stats.append(battledata["my_team_members"][n]["kill_count"] +
-							  battledata["my_team_members"][n]["assist_count"])
-			ally_stats.append(battledata["my_team_members"][n]["assist_count"])
-			ally_stats.append(battledata["my_team_members"][n]["death_count"])
-			ally_stats.append(battledata["my_team_members"][n]["special_count"])
-			ally_stats.append(translate_weapons[int(battledata["my_team_members"][n]["player"]["weapon"]["id"])])
-			ally_stats.append(battledata["my_team_members"][n]["player"]["player_rank"])
-			if mode == "gachi":
-				ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower()) # might have to apply a forced C- if no rank in a private battle
-				ally_stats.append(None) # points of turf inked is null if ranked battle
-			elif rule == "turf_war":
-				ally_stats.append(None) # udemae (rank) is null if turf war
-				if result == "victory":
-					ally_stats.append(battledata["my_team_members"][n]["game_paint_point"] + 1000)
-				else:
-					ally_stats.append(battledata["my_team_members"][n]["game_paint_point"])
-			ally_stats.append(1) # my team? (yes)
-			ally_stats.append(0) # is me? (no)
-			ally_scoreboard.append(ally_stats)
-
-		my_stats = []
-		my_stats.append(battledata["player_result"]["sort_score"])
-		my_stats.append(k_or_a)
-		my_stats.append(battledata["player_result"]["assist_count"])
-		my_stats.append(death)
-		my_stats.append(special)
-		my_stats.append(translate_weapons[int(weapon)])
-		my_stats.append(level_before)
+	ally_scoreboard = []
+	for n in xrange(len(battledata["my_team_members"])):
+		ally_stats = []
+		ally_stats.append(battledata["my_team_members"][n]["sort_score"])
+		ally_stats.append(battledata["my_team_members"][n]["kill_count"] +
+						  battledata["my_team_members"][n]["assist_count"])
+		ally_stats.append(battledata["my_team_members"][n]["assist_count"])
+		ally_stats.append(battledata["my_team_members"][n]["death_count"])
+		ally_stats.append(battledata["my_team_members"][n]["special_count"])
+		ally_stats.append(translate_weapons[int(battledata["my_team_members"][n]["player"]["weapon"]["id"])])
+		ally_stats.append(battledata["my_team_members"][n]["player"]["player_rank"])
 		if mode == "gachi":
-			my_stats.append(rank_before)
-			my_stats.append(None) # points of turf inked is null if ranked battle
-		elif mode == "regular" or mode == "fest":
-			my_stats.append(None) # udemae (rank) is null if turf war
+			ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower()) # might have to apply a forced C- if no rank in a private battle
+			ally_stats.append(None) # points of turf inked is null if ranked battle
+		elif rule == "turf_war":
+			ally_stats.append(None) # udemae (rank) is null if turf war
 			if result == "victory":
-				my_stats.append(turfinked + 1000)
+				ally_stats.append(battledata["my_team_members"][n]["game_paint_point"] + 1000)
 			else:
-				my_stats.append(turfinked)
-		my_stats.append(1) # my team? (yes)
-		my_stats.append(1) # is me? (yes)
-		ally_scoreboard.append(my_stats)
+				ally_stats.append(battledata["my_team_members"][n]["game_paint_point"])
+		ally_stats.append(1) # my team? (yes)
+		ally_stats.append(0) # is me? (no)
+		ally_scoreboard.append(ally_stats)
 
-		# scoreboard sorted by sort_score, then kills + assists, assists, deaths (higher = better, for some reason), & finally specials
-		sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 2, 3, 4), reverse=True)
+	my_stats = []
+	my_stats.append(battledata["player_result"]["sort_score"])
+	my_stats.append(k_or_a)
+	my_stats.append(battledata["player_result"]["assist_count"])
+	my_stats.append(death)
+	my_stats.append(special)
+	my_stats.append(translate_weapons[int(weapon)])
+	my_stats.append(level_before)
+	if mode == "gachi":
+		my_stats.append(rank_before)
+		my_stats.append(None) # points of turf inked is null if ranked battle
+	elif mode == "regular" or mode == "fest":
+		my_stats.append(None) # udemae (rank) is null if turf war
+		if result == "victory":
+			my_stats.append(turfinked + 1000)
+		else:
+			my_stats.append(turfinked)
+	my_stats.append(1) # my team? (yes)
+	my_stats.append(1) # is me? (yes)
+	ally_scoreboard.append(my_stats)
 
-		for n in xrange(len(sorted_ally_scoreboard)):
-			if sorted_ally_scoreboard[n][-1] == 1:
-				payload["rank_in_team"] = n + 1
-				break
+	# scoreboard sorted by sort_score, then kills + assists, assists, deaths (higher = better, for some reason), & finally specials
+	sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 2, 3, 4), reverse=True)
 
-		enemy_scoreboard = []
-		for n in xrange(len(battledata["other_team_members"])):
-			enemy_stats = []
-			enemy_stats.append(battledata["other_team_members"][n]["sort_score"])
-			enemy_stats.append(battledata["other_team_members"][n]["kill_count"] +
-							   battledata["other_team_members"][n]["assist_count"])
-			enemy_stats.append(battledata["other_team_members"][n]["assist_count"])
-			enemy_stats.append(battledata["other_team_members"][n]["death_count"])
-			enemy_stats.append(battledata["other_team_members"][n]["special_count"])
-			enemy_stats.append(translate_weapons[int(battledata["other_team_members"][n]["player"]["weapon"]["id"])])
-			enemy_stats.append(battledata["other_team_members"][n]["player"]["player_rank"])
-			if mode == "gachi":
-				enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower())  # might have to apply a forced C- if no rank in a private battle
-				enemy_stats.append(None)
-			elif rule == "turf_war":
-				enemy_stats.append(None)
-				if result == "defeat":
-					enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"] + 1000)
-				else:
-					enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"])
-			enemy_stats.append(0) # my team? (no)
-			enemy_stats.append(0) # is me? (no)
-			enemy_scoreboard.append(enemy_stats)
+	for n in xrange(len(sorted_ally_scoreboard)):
+		if sorted_ally_scoreboard[n][-1] == 1:
+			payload["rank_in_team"] = n + 1
+			break
 
-		sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(0, 1, 2, 3, 4), reverse=True)
+	enemy_scoreboard = []
+	for n in xrange(len(battledata["other_team_members"])):
+		enemy_stats = []
+		enemy_stats.append(battledata["other_team_members"][n]["sort_score"])
+		enemy_stats.append(battledata["other_team_members"][n]["kill_count"] +
+						   battledata["other_team_members"][n]["assist_count"])
+		enemy_stats.append(battledata["other_team_members"][n]["assist_count"])
+		enemy_stats.append(battledata["other_team_members"][n]["death_count"])
+		enemy_stats.append(battledata["other_team_members"][n]["special_count"])
+		enemy_stats.append(translate_weapons[int(battledata["other_team_members"][n]["player"]["weapon"]["id"])])
+		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_rank"])
+		if mode == "gachi":
+			enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower())  # might have to apply a forced C- if no rank in a private battle
+			enemy_stats.append(None)
+		elif rule == "turf_war":
+			enemy_stats.append(None)
+			if result == "defeat":
+				enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"] + 1000)
+			else:
+				enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"])
+		enemy_stats.append(0) # my team? (no)
+		enemy_stats.append(0) # is me? (no)
+		enemy_scoreboard.append(enemy_stats)
 
-		full_scoreboard = sorted_ally_scoreboard + sorted_enemy_scoreboard
+	sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(0, 1, 2, 3, 4), reverse=True)
 
-		payload["players"] = []
-		for n in xrange(len(full_scoreboard)):
-			detail = {
-				"team": "my" if full_scoreboard[n][-2] == 1 else "his",
-				"is_me": "yes" if full_scoreboard[n][-1] == 1 else "no",
-				"weapon": full_scoreboard[n][5],
-				"level": full_scoreboard[n][6],
-				"rank_in_team": n + 1 if n < 4 else n - 3,
-				"kill": full_scoreboard[n][1] - full_scoreboard[n][2],
-				"death": full_scoreboard[n][3],
-				"kill_or_assist": full_scoreboard[n][1],
-				"special": full_scoreboard[n][4],
-				"point": full_scoreboard[n][-3]
-			}
-			if mode == "gachi":
-				detail["rank"] = full_scoreboard[n][-4]
-			payload["players"].append(detail)
+	full_scoreboard = sorted_ally_scoreboard + sorted_enemy_scoreboard
 
-	# headgear_id  = results[i]["player_result"]["player"]["head"]["id"]
-	# clothing_id  = results[i]["player_result"]["player"]["clothes"]["id"]
-	# shoes_id     = results[i]["player_result"]["player"]["shoes"]["id"]
+	payload["players"] = []
+	for n in xrange(len(full_scoreboard)):
+		detail = {
+			"team": "my" if full_scoreboard[n][-2] == 1 else "his",
+			"is_me": "yes" if full_scoreboard[n][-1] == 1 else "no",
+			"weapon": full_scoreboard[n][5],
+			"level": full_scoreboard[n][6],
+			"rank_in_team": n + 1 if n < 4 else n - 3,
+			"kill": full_scoreboard[n][1] - full_scoreboard[n][2],
+			"death": full_scoreboard[n][3],
+			"kill_or_assist": full_scoreboard[n][1],
+			"special": full_scoreboard[n][4],
+			"point": full_scoreboard[n][-3]
+		}
+		if mode == "gachi":
+			detail["rank"] = full_scoreboard[n][-4]
+		payload["players"].append(detail)
 
-	# headgear_main  = results[i]["player_result"]["player"]["head_skills"]["main"]["id"]
-	# clothing_main  = results[i]["player_result"]["player"]["clothes_skills"]["main"]["id"]
-	# shoes_main     = results[i]["player_result"]["player"]["shoes_skills"]["main"]["id"]
+	return payload # return new payload w/ players key
 
-	# headgear_subs, clothing_subs, shoes_subs = ([-1,-1,-1] for i in xrange(3))
-	# for j in xrange(3):
-	# 	try:
-	# 		headgear_subs[j] = results[i]["player_result"]["player"]["head_skills"]["subs"][j]["id"]
-	# 	except:
-	# 		headgear_subs[j] = '-1'
-	# 	try:
-	# 		clothing_subs[j] = results[i]["player_result"]["player"]["clothes_skills"]["subs"][j]["id"]
-	# 	except:
-	# 		clothing_subs[j] = '-1'
-	# 	try:
-	# 		shoes_subs[j] = results[i]["player_result"]["player"]["shoes_skills"]["subs"][j]["id"]
-	# 	except:
-	# 		shoes_subs[j] = '-1'
+# # https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md
+def post_battle(i, results, payload, p_flag, t_flag, debug):
+	'''Uploads battle #i from the provided dictionary.'''
 
-	# lobby + mode
+	##################
+	## LOBBY & MODE ##
+	##################
+	lobby = results[i]["game_mode"]["key"] # regular, league_team, league_pair, private, fes_solo, fes_team
 	if lobby == "regular": # turf war solo
 		payload["lobby"] = "standard"
 		payload["mode"] = "regular"
@@ -388,7 +262,10 @@ for i in reversed(xrange(n)):
 		payload["lobby"] = "squad_4"
 		payload["mode"] = "fest"
 
-	# rule
+	##########
+	## RULE ##
+	##########
+	rule = results[i]["rule"]["key"] # turf_war, rainmaker, splat_zones, tower_control
 	if rule == "turf_war":
 		payload["rule"] = "nawabari"
 	elif rule == "splat_zones":
@@ -398,19 +275,43 @@ for i in reversed(xrange(n)):
 	elif rule == "rainmaker":
 		payload["rule"] = "hoko"
 
-	# stage
-	payload["stage"] = translate_stages[int(stage)]
+	###########
+	## STAGE ##
+	###########
+	stage = int(results[i]["stage"]["id"])
+	payload["stage"] = translate_stages[stage]
 
-	# weapon
-	payload["weapon"] = translate_weapons[int(weapon)]
+	############
+	## WEAPON ##
+	############
+	weapon = int(results[i]["player_result"]["player"]["weapon"]["id"])
+	payload["weapon"] = translate_weapons[weapon]
 
-	# result
+	############
+	## RESULT ##
+	############
+	result = results[i]["my_team_result"]["key"] # victory, defeat
 	if result == "victory":
 		payload["result"] = "win"
 	elif result == "defeat":
 		payload["result"] = "lose"
 
-	# team percents/counts
+	##########################
+	## TEAM PERCENTS/COUNTS ##
+	##########################
+	try:
+		my_percent    = results[i]["my_team_percentage"]
+		their_percent = results[i]["other_team_percentage"]
+	except KeyError:
+		pass # don't need to handle - won't be put into the payload unless relevant
+
+	try:
+		my_count    = results[i]["my_team_count"]
+		their_count = results[i]["other_team_count"]
+	except:
+		pass
+
+	mode = results[i]["type"] # regular, gachi, league, fes
 	if mode == "regular" or mode == "fes":
 		payload["my_team_percent"] = my_percent
 		payload["his_team_percent"] = their_percent
@@ -422,75 +323,124 @@ for i in reversed(xrange(n)):
 		else:
 			payload["knock_out"] = "no"
 
-	# turf inked
+	################
+	## TURF INKED ##
+	################
+	turfinked = results[i]["player_result"]["game_paint_point"] # without bonus
 	if rule == "turf_war": # only upload if TW
 		if result == "victory":
 			payload["my_point"] = turfinked + 1000 # win bonus
 		else:
 			payload["my_point"] = turfinked
 
-	# kills, etc.
-	payload["kill"] = kill
+	#################
+	## KILLS, ETC. ##
+	#################
+	kill    = results[i]["player_result"]["kill_count"]
+	k_or_a  = results[i]["player_result"]["kill_count"] + results[i]["player_result"]["assist_count"]
+	special = results[i]["player_result"]["special_count"]
+	death   = results[i]["player_result"]["death_count"]
+	payload["kill"]           = kill
 	payload["kill_or_assist"] = k_or_a
-	payload["special"] = special
-	payload["death"] = death
+	payload["special"]        = special
+	payload["death"]          = death
 
-	# level
-	payload["level"] = level_before
+	###########
+	## LEVEL ##
+	###########
+	level_before = results[i]["player_result"]["player"]["player_rank"]
+	level_after  = results[i]["player_rank"]
+	payload["level"]       = level_before
 	payload["level_after"] = level_after
 
-	# rank
-	if rule != "turf_war": # only upload if Ranked
-		payload["rank"] = rank_before
+	##########
+	## RANK ##
+	##########
+	try: # only occur in either TW xor ranked
+		rank_before = results[i]["player_result"]["player"]["udemae"]["name"].lower()
+		rank_after  = results[i]["udemae"]["name"].lower()
+		if rank_before == None:
+			rank_before = "c-"
+			rank_after = "c-"
+	except: # in case of private battles where a player has never played ranked before
+		rank_before = "c-"
+		rank_after = "c-"
+	if rule != "turf_war": # only upload if ranked
+		payload["rank"]       = rank_before
 		payload["rank_after"] = rank_after
 
-	# splatfest titles/power
+	#####################
+	## START/END TIMES ##
+	#####################
+	try:
+		elapsed_time = results[i]["elapsed_time"] # apparently only a thing in ranked
+	except KeyError:
+		elapsed_time = 180 # turf war - 3 minutes in seconds
+	payload["start_at"] = results[i]["start_time"]
+	payload["end_at"]   = results[i]["start_time"] + elapsed_time
+
+	###################
+	## BATTLE NUMBER ##
+	###################
+	bn = results[i]["battle_number"]
+	if not p_flag: # -p not provided
+		payload["private_note"] = "Battle #" + bn
+
+	############################
+	## SPLATFEST TITLES/POWER ##
+	############################ https://github.com/fetus-hina/stat.ink/blob/master/API.md
 	if mode == "fes":
-		title_before = results[i]["player_result"]["player"]["fes_grade"]["rank"]
-		title_after = results[i]["fes_grade"]["rank"]
+		title = results[i]["fes_grade"]["rank"]
 		payload["fest_power"] = results[i]["fes_power"]
 		payload["my_team_power"] = results[i]["my_estimate_fes_power"]
 		payload["his_team_power"] = results[i]["other_estimate_fes_power"]
-		if title_before == 0: # ___ fangirl/boy
+		if title == 0: # ___ fangirl/boy
 			payload["fest_title"] = "fanboy"
-		elif title_before == 1: # ___ fiend
+		elif title == 1: # ___ fiend
 			payload["fest_title"] = "fiend"
-		elif title_before == 2: # ___ defender
+		elif title == 2: # ___ defender
 			payload["fest_title"] = "defender"
-		elif title_before == 3: # ___ champion
+		elif title == 3: # ___ champion
 			payload["fest_title"] = "champion"
-		elif title_before == 4: # ___ queen/king
+		elif title == 4: # ___ queen/king
 			payload["fest_title"] = "king"
-		if title_after == 0: # ___ fangirl/boy
-			payload["fest_title_after"] = "fanboy"
-		elif title_after == 1: # ___ fiend
-			payload["fest_title_after"] = "fiend"
-		elif title_after == 2: # ___ defender
-			payload["fest_title_after"] = "defender"
-		elif title_after == 3: # ___ champion
-			payload["fest_title_after"] = "champion"
-		elif title_after == 4: # ___ queen/king
-			payload["fest_title_after"] = "king"
 
-	# battle times
-	payload["start_at"] = start_time
-	payload["end_at"] = start_time + elapsed_time
+	################
+	## SCOREBOARD ##
+	################
+	if YOUR_COOKIE != "": # if no cookie set, don't do this, as it requires online & will fail
+		mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked]
+		payload = set_scoreboard(payload, bn, mystats)
 
-	# battle number
-	if not parser_result.p: # -p not provided
-		payload["private_note"] = "Battle #" + battle_number
-
-	# gear - not implemented in stat.ink API v2 yet
-	# API v1: https://github.com/fetus-hina/stat.ink/blob/master/doc/api-1/constant/gear.md
-	#         https://github.com/fetus-hina/stat.ink/blob/master/API.md#gears
+	##########
+	## GEAR ## not in API v2 yet
+	########## https://github.com/fetus-hina/stat.ink/blob/master/API.md#gears
+	# headgear_id = results[i]["player_result"]["player"]["head"]["id"]
+	# clothing_id = results[i]["player_result"]["player"]["clothes"]["id"]
+	# shoes_id    = results[i]["player_result"]["player"]["shoes"]["id"]
 	# payload["headgear"] = translate_headgear[int(headgear_id)]
 	# payload["clothing"] = translate_clothing[int(clothing_id)]
-	# payload["shoes"] = translate_shoes[int(shoes_id)]
+	# payload["shoes"]    = translate_shoes[int(shoes_id)]
 
-	# abilities - not implemented in stat.ink API v2 yet
-	# API v1: https://github.com/fetus-hina/stat.ink/blob/master/doc/api-1/constant/ability.md
-	# payload["headgear_main"] = translate_ability[int(headgear_main)]
-	# payload["clothing_main"] = translate_ability[int(clothing_main)]
+	###############
+	## ABILITIES ## not in API v2 yet
+	############### https://github.com/fetus-hina/stat.ink/blob/master/doc/api-1/constant/ability.md
+	# headgear_subs, clothing_subs, shoes_subs = ([-1,-1,-1] for i in xrange(3))
+	# for j in xrange(3):
+	# 	try:
+	# 		headgear_subs[j] = results[i]["player_result"]["player"]["head_skills"]["subs"][j]["id"]
+	# 	except:
+	# 		headgear_subs[j] = '-1'
+	# 	try:
+	# 		clothing_subs[j] = results[i]["player_result"]["player"]["clothes_skills"]["subs"][j]["id"]
+	# 	except:
+	# 		clothing_subs[j] = '-1'
+	# 	try:
+	# 		shoes_subs[j] = results[i]["player_result"]["player"]["shoes_skills"]["subs"][j]["id"]
+	# 	except:
+	# 		shoes_subs[j] = '-1'
+	# payload["headgear_main"]   = translate_ability[int(headgear_main)]
+	# payload["clothing_main"]   = translate_ability[int(clothing_main)]
 	# payload["shoes_main_name"] = translate_ability[int(shoes_main)]
 	# payload["headgear_sub1"] = translate_ability[int(headgear_subs[0])]
 	# payload["headgear_sub2"] = translate_ability[int(headgear_subs[1])]
@@ -498,25 +448,49 @@ for i in reversed(xrange(n)):
 	# payload["clothing_sub1"] = translate_ability[int(clothing_subs[0])]
 	# payload["clothing_sub2"] = translate_ability[int(clothing_subs[1])]
 	# payload["clothing_sub3"] = translate_ability[int(clothing_subs[2])]
-	# payload["shoes_sub1"] = translate_ability[int(shoes_subs[0])]
-	# payload["shoes_sub2"] = translate_ability[int(shoes_subs[1])]
-	# payload["shoes_sub3"] = translate_ability[int(shoes_subs[2])]
+	# payload["shoes_sub1"]    = translate_ability[int(shoes_subs[0])]
+	# payload["shoes_sub2"]    = translate_ability[int(shoes_subs[1])]
+	# payload["shoes_sub3"]    = translate_ability[int(shoes_subs[2])]
 
-	# debugging
-	# print payload
+	#############
+	## DRY RUN ##
+	#############
+	if t_flag: # -t provided
+		payload["test"] = "dry_run" # works the same as 'validate' for now
 
-	# POST to stat.ink
-	url     = 'https://stat.ink/api/v2/battle'
-	auth    = {'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/json'}
+	#**************
+	#*** OUTPUT ***
+	#**************
+	if debug:
+		print ""
+		print json.dumps(payload).replace("\"", "'")
+	else:
+		# POST to stat.ink
+		url     = 'https://stat.ink/api/v2/battle'
+		auth    = {'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/json'}
 
-	r2 = requests.post(url, headers=auth, data=json.dumps(payload))
-
-	# Response
-	try:
-		print "Battle #" + str(i+1) + " uploaded to " + r2.headers.get('location') # display url
-	except TypeError: # r.headers.get is likely NoneType, i.e. we received an error
-		print "Error uploading battle #" + str(i+1) + ". Message from server:"
-		print r2.content
-		cont = raw_input('Continue (y/n)? ')
-		if cont in ['n', 'N', 'no', 'No', 'NO']:
+		if payload["agent"] != os.path.splitext(sys.argv[0])[0]:
+			print "Could not upload. Please contact @frozenpandaman on Twitter/GitHub for assistance."
 			exit(1)
+		r2 = requests.post(url, headers=auth, data=json.dumps(payload))
+
+		# Response
+		try:
+			print "Battle #" + str(i+1) + " uploaded to " + r2.headers.get('location') # display url
+		except TypeError: # r.headers.get is likely NoneType, i.e. we received an error
+			if t_flag:
+				print "Battle #" + str(i+1) + " - message from server:"
+			else:
+				print "Error uploading battle #" + str(i+1) + ". Message from server:"
+			print r2.content
+			if not t_flag:
+				cont = raw_input('Continue (y/n)? ')
+				if cont in ['n', 'N', 'no', 'No', 'NO']:
+					exit(1)
+
+if __name__=="__main__":
+	n, results, is_p, is_t = get_num_battles()
+	for i in reversed(xrange(n)):
+		post_battle(i, results, payload, is_p, is_t, debug)
+	if debug:
+		print ""
