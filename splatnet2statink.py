@@ -483,7 +483,7 @@ def post_battle(i, results, payload, p_flag, t_flag, debug):
 		if payload["agent"] != os.path.splitext(sys.argv[0])[0]:
 			print "Could not upload. Please contact @frozenpandaman on Twitter/GitHub for assistance."
 			exit(1)
-		r2 = requests.post(url, headers=auth, data=json.dumps(payload))
+		r2 = requests.post(url, headers=auth, json=payload)
 
 		# Response
 		try:
