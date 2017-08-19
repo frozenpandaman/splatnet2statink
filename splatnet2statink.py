@@ -12,6 +12,8 @@ A_VERSION = "0.0.27"
 API_KEY       = "" # for stat.ink
 YOUR_COOKIE   = "" # iksm_session
 SESSION_TOKEN = "" # to generate new cookies in the future
+USER_LANG     = "en-US" # only works with your game region's supported languages
+  # e.g. games purchased in NA will work with en-US, es-MX, or fr-CA, but not ja-JP
 ######## CHANGE ABOVE ########
 ##############################
 
@@ -26,7 +28,7 @@ app_head = {
 	'Accept': '*/*',
 	'Referer': 'https://app.splatoon2.nintendo.net/home',
 	'Accept-Encoding': 'gzip, deflate',
-	'Accept-Language': 'en-US'
+	'Accept-Language': USER_LANG
 }
 payload = {'agent': 'splatnet2statink', 'agent_version': A_VERSION}
 
@@ -49,7 +51,7 @@ def gen_new_cookie(reason):
 		print "session_token is blank. Could not generate cookie."
 		exit(1)
 	else:
-		new_cookie = iksm.get_cookie(SESSION_TOKEN)
+		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG)
 		print "New cookie: " + new_cookie + ".\nPlease set this as YOUR_COOKIE and run the script again."
 		exit(0)
 

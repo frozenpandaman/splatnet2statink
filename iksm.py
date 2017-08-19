@@ -2,13 +2,13 @@
 # clovervidia
 import requests, json
 
-def get_cookie(session_token):
+def get_cookie(session_token, userLang):
 	'''Returns a new cookie provided the session_token.'''
 	app_head = {
 		'Host': 'accounts.nintendo.com',
 		'Accept-Encoding': 'gzip, deflate',
 		'Content-Type': 'application/json;charset=utf-8',
-		'Accept-Language': 'en-US',
+		'Accept-Language': userLang,
 		'Content-Length': '437',
 		'Accept': 'application/json',
 		'Connection': 'keep-alive',
@@ -30,7 +30,7 @@ def get_cookie(session_token):
 	try:
 		app_head = {
 			'User-Agent': 'OnlineLounge/1.0.4 NASDKAPI Android',
-			'Accept-Language': 'en-US',
+			'Accept-Language': userLang,
 			'Accept': 'application/json',
 			'Authorization': 'Bearer ' + id_response["access_token"],
 			'Host': 'api.accounts.nintendo.com',
@@ -49,7 +49,7 @@ def get_cookie(session_token):
 	# get access token
 	app_head = {
 		'Host': 'api-lp1.znc.srv.nintendo.net',
-		'Accept-Language': 'en-us',
+		'Accept-Language': userLang,
 		'User-Agent': 'com.nintendo.znca/1.0.4 (Android/7.1.2)',
 		'Accept': 'application/json',
 		'X-ProductVersion': '1.0.4',
@@ -84,7 +84,7 @@ def get_cookie(session_token):
 	try:
 		app_head = {
 			'Host': 'api-lp1.znc.srv.nintendo.net',
-			'Accept-Language': 'en-us',
+			'Accept-Language': userLang,
 			'User-Agent': 'com.nintendo.znca/1.0.4 (Android/7.1.2)',
 			'Accept': 'application/json',
 			'X-ProductVersion': '1.0.4',
@@ -118,7 +118,7 @@ def get_cookie(session_token):
 			'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
 			'Accept-Encoding': 'gzip, deflate',
 			'X-GameWebToken': splatoon_access_token["result"]["accessToken"],
-			'Accept-Language': 'en-us',
+			'Accept-Language': userLang,
 			'X-IsAnalyticsOptedIn': 'true',
 			'Connection': 'keep-alive',
 			'DNT': '0',
@@ -128,7 +128,7 @@ def get_cookie(session_token):
 		print "Error from Nintendo:\n" + json.dumps(splatoon_access_token, indent=2)
 		exit(1)
 
-	url = "https://app.splatoon2.nintendo.net/?lang=en-US"
+	url = "https://app.splatoon2.nintendo.net/?lang=" + userLang
 
 	r = requests.get(url, headers=app_head)
 
