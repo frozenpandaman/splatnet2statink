@@ -23,12 +23,12 @@ The `-p` flag suppresses uploading the battle number as a private note.
 - [x] Battle start & end times
 - [x] Splatfest title & power
 - [x] Scoreboard stats & player ranking
+- [x] Monitoring for new battles/updates in real-time
 - [x] Cookie generation using user's session token (must be manually acquired for now)
 - [x] Non-English language game support
 
 ## To implement
 - [ ] Gear + ability recognition (waiting on stat.ink API v2)
-- [ ] Monitoring for new battles/updates in real-time
 - [ ] Full automation of SplatNet cookie generation/acquisition, e.g. via user log-in
 
 ## Setup instructions
