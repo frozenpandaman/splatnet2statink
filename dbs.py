@@ -35,6 +35,7 @@ weapons = {
 	1100: 'pablo',                # Inkbrush
 	1110: 'hokusai',              # Octobrush
 	1115: 'herobrush_replica',    # Herobrush Replica
+	2000: 'squiclean_a',          # Classic Squiffer
 	2010: 'splatcharger',         # Splat Charger
 	2011: 'splatcharger_collabo', # Firefin Splat Charger
 	2015: 'herocharger_replica',  # Hero Charger Replica
