@@ -1,11 +1,13 @@
 # splatnet2statink.py
 
-A script that uploads JSON data from the SplatNet 2 app ("Nintendo Switch Online", for use with *Splatoon 2*) to [http://stat.ink/](http://stat.ink/), a site for visualizing and aggregating statistics from *Splatoon* and *Splatoon 2*.
+A script that uploads JSON data from the SplatNet 2 app ("Nintendo Switch Online," for use with *Splatoon 2*) to [http://stat.ink/](http://stat.ink/), a site for visualizing and aggregating statistics from *Splatoon* and *Splatoon 2*.
 
 ## Usage
 ```
-$ python splatnet2statink.py [-i path/to/results.json] [-t] [-p]
+$ python splatnet2statink.py [-M] [-i path/to/results.json] [-t] [-p]
 ```
+
+The `-M` flag runs the script in realtime monitoring mode, uploading new battle results as you play games.
 
 The `-i` flag allows users to specify the path to a JSON file to be used as input. Without this, the file is pulled from [https://app.splatoon2.nintendo.net/api/results](https://app.splatoon2.nintendo.net/api/results), given a valid cookie.
 

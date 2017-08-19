@@ -1,15 +1,15 @@
 # eli fessler
 # clovervidia
 import os.path, argparse, sys
-import requests, json
+import requests, json, time, datetime
 import iksm, dbs
 from operator import itemgetter
 
-A_VERSION = "0.0.25"
+A_VERSION = "0.0.27"
 
 ##############################
 ######## CHANGE BELOW ######## (Keep these secret!)
-API_KEY       = "" # for splat.ink
+API_KEY       = "" # for stat.ink
 YOUR_COOKIE   = "" # iksm_session
 SESSION_TOKEN = "" # to generate new cookies in the future
 ######## CHANGE ABOVE ########
@@ -40,6 +40,7 @@ translate_stages = dbs.stages
 
 def gen_new_cookie(reason):
 	'''Attempts to generate new cookie in case provided one is invalid.'''
+
 	if reason == "blank":
 		print "Blank cookie. Trying to generate one given your session_token..."
 	else: # auth, error
@@ -48,22 +49,25 @@ def gen_new_cookie(reason):
 		print "session_token is blank. Could not generate cookie."
 		exit(1)
 	else:
-		NEW_COOKIE = iksm.get_cookie(SESSION_TOKEN)
-		print "New cookie: " + NEW_COOKIE + ".\nPlease set this as YOUR_COOKIE and run the script again."
+		new_cookie = iksm.get_cookie(SESSION_TOKEN)
+		print "New cookie: " + new_cookie + ".\nPlease set this as YOUR_COOKIE and run the script again."
 		exit(0)
 
-def load_json():
+def load_json(bool):
 	'''Returns results JSON from online.'''
 
-	print "Pulling data from online..." # grab data from SplatNet
+	if bool:
+		print "Pulling data from online..." # grab data from SplatNet
 	url = "https://app.splatoon2.nintendo.net/api/results"
 	r = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
 	return json.loads(r.text)
 
-def get_num_battles():
-	'''I/O and setup. Returns number of battles to upload along with results json.'''
+def main():
+	'''I/O and setup.'''
 
 	parser = argparse.ArgumentParser()
+	parser.add_argument("-M", required=False, action="store_true",
+						help="run in realtime monitoring mode")
 	parser.add_argument("-i", dest="filename", required=False,
 						help="results JSON file", metavar="file.json")
 	parser.add_argument("-t", required=False, action="store_true",
@@ -72,14 +76,20 @@ def get_num_battles():
 						help="don't upload battle # as private note")
 	parser_result = parser.parse_args()
 
-	if parser_result.filename != None: # local file provided
-		if not os.path.exists(parser_result.filename):
-			parser.error("File %s does not exist!" % parser_result.filename) # exit
-		with open(parser_result.filename) as data_file:
-			data = json.load(data_file)
-	else: # no argument
-		data = load_json()
+	is_m = parser_result.M
+	is_p = parser_result.p
+	is_t = parser_result.t
+	filename = parser_result.filename;
+	return is_m, is_p, is_t, filename;
 
+def monitor_battles(p_flag, t_flag, debug):
+	'''Monitor JSON for changes/new battles and upload them.'''
+
+	if filename != None: # local file provided
+		print "Cannot run in monitoring mode provided a local file. Exiting."
+		exit(1)
+
+	data = load_json(False)
 	try:
 		results = data["results"] # all we care about
 	except KeyError: # no 'results' key, which means...
@@ -91,9 +101,56 @@ def get_num_battles():
 			reason = "other"
 		gen_new_cookie(reason)
 
+	# don't upload any of the ones already in the file
+	battles = []
+	for result in results:
+		battles.append(int(result["battle_number"]))
+
+	secs = 60
+	print "Waiting for new battles... (checking every minute)" # allow this to be customized?
+
+	try:
+		while True:
+			for i in range(secs, -1, -1):
+				sys.stdout.write("Press Ctrl+C to exit. " + str(i) + " ")
+				sys.stdout.flush()
+				time.sleep(1)
+				sys.stdout.write("\r")
+			data = load_json(False)
+			results = data["results"]
+			for result in results[::-1]: # reversed chrono order
+				if int(result["battle_number"]) not in battles:
+					print "New battle result detected at %s!" % datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0")
+					battles.append(int(result["battle_number"]))
+					post_battle(0, [result], payload, p_flag, t_flag, debug)
+	except KeyboardInterrupt:
+		print "\nBye!"
+
+def get_num_battles():
+	'''Returns number of battles to upload along with results json.'''
+
+	if filename != None:
+		if not os.path.exists(filename):
+			parser.error("File %s does not exist!" % filename) # exit
+		with open(filename) as data_file:
+			data = json.load(data_file)
+	else: # no argument
+		data = load_json(True)
+
+	try:
+		results = data["results"]
+	except KeyError:
+		if YOUR_COOKIE == "":
+			reason = "blank"
+		elif data["code"] == "AUTHENTICATION_ERROR":
+			reason = "auth"
+		else:
+			reason = "other"
+		gen_new_cookie(reason)
+
 	try:
 		n = int(raw_input("Number of recent battles to upload (0-50)? "))
-	except ValueError, ex:
+	except ValueError:
 		print "Please enter an integer between 0 and 50."
 		exit(1)
 	if n == 0:
@@ -103,9 +160,7 @@ def get_num_battles():
 		print "SplatNet 2 only stores the 50 most recent battles. Exiting."
 		exit(0)
 	else:
-		is_p = parser_result.p
-		is_t = parser_result.t
-		return n, results, is_p, is_t
+		return n, results;
 
 def set_scoreboard(payload, battle_number, mystats):
 	'''Returns a new payload with the players key (scoreboard) present.'''
@@ -499,9 +554,13 @@ def post_battle(i, results, payload, p_flag, t_flag, debug):
 				if cont in ['n', 'N', 'no', 'No', 'NO']:
 					exit(1)
 
-if __name__=="__main__":
-	n, results, is_p, is_t = get_num_battles()
-	for i in reversed(xrange(n)):
-		post_battle(i, results, payload, is_p, is_t, debug)
-	if debug:
-		print ""
+if __name__ == "__main__":
+	is_m, is_p, is_t, filename = main()
+	if is_m:
+		monitor_battles(is_p, is_t, debug)
+	else:
+		n, results = get_num_battles()
+		for i in reversed(xrange(n)):
+			post_battle(i, results, payload, is_p, is_t, debug)
+		if debug:
+			print ""
