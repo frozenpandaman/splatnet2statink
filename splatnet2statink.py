@@ -5,15 +5,15 @@ import requests, json, time, datetime
 import iksm, dbs
 from operator import itemgetter
 
-A_VERSION = "0.0.27"
+A_VERSION = "0.0.28"
 
 ##############################
 ######## CHANGE BELOW ######## (Keep these secret!)
 API_KEY       = "" # for stat.ink
-YOUR_COOKIE   = "" # iksm_session
 SESSION_TOKEN = "" # to generate new cookies in the future
+YOUR_COOKIE   = "" # iksm_session
 USER_LANG     = "en-US" # only works with your game region's supported languages
-  # e.g. games purchased in NA will work with en-US, es-MX, or fr-CA, but not ja-JP
+                        # e.g. games purchased in NA will work with en-US, es-MX, or fr-CA, but not ja-JP
 ######## CHANGE ABOVE ########
 ##############################
 
@@ -21,7 +21,7 @@ debug = False
 
 app_head = {
 	'Host': 'app.splatoon2.nintendo.net',
-	'x-unique-id': '32449507786579989234', # random 19-20 digit num
+	'x-unique-id': '32449507786579989234', # random 19-20 digit token used for annie's store
 	'x-requested-with': 'XMLHttpRequest',
 	'x-timezone-offset': '0',
 	'User-Agent': 'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36',
@@ -30,6 +30,7 @@ app_head = {
 	'Accept-Encoding': 'gzip, deflate',
 	'Accept-Language': USER_LANG
 }
+
 payload = {'agent': 'splatnet2statink', 'agent_version': A_VERSION}
 
 translate_weapons = dbs.weapons
@@ -39,27 +40,35 @@ translate_stages = dbs.stages
 # translate_shoes = dbs.shoes
 # translate_ability = dbs.abilities
 
-
 def gen_new_cookie(reason):
 	'''Attempts to generate new cookie in case provided one is invalid.'''
 
 	if reason == "blank":
 		print "Blank cookie. Trying to generate one given your session_token..."
-	else: # auth, error
+	elif reason == "auth": # authentication error
 		print "Bad cookie. Trying to generate a new one given your session_token..."
-	if SESSION_TOKEN == "":
-		print "session_token is blank. Could not generate cookie."
+	else: # server error or the player hasn't played online before
+		print "Make sure you've played at least one battle online to access SplatNet 2."
 		exit(1)
+	if SESSION_TOKEN == "":
+		print "session_token is blank. Please log in to your Nintendo Account to obtain your session_token."
+		new_token = iksm.log_in()
+		if new_token == None:
+			print "There was a problem logging you in. Please try again later."
+		else:
+			print "Your session_token is " + new_token
+			print "Please set this as SESSION_TOKEN and run the script again."
+			exit(0)
 	else:
 		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG)
-		print "New cookie: " + new_cookie + ".\nPlease set this as YOUR_COOKIE and run the script again."
+		print "New cookie: " + new_cookie + "\nPlease set this as YOUR_COOKIE and run the script again."
 		exit(0)
 
 def load_json(bool):
 	'''Returns results JSON from online.'''
 
 	if bool:
-		print "Pulling data from online..." # grab data from SplatNet
+		print "Pulling data from online..." # grab data from SplatNet 2
 	url = "https://app.splatoon2.nintendo.net/api/results"
 	r = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
 	return json.loads(r.text)
@@ -73,7 +82,7 @@ def main():
 	parser.add_argument("-i", dest="filename", required=False,
 						help="results JSON file", metavar="file.json")
 	parser.add_argument("-t", required=False, action="store_true",
-						help="dry run for testing (don't upload to stat.ink)")
+						help="dry run for testing (won't upload to stat.ink)")
 	parser.add_argument("-p", required=False, action="store_true",
 						help="don't upload battle # as private note")
 	parser_result = parser.parse_args()
@@ -95,12 +104,12 @@ def monitor_battles(p_flag, t_flag, debug):
 	try:
 		results = data["results"] # all we care about
 	except KeyError: # no 'results' key, which means...
-		if YOUR_COOKIE == "":
+		if YOUR_COOKIE == "": # ...the cookie was blank
 			reason = "blank"
-		elif data["code"] == "AUTHENTICATION_ERROR":
+		elif data["code"] == "AUTHENTICATION_ERROR": # ...there was a problem authenticating
 			reason = "auth"
 		else:
-			reason = "other"
+			reason = "other" # ...there's no results key because the player has never battled before or a server error
 		gen_new_cookie(reason)
 
 	# don't upload any of the ones already in the file
@@ -166,6 +175,7 @@ def get_num_battles():
 
 def set_scoreboard(payload, battle_number, mystats):
 	'''Returns a new payload with the players key (scoreboard) present.'''
+
 	url = "https://app.splatoon2.nintendo.net/api/results/" + battle_number
 	battle = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
 	battledata = json.loads(battle.text)
@@ -289,7 +299,7 @@ def set_scoreboard(payload, battle_number, mystats):
 
 	return payload # return new payload w/ players key
 
-# # https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md
+# https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md
 def post_battle(i, results, payload, p_flag, t_flag, debug):
 	'''Uploads battle #i from the provided dictionary.'''
 
@@ -534,6 +544,9 @@ def post_battle(i, results, payload, p_flag, t_flag, debug):
 		print json.dumps(payload).replace("\"", "'")
 	else:
 		# POST to stat.ink
+		if API_KEY == "":
+			print "Please enter your stat.ink API key and run the script again."
+			exit(1)
 		url     = 'https://stat.ink/api/v2/battle'
 		auth    = {'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/json'}
 
@@ -553,7 +566,7 @@ def post_battle(i, results, payload, p_flag, t_flag, debug):
 			print r2.content
 			if not t_flag:
 				cont = raw_input('Continue (y/n)? ')
-				if cont in ['n', 'N', 'no', 'No', 'NO']:
+				if cont in ['n', 'N', 'no', 'No', 'nO', 'NO']:
 					exit(1)
 
 if __name__ == "__main__":

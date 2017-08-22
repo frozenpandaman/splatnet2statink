@@ -1,9 +1,114 @@
 # eli fessler
 # clovervidia
-import requests, json
+import requests, json, re
+import os, base64, hashlib, hmac
+import getpass
+
+def log_in():
+	'''Logs in to a Nintendo Account and returns a session_token.'''
+
+	authenticated = False
+
+	session = requests.Session()
+
+	token = re.compile(r'(eyJhbGciOiJIUzI1NiJ9\.[a-zA-Z0-9_-]*\.[a-zA-Z0-9_-]*)')
+
+	auth_state = base64.urlsafe_b64encode(os.urandom(36))
+
+	auth_code_verifier = base64.urlsafe_b64encode(os.urandom(32))
+	auth_cv_hash = hashlib.sha256()
+	auth_cv_hash.update(auth_code_verifier.replace("=",""))
+	auth_code_challenge = base64.urlsafe_b64encode(auth_cv_hash.digest())
+
+	app_head = {
+		'Host':                      'accounts.nintendo.com',
+		'Connection':                'keep-alive',
+		'Cache-Control':             'max-age=0',
+		'Upgrade-Insecure-Requests': '1',
+		'User-Agent':                'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36',
+		'Accept':                    'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8n',
+		'DNT':                       '1',
+		'Accept-Encoding':           'gzip, deflate, br',
+	}
+
+	body = {
+		'state':                                auth_state,
+		'redirect_uri':                         'npf71b963c1b7b6d119://auth',
+		'client_id':                            '71b963c1b7b6d119',
+		'scope':                                'openid user user.birthday user.mii user.screenName',
+		'response_type':                        'session_token_code',
+		'session_token_code_challenge':         auth_code_challenge.replace("=",""),
+		'session_token_code_challenge_method': 'S256',
+		'theme':                               'login_form'
+	}
+
+	url = 'https://accounts.nintendo.com/connect/1.0.0/authorize'
+	r = session.get(url, headers=app_head, params=body)
+
+	csrf_token = token.findall(r.text)[0]
+
+	post_login = r.history[0].url
+
+	while not authenticated:
+		username = raw_input("Enter your username: ")
+		password = getpass.getpass("Enter your password: ")
+
+		msg = '{}:{}:{}'.format(username, password, csrf_token)
+		h = hmac.new(csrf_token[-8:].encode(), msg=msg.encode(), digestmod=hashlib.sha256).hexdigest()
+
+		app_head = {
+			'Referer':                   r.url,
+			'Accept-Encoding':           'gzip',
+			'User-Agent':                'OnlineLounge/1.0.4 NASDKAPI Android'
+			}
+
+		body = {
+			'post_login_redirect_uri' : post_login,
+			'redirect_after'          : 5,
+			'display'                 : '',
+			'subject_id'              : username,
+			'subject_password'        : password,
+			'csrf_token'              : csrf_token,
+			'_h'                      : h,
+		}
+
+		url = 'https://accounts.nintendo.com/login'
+		r = session.post(url, headers=app_head, data=body)
+		
+		try:
+			session_token_code = token.findall(r.text)[0]
+		except:
+			print "Couldn't sign you in. Check your credentials."
+			return
+
+		if len(session_token_code) == 413:
+			app_head = {
+				'User-Agent':      'OnlineLounge/1.0.4 NASDKAPI Android',
+				'Accept-Language': 'en-US',
+				'Accept':          'application/json',
+				'Content-Type':    'application/x-www-form-urlencoded',
+				'Host':            'accounts.nintendo.com',
+				'Connection':      'Keep-Alive',
+				'Accept-Encoding': 'gzip'
+				}
+
+			body = {
+				'client_id':                   '71b963c1b7b6d119',
+				'session_token_code':          session_token_code,
+				'session_token_code_verifier': auth_code_verifier.replace("=","")
+				}
+
+			url = 'https://accounts.nintendo.com/connect/1.0.0/api/session_token'
+
+			r = session.post(url, headers=app_head, data=body)
+			authenticated = True
+			return json.loads(r.text)["session_token"]
+		else:
+			print "Incorrect email or password." # could be either incorrect credentials or some other cause
 
 def get_cookie(session_token, userLang):
 	'''Returns a new cookie provided the session_token.'''
+
 	app_head = {
 		'Host': 'accounts.nintendo.com',
 		'Accept-Encoding': 'gzip, deflate',
