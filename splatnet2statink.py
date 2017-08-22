@@ -3,6 +3,8 @@
 import os.path, argparse, sys
 import requests, json, time, datetime
 import iksm, dbs
+import msgpack
+from io import BytesIO
 from operator import itemgetter
 
 A_VERSION = "0.0.29"
@@ -453,6 +455,18 @@ def post_battle(i, results, payload, p_flag, t_flag, debug):
 	if not p_flag: # -p not provided
 		payload["private_note"] = "Battle #" + bn
 
+	##################
+	## IMAGE RESULT ##
+	##################
+	url = "https://app.splatoon2.nintendo.net/api/share/results/%s" % bn
+	share_result = requests.post(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
+	if share_result.status_code == requests.codes.ok:
+		image_result_url = share_result.json().get("url")
+		if image_result_url:
+			image_result = requests.get(image_result_url, stream=True)
+			if image_result.status_code == requests.codes.ok:
+				payload["image_result"] = BytesIO(image_result.content).getvalue()
+
 	############################
 	## SPLATFEST TITLES/POWER ##
 	############################ https://github.com/fetus-hina/stat.ink/blob/master/API.md
@@ -548,12 +562,12 @@ def post_battle(i, results, payload, p_flag, t_flag, debug):
 			print "Please enter your stat.ink API key and run the script again."
 			exit(1)
 		url     = 'https://stat.ink/api/v2/battle'
-		auth    = {'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/json'}
+		auth    = {'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/x-msgpack'}
 
 		if payload["agent"] != os.path.splitext(sys.argv[0])[0]:
 			print "Could not upload. Please contact @frozenpandaman on Twitter/GitHub for assistance."
 			exit(1)
-		r2 = requests.post(url, headers=auth, json=payload)
+		r2 = requests.post(url, headers=auth, data=msgpack.packb(payload))
 
 		# Response
 		try:
