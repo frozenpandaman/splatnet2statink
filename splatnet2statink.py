@@ -2,15 +2,14 @@
 # clovervidia
 import os.path, argparse, sys
 import requests, json, time, datetime
-import iksm, dbs
+import dbs
 from operator import itemgetter
-
+from NSOnline import Splatoon
 A_VERSION = "0.0.27"
 
 ##############################
 ######## CHANGE BELOW ######## (Keep these secret!)
 API_KEY       = "" # for stat.ink
-YOUR_COOKIE   = "" # iksm_session
 SESSION_TOKEN = "" # to generate new cookies in the future
 USER_LANG     = "en-US" # only works with your game region's supported languages
   # e.g. games purchased in NA will work with en-US, es-MX, or fr-CA, but not ja-JP
@@ -19,17 +18,6 @@ USER_LANG     = "en-US" # only works with your game region's supported languages
 
 debug = False
 
-app_head = {
-	'Host': 'app.splatoon2.nintendo.net',
-	'x-unique-id': '32449507786579989234', # random 19-20 digit num
-	'x-requested-with': 'XMLHttpRequest',
-	'x-timezone-offset': '0',
-	'User-Agent': 'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36',
-	'Accept': '*/*',
-	'Referer': 'https://app.splatoon2.nintendo.net/home',
-	'Accept-Encoding': 'gzip, deflate',
-	'Accept-Language': USER_LANG
-}
 payload = {'agent': 'splatnet2statink', 'agent_version': A_VERSION}
 
 translate_weapons = dbs.weapons
@@ -38,7 +26,7 @@ translate_stages = dbs.stages
 # translate_clothing = dbs.clothes
 # translate_shoes = dbs.shoes
 # translate_ability = dbs.abilities
-
+splatoon = Splatoon(SESSION_TOKEN)
 
 def gen_new_cookie(reason):
 	'''Attempts to generate new cookie in case provided one is invalid.'''
@@ -51,18 +39,14 @@ def gen_new_cookie(reason):
 		print "session_token is blank. Could not generate cookie."
 		exit(1)
 	else:
-		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG)
-		print "New cookie: " + new_cookie + ".\nPlease set this as YOUR_COOKIE and run the script again."
-		exit(0)
+		splatoon = Splatoon(SESSION_TOKEN)
 
 def load_json(bool):
 	'''Returns results JSON from online.'''
 
 	if bool:
 		print "Pulling data from online..." # grab data from SplatNet
-	url = "https://app.splatoon2.nintendo.net/api/results"
-	r = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
-	return json.loads(r.text)
+	return splatoon.get_results()
 
 def main():
 	'''I/O and setup.'''
