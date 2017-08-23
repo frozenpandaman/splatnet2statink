@@ -33,8 +33,6 @@ app_head = {
 	'Accept-Language': USER_LANG
 }
 
-payload = {'agent': 'splatnet2statink', 'agent_version': A_VERSION}
-
 translate_weapons = dbs.weapons
 translate_stages = dbs.stages
 # translate_headgear = dbs.headgears
@@ -135,7 +133,7 @@ def monitor_battles(p_flag, t_flag, debug):
 				if int(result["battle_number"]) not in battles:
 					print "New battle result detected at %s!" % datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0")
 					battles.append(int(result["battle_number"]))
-					post_battle(0, [result], payload, p_flag, t_flag, debug)
+					post_battle(0, [result], p_flag, t_flag, debug)
 	except KeyboardInterrupt:
 		print "\nBye!"
 
@@ -302,8 +300,13 @@ def set_scoreboard(payload, battle_number, mystats):
 	return payload # return new payload w/ players key
 
 # https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md
-def post_battle(i, results, payload, p_flag, t_flag, debug):
+def post_battle(i, results, p_flag, t_flag, debug):
 	'''Uploads battle #i from the provided dictionary.'''
+
+	#############
+	## PAYLOAD ##
+	#############
+	payload = {'agent': 'splatnet2statink', 'agent_version': A_VERSION}
 
 	##################
 	## LOBBY & MODE ##
@@ -571,12 +574,12 @@ def post_battle(i, results, payload, p_flag, t_flag, debug):
 
 		# Response
 		try:
-			print "Battle #" + str(i+1) + " uploaded to " + r2.headers.get('location') # display url
+			print "Battle #" + bn + " uploaded to " + r2.headers.get('location') # display url
 		except TypeError: # r.headers.get is likely NoneType, i.e. we received an error
 			if t_flag:
-				print "Battle #" + str(i+1) + " - message from server:"
+				print "Battle #" + bn + " - message from server:"
 			else:
-				print "Error uploading battle #" + str(i+1) + ". Message from server:"
+				print "Error uploading battle #" + bn + ". Message from server:"
 			print r2.content
 			if not t_flag:
 				cont = raw_input('Continue (y/n)? ')
@@ -590,6 +593,6 @@ if __name__ == "__main__":
 	else:
 		n, results = get_num_battles()
 		for i in reversed(xrange(n)):
-			post_battle(i, results, payload, is_p, is_t, debug)
+			post_battle(i, results, is_p, is_t, debug)
 		if debug:
 			print ""
