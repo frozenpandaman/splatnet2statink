@@ -4,12 +4,12 @@ import requests, json, re
 import os, base64, hashlib, hmac
 import getpass
 
+session = requests.Session()
+
 def log_in():
 	'''Logs in to a Nintendo Account and returns a session_token.'''
 
 	authenticated = False
-
-	session = requests.Session()
 
 	token = re.compile(r'(eyJhbGciOiJIUzI1NiJ9\.[a-zA-Z0-9_-]*\.[a-zA-Z0-9_-]*)')
 
@@ -49,7 +49,8 @@ def log_in():
 
 	post_login = r.history[0].url
 
-	while not authenticated:
+	login_attempts = 0
+	while not authenticated and login_attempts < 5:
 		username = raw_input("Enter your username: ")
 		password = getpass.getpass("Enter your password: ")
 
@@ -74,7 +75,7 @@ def log_in():
 
 		url = 'https://accounts.nintendo.com/login'
 		r = session.post(url, headers=app_head, data=body)
-		
+
 		try:
 			session_token_code = token.findall(r.text)[0]
 		except:
@@ -82,29 +83,40 @@ def log_in():
 			return
 
 		if len(session_token_code) == 413:
-			app_head = {
-				'User-Agent':      'OnlineLounge/1.0.4 NASDKAPI Android',
-				'Accept-Language': 'en-US',
-				'Accept':          'application/json',
-				'Content-Type':    'application/x-www-form-urlencoded',
-				'Host':            'accounts.nintendo.com',
-				'Connection':      'Keep-Alive',
-				'Accept-Encoding': 'gzip'
-				}
-
-			body = {
-				'client_id':                   '71b963c1b7b6d119',
-				'session_token_code':          session_token_code,
-				'session_token_code_verifier': auth_code_verifier.replace("=","")
-				}
-
-			url = 'https://accounts.nintendo.com/connect/1.0.0/api/session_token'
-
-			r = session.post(url, headers=app_head, data=body)
 			authenticated = True
-			return json.loads(r.text)["session_token"]
+			return get_session_token(session_token_code, auth_code_verifier)
 		else:
 			print "Incorrect email or password." # could be either incorrect credentials or some other cause
+			login_attempts = login_attempts + 1
+
+	print "\nUnable to log in to your Nintendo Account. Please go to this URL in your browser: "
+	print post_login
+	print "Log in, right click the [Use this account] button, copy the URL, and paste it in here."
+	use_account_url = raw_input("URL: ")
+	session_token_code = re.search('de=(.*)\&', use_account_url)
+	return get_session_token(session_token_code.group(1), auth_code_verifier)
+
+def get_session_token(session_token_code, auth_code_verifier):
+	app_head = {
+	'User-Agent':      'OnlineLounge/1.0.4 NASDKAPI Android',
+	'Accept-Language': 'en-US',
+	'Accept':          'application/json',
+	'Content-Type':    'application/x-www-form-urlencoded',
+	'Host':            'accounts.nintendo.com',
+	'Connection':      'Keep-Alive',
+	'Accept-Encoding': 'gzip'
+	}
+	
+	body = {
+	'client_id':                   '71b963c1b7b6d119',
+	'session_token_code':          session_token_code,
+	'session_token_code_verifier': auth_code_verifier.replace("=","")
+	}
+	
+	url = 'https://accounts.nintendo.com/connect/1.0.0/api/session_token'
+
+	r = session.post(url, headers=app_head, data=body)
+	return json.loads(r.text)["session_token"]
 
 def get_cookie(session_token, userLang):
 	'''Returns a new cookie provided the session_token.'''

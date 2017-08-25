@@ -5,7 +5,7 @@ import requests, json, time, datetime
 import iksm, dbs
 from operator import itemgetter
 
-A_VERSION = "0.0.28"
+A_VERSION = "0.0.29"
 
 ##############################
 ######## CHANGE BELOW ######## (Keep these secret!)
@@ -56,7 +56,7 @@ def gen_new_cookie(reason):
 		if new_token == None:
 			print "There was a problem logging you in. Please try again later."
 		else:
-			print "Your session_token is " + new_token
+			print "\nYour session_token is " + new_token
 			print "Please set this as SESSION_TOKEN and run the script again."
 			exit(0)
 	else:
