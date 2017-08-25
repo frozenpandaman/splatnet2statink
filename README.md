@@ -35,7 +35,9 @@ The `-p` flag suppresses uploading the battle number as a private note.
 
 Change the `API_KEY` variable at the top of `splatnet2statink.py` to your stat.ink API key. You can also change `USER_LANG` to match your game's language.
 
-When you run the script for the first time, it will prompt you to log in to your Nintendo Account to obtain your `session_token`. You may need to try logging in a few times if it doesn't work the first time. After the script returns your `session_token`, put it into `SESSION_TOKEN`, and run the script again to generate a cookie. Put the cookie into `YOUR_COOKIE`.
+When you run the script for the first time, it will prompt you to log in to your Nintendo Account to obtain your `session_token`. You may need to try logging in a few times if it doesn't work the first time. If your login is rejected multiple times, the script will try an alternate method by giving you a URL and prompting you to log in to your Nintendo Account through a browser with that URL. If this occurs, open the provided URL, right click the "Use this account" button and copy the URL, and paste that URL into the console window.
+
+After the script returns your `session_token`, put it into `SESSION_TOKEN`, and run the script again to generate a cookie. Put the cookie into `YOUR_COOKIE`.
 
 Once both of those values are set, you will be able to run the script normally and upload battle results to stat.ink.
 
