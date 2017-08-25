@@ -68,7 +68,7 @@ stages = {
 	3: 'chozame',   # Sturgeon Shipyard
 	4: 'ama',       # Inkblot Art Academy
 	5: 'combu',     # Humpback Pump Track
-	# wtf nintendo
+	6: 'manta',     # Manta Maria
 	7: 'hokke',     # Port Mackerel
 	8: 'tachiuo',   # Moray Towers
 	9999: 'mystery' # Shifty Station (Splatfest only)
