@@ -2,19 +2,19 @@
 # clovervidia
 import os.path, argparse, sys
 import requests, json, time, datetime
-import iksm, dbs
 import msgpack
+import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.31"
+A_VERSION = "0.0.32"
 
 try:
 	config_file = open("config.txt", "r+")
 	config_data = json.load(config_file)
 except:
 	print "Could not read config.txt. Generating new config file."
-	config_data = {"cookie":"", "session_token":"", "statink_apikey": "replace_this", "user_lang": "en-US"}
+	config_data = {"api_key": "", "cookie": "", "session_token": "", "user_lang": "en-US"}
 	config_file = open("config.txt", "w")
 	config_file.seek(0)
 	config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
@@ -24,17 +24,17 @@ except:
 
 #########################
 ## API KEYS AND TOKENS ##
-API_KEY       = config_data["statink_apikey"] # for stat.ink
-SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
+API_KEY       = config_data["api_key"] # for stat.ink
 YOUR_COOKIE   = config_data["cookie"] # iksm_session
+SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
 USER_LANG     = config_data["user_lang"] # only works with your game region's supported languages
-#########################                # e.g. games purchased in NA will work with en-US, es-MX, or fr-CA, but not ja-JP
+#########################
 
 debug = False
 
 app_head = {
 	'Host': 'app.splatoon2.nintendo.net',
-	'x-unique-id': '32449507786579989234', # random 19-20 digit token used for annie's store
+	'x-unique-id': '32449507786579989234', # random 19-20 digit token. used for splatnet store
 	'x-requested-with': 'XMLHttpRequest',
 	'x-timezone-offset': '0',
 	'User-Agent': 'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36',
@@ -59,7 +59,7 @@ def gen_new_cookie(reason):
 	elif reason == "auth": # authentication error
 		print "Bad cookie. Trying to generate a new one given your session_token..."
 	else: # server error or the player hasn't played online before
-		print "Make sure you've played at least one battle online to access SplatNet 2."
+		print "Cannot access SplatNet 2 without having played at least one battle online."
 		exit(1)
 	if SESSION_TOKEN == "":
 		print "session_token is blank. Please log in to your Nintendo Account to obtain your session_token."
@@ -67,7 +67,7 @@ def gen_new_cookie(reason):
 		if new_token == None:
 			print "There was a problem logging you in. Please try again later."
 		else:
-			print "\nYour session_token is " + new_token
+			print "\nWrote session_token to config.txt."
 			config_data["session_token"] = new_token
 			config_file.seek(0)
 			config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
@@ -75,7 +75,7 @@ def gen_new_cookie(reason):
 			refresh_token(config_data)
 	else:
 		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG)
-		print "New cookie: " + new_cookie
+		print "Wrote iksm_session cookie to config.txt.\nYour cookie: " + new_cookie
 		config_data["cookie"] = new_cookie
 		config_file.seek(0)
 		config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
@@ -83,12 +83,12 @@ def gen_new_cookie(reason):
 		refresh_token(config_data)
 
 def refresh_token(tokens):
-	'''Updates the global token variables.'''
+	'''Updates the global variables.'''
 
 	global SESSION_TOKEN
 	SESSION_TOKEN = tokens["session_token"]
 	global YOUR_COOKIE
-	YOUR_COOKIE   = tokens["cookie"]
+	YOUR_COOKIE = tokens["cookie"]
 
 def load_json(bool):
 	'''Returns results JSON from online.'''
@@ -105,21 +105,21 @@ def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-M", required=False, action="store_true",
 						help="run in realtime monitoring mode")
+	parser.add_argument("-s", required=False, action="store_true",
+						help="don't upload scoreboard result image")
 	parser.add_argument("-i", dest="filename", required=False,
 						help="results JSON file", metavar="file.json")
 	parser.add_argument("-t", required=False, action="store_true",
 						help="dry run for testing (won't upload to stat.ink)")
-	parser.add_argument("-p", required=False, action="store_true",
-						help="don't upload battle # as private note")
 	parser_result = parser.parse_args()
 
 	is_m = parser_result.M
-	is_p = parser_result.p
+	is_s = parser_result.s
 	is_t = parser_result.t
 	filename = parser_result.filename;
-	return is_m, is_p, is_t, filename;
+	return is_m, is_s, is_t, filename;
 
-def monitor_battles(p_flag, t_flag, debug):
+def monitor_battles(s_flag, t_flag, debug):
 	'''Monitor JSON for changes/new battles and upload them.'''
 
 	if filename != None: # local file provided
@@ -129,13 +129,13 @@ def monitor_battles(p_flag, t_flag, debug):
 	data = load_json(False)
 	try:
 		results = data["results"] # all we care about
-	except KeyError: # no 'results' key, which means...
-		if YOUR_COOKIE == "": # ...the cookie was blank
+	except KeyError:
+		if YOUR_COOKIE == "":
 			reason = "blank"
-		elif data["code"] == "AUTHENTICATION_ERROR": # ...there was a problem authenticating
+		elif data["code"] == "AUTHENTICATION_ERROR":
 			reason = "auth"
 		else:
-			reason = "other" # ...there's no results key because the player has never battled before or a server error
+			reason = "other" # server error or player hasn't battled before
 		gen_new_cookie(reason)
 
 	# don't upload any of the ones already in the file
@@ -143,13 +143,13 @@ def monitor_battles(p_flag, t_flag, debug):
 	for result in results:
 		battles.append(int(result["battle_number"]))
 
-	secs = 60
-	print "Waiting for new battles... (checking every minute)" # allow this to be customized?
+	secs = 180
+	print "Waiting for new battles... (checking every 3 minutes)" # allow this to be customized?
 
 	try:
 		while True:
 			for i in range(secs, -1, -1):
-				sys.stdout.write("Press Ctrl+C to exit. " + str(i) + " ")
+				sys.stdout.write("Press Ctrl+C to exit. " + str(i) + "  ")
 				sys.stdout.flush()
 				time.sleep(1)
 				sys.stdout.write("\r")
@@ -159,7 +159,7 @@ def monitor_battles(p_flag, t_flag, debug):
 				if int(result["battle_number"]) not in battles:
 					print "New battle result detected at %s!" % datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0")
 					battles.append(int(result["battle_number"]))
-					post_battle(0, [result], p_flag, t_flag, debug)
+					post_battle(0, [result], s_flag, t_flag, debug)
 	except KeyboardInterrupt:
 		print "\nBye!"
 
@@ -328,7 +328,7 @@ def set_scoreboard(payload, battle_number, mystats):
 	return payload # return new payload w/ players key
 
 # https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md
-def post_battle(i, results, p_flag, t_flag, debug):
+def post_battle(i, results, s_flag, t_flag, debug):
 	'''Uploads battle #i from the provided dictionary.'''
 
 	#############
@@ -483,20 +483,6 @@ def post_battle(i, results, p_flag, t_flag, debug):
 	## BATTLE NUMBER ##
 	###################
 	bn = results[i]["battle_number"]
-	if not p_flag: # -p not provided
-		payload["private_note"] = "Battle #" + bn
-
-	##################
-	## IMAGE RESULT ##
-	##################
-	url = "https://app.splatoon2.nintendo.net/api/share/results/%s" % bn
-	share_result = requests.post(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
-	if share_result.status_code == requests.codes.ok:
-		image_result_url = share_result.json().get("url")
-		if image_result_url:
-			image_result = requests.get(image_result_url, stream=True)
-			if image_result.status_code == requests.codes.ok:
-				payload["image_result"] = BytesIO(image_result.content).getvalue()
 
 	############################
 	## SPLATFEST TITLES/POWER ##
@@ -534,6 +520,19 @@ def post_battle(i, results, p_flag, t_flag, debug):
 	if YOUR_COOKIE != "": # if no cookie set, don't do this, as it requires online & will fail
 		mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked]
 		payload = set_scoreboard(payload, bn, mystats)
+
+	##################
+	## IMAGE RESULT ##
+	##################
+	if not s_flag:
+		url = "https://app.splatoon2.nintendo.net/api/share/results/%s" % bn
+		share_result = requests.post(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
+		if share_result.status_code == requests.codes.ok:
+			image_result_url = share_result.json().get("url")
+			if image_result_url:
+				image_result = requests.get(image_result_url, stream=True)
+				if image_result.status_code == requests.codes.ok:
+					payload["image_result"] = BytesIO(image_result.content).getvalue()
 
 	##########
 	## GEAR ## not in API v2 yet
@@ -589,8 +588,9 @@ def post_battle(i, results, p_flag, t_flag, debug):
 		print json.dumps(payload).replace("\"", "'")
 	else:
 		# POST to stat.ink
+		# https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/request-body.md
 		if len(API_KEY) != 43:
-			print "Please enter your stat.ink API key in config.txt and run the script again."
+			print "Invalid stat.ink API key. Please re-check your API key in config.txt and try again."
 			exit(1)
 		url     = 'https://stat.ink/api/v2/battle'
 		auth    = {'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/x-msgpack'}
@@ -602,25 +602,26 @@ def post_battle(i, results, p_flag, t_flag, debug):
 
 		# Response
 		try:
-			print "Battle #" + bn + " uploaded to " + r2.headers.get('location') # display url
+			print "Battle #" + str(i+1) + " uploaded to " + r2.headers.get('location') # display url
 		except TypeError: # r.headers.get is likely NoneType, i.e. we received an error
 			if t_flag:
-				print "Battle #" + bn + " - message from server:"
+				print "Battle #" + str(i+1) + " - message from server:"
 			else:
-				print "Error uploading battle #" + bn + ". Message from server:"
+				print "Error uploading battle #" + str(i+1) + ". Message from server:"
 			print r2.content
 			if not t_flag:
 				cont = raw_input('Continue (y/n)? ')
-				if cont in ['n', 'N', 'no', 'No', 'nO', 'NO']:
+				if cont[0].lower() == "n":
+					print "Exiting."
 					exit(1)
 
 if __name__ == "__main__":
-	is_m, is_p, is_t, filename = main()
+	is_m, is_s, is_t, filename = main()
 	if is_m:
-		monitor_battles(is_p, is_t, debug)
+		monitor_battles(is_s, is_t, debug)
 	else:
 		n, results = get_num_battles()
 		for i in reversed(xrange(n)):
-			post_battle(i, results, is_p, is_t, debug)
+			post_battle(i, results, is_s, is_t, debug)
 		if debug:
 			print ""

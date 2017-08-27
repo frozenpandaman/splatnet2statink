@@ -49,34 +49,38 @@ def log_in():
 
 	post_login = r.history[0].url
 
-	print "\nPlease go to this URL in your browser: "
+	print "\nNavigate to this URL in your browser: "
 	print post_login
+	print "Log in, right click the \"Use this account\" button, copy the link address, and paste it here:",
 	while True:
 		try:
-			print "Log in, right click the [Use this account] button, copy the URL, and paste it in here."
-			use_account_url = raw_input("URL: ")
+			use_account_url = raw_input("")
 			session_token_code = re.search('de=(.*)\&', use_account_url)
 			return get_session_token(session_token_code.group(1), auth_code_verifier)
+		except KeyboardInterrupt:
+			print "\nBye!"
+			exit(1)
 		except:
-			print "Malformed URL. Please try again, or press CTRL-C to exit."
+			print "Malformed URL. Please try again, or press Ctrl+C to exit."
+			print "URL:",
 
 def get_session_token(session_token_code, auth_code_verifier):
 	app_head = {
-	'User-Agent':      'OnlineLounge/1.0.4 NASDKAPI Android',
-	'Accept-Language': 'en-US',
-	'Accept':          'application/json',
-	'Content-Type':    'application/x-www-form-urlencoded',
-	'Host':            'accounts.nintendo.com',
-	'Connection':      'Keep-Alive',
-	'Accept-Encoding': 'gzip'
+		'User-Agent':      'OnlineLounge/1.0.4 NASDKAPI Android',
+		'Accept-Language': 'en-US',
+		'Accept':          'application/json',
+		'Content-Type':    'application/x-www-form-urlencoded',
+		'Host':            'accounts.nintendo.com',
+		'Connection':      'Keep-Alive',
+		'Accept-Encoding': 'gzip'
 	}
-	
+
 	body = {
-	'client_id':                   '71b963c1b7b6d119',
-	'session_token_code':          session_token_code,
-	'session_token_code_verifier': auth_code_verifier.replace("=","")
+		'client_id':                   '71b963c1b7b6d119',
+		'session_token_code':          session_token_code,
+		'session_token_code_verifier': auth_code_verifier.replace("=","")
 	}
-	
+
 	url = 'https://accounts.nintendo.com/connect/1.0.0/api/session_token'
 
 	r = session.post(url, headers=app_head, data=body)
