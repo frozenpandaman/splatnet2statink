@@ -169,7 +169,7 @@ def get_num_battles():
 	while True:
 		if filename != None:
 			if not os.path.exists(filename):
-				parser.error("File %s does not exist!" % filename) # exit
+				argparse.ArgumentParser().error("File %s does not exist!" % filename) # exit
 			with open(filename) as data_file:
 				data = json.load(data_file)
 		else: # no argument
@@ -191,8 +191,8 @@ def get_num_battles():
 			n = int(raw_input("Number of recent battles to upload (0-50)? "))
 		except ValueError:
 			print "Please enter an integer between 0 and 50."
-			exit(1)
-		if n == 0:
+			exit(0)
+		if n < 1:
 			print "Exiting without uploading anything."
 			exit(0)
 		elif n > 50:
