@@ -3,6 +3,8 @@
 import os.path, argparse, sys
 import requests, json, time, datetime
 import iksm, dbs
+import msgpack
+from io import BytesIO
 from operator import itemgetter
 
 A_VERSION = "0.0.31"
@@ -41,8 +43,6 @@ app_head = {
 	'Accept-Encoding': 'gzip, deflate',
 	'Accept-Language': USER_LANG
 }
-
-payload = {'agent': 'splatnet2statink', 'agent_version': A_VERSION}
 
 translate_weapons = dbs.weapons
 translate_stages = dbs.stages
@@ -159,7 +159,7 @@ def monitor_battles(p_flag, t_flag, debug):
 				if int(result["battle_number"]) not in battles:
 					print "New battle result detected at %s!" % datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0")
 					battles.append(int(result["battle_number"]))
-					post_battle(0, [result], payload, p_flag, t_flag, debug)
+					post_battle(0, [result], p_flag, t_flag, debug)
 	except KeyboardInterrupt:
 		print "\nBye!"
 
@@ -328,8 +328,13 @@ def set_scoreboard(payload, battle_number, mystats):
 	return payload # return new payload w/ players key
 
 # https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md
-def post_battle(i, results, payload, p_flag, t_flag, debug):
+def post_battle(i, results, p_flag, t_flag, debug):
 	'''Uploads battle #i from the provided dictionary.'''
+
+	#############
+	## PAYLOAD ##
+	#############
+	payload = {'agent': 'splatnet2statink', 'agent_version': A_VERSION}
 
 	##################
 	## LOBBY & MODE ##
@@ -481,6 +486,18 @@ def post_battle(i, results, payload, p_flag, t_flag, debug):
 	if not p_flag: # -p not provided
 		payload["private_note"] = "Battle #" + bn
 
+	##################
+	## IMAGE RESULT ##
+	##################
+	url = "https://app.splatoon2.nintendo.net/api/share/results/%s" % bn
+	share_result = requests.post(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
+	if share_result.status_code == requests.codes.ok:
+		image_result_url = share_result.json().get("url")
+		if image_result_url:
+			image_result = requests.get(image_result_url, stream=True)
+			if image_result.status_code == requests.codes.ok:
+				payload["image_result"] = BytesIO(image_result.content).getvalue()
+
 	############################
 	## SPLATFEST TITLES/POWER ##
 	############################ https://github.com/fetus-hina/stat.ink/blob/master/API.md
@@ -576,21 +593,21 @@ def post_battle(i, results, payload, p_flag, t_flag, debug):
 			print "Please enter your stat.ink API key in config.txt and run the script again."
 			exit(1)
 		url     = 'https://stat.ink/api/v2/battle'
-		auth    = {'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/json'}
+		auth    = {'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/x-msgpack'}
 
 		if payload["agent"] != os.path.splitext(sys.argv[0])[0]:
 			print "Could not upload. Please contact @frozenpandaman on Twitter/GitHub for assistance."
 			exit(1)
-		r2 = requests.post(url, headers=auth, json=payload)
+		r2 = requests.post(url, headers=auth, data=msgpack.packb(payload))
 
 		# Response
 		try:
-			print "Battle #" + str(i+1) + " uploaded to " + r2.headers.get('location') # display url
+			print "Battle #" + bn + " uploaded to " + r2.headers.get('location') # display url
 		except TypeError: # r.headers.get is likely NoneType, i.e. we received an error
 			if t_flag:
-				print "Battle #" + str(i+1) + " - message from server:"
+				print "Battle #" + bn + " - message from server:"
 			else:
-				print "Error uploading battle #" + str(i+1) + ". Message from server:"
+				print "Error uploading battle #" + bn + ". Message from server:"
 			print r2.content
 			if not t_flag:
 				cont = raw_input('Continue (y/n)? ')
@@ -604,6 +621,6 @@ if __name__ == "__main__":
 	else:
 		n, results = get_num_battles()
 		for i in reversed(xrange(n)):
-			post_battle(i, results, payload, is_p, is_t, debug)
+			post_battle(i, results, is_p, is_t, debug)
 		if debug:
 			print ""
