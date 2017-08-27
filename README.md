@@ -42,7 +42,7 @@ pip install requests
 pip install msgpack-python
 ```
 
-3. Find your stat.ink API key on your [profile page](https://stat.ink/profile) and enter it into the `api_key` variable at the top of `config.txt`. You can change `user_lang` to match your game's [language](https://github.com/frozenpandaman/splatnet2statink/wiki/languages) as well.
+3. Find your stat.ink API key on your [profile page](https://stat.ink/profile) and enter it when the script prompts you to. You can change `user_lang` in `config.txt` to match your game's [language](https://github.com/frozenpandaman/splatnet2statink/wiki/languages) as well.
 
 4. Running the script for the first time will prompt you to navigate to a specific URL on Nintendo.com, log in, and follow simple instructions to obtain your `session_token`. This token will automatically be entered into `config.txt` for you, and a cookie will be generated.
 
