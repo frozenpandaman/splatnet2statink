@@ -7,7 +7,7 @@ import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.32"
+A_VERSION = "0.0.33"
 
 try:
 	config_file = open("config.txt", "r+")
@@ -85,6 +85,8 @@ def gen_new_cookie(reason):
 def refresh_token(tokens):
 	'''Updates the global variables.'''
 
+	global API_KEY
+	API_KEY = tokens["api_key"]
 	global SESSION_TOKEN
 	SESSION_TOKEN = tokens["session_token"]
 	global YOUR_COOKIE
@@ -101,6 +103,8 @@ def load_json(bool):
 
 def main():
 	'''I/O and setup.'''
+	
+	check_statink_key()
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-M", required=False, action="store_true",
@@ -118,6 +122,21 @@ def main():
 	is_t = parser_result.t
 	filename = parser_result.filename;
 	return is_m, is_s, is_t, filename;
+
+def check_statink_key():
+	'''Checks if there is a stat.ink API key entered, and if not, prompts to enter one.'''
+	
+	if len(API_KEY) != 43:
+		new_api_key = ""
+		while len(new_api_key) != 43:
+			print "Invalid stat.ink API key. Please enter your API key below."
+			new_api_key = raw_input("API key: ")
+			config_data["api_key"] = new_api_key
+		config_file.seek(0)
+		config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
+		config_file.flush()
+		refresh_token(config_data)
+	return
 
 def monitor_battles(s_flag, t_flag, debug):
 	'''Monitor JSON for changes/new battles and upload them.'''
@@ -248,6 +267,7 @@ def set_scoreboard(payload, battle_number, mystats):
 				ally_stats.append(battledata["my_team_members"][n]["game_paint_point"])
 		ally_stats.append(1) # my team? (yes)
 		ally_stats.append(0) # is me? (no)
+		ally_stats.append(battledata["my_team_members"][n]["player"]["nickname"])
 		ally_scoreboard.append(ally_stats)
 
 	my_stats = []
@@ -269,6 +289,7 @@ def set_scoreboard(payload, battle_number, mystats):
 			my_stats.append(turfinked)
 	my_stats.append(1) # my team? (yes)
 	my_stats.append(1) # is me? (yes)
+	my_stats.append(battledata["player_result"]["player"]["nickname"])
 	ally_scoreboard.append(my_stats)
 
 	# scoreboard sorted by sort_score, then kills + assists, assists, deaths (higher = better, for some reason), & finally specials
@@ -301,6 +322,7 @@ def set_scoreboard(payload, battle_number, mystats):
 				enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"])
 		enemy_stats.append(0) # my team? (no)
 		enemy_stats.append(0) # is me? (no)
+		enemy_stats.append(battledata["other_team_members"][n]["player"]["nickname"])
 		enemy_scoreboard.append(enemy_stats)
 
 	sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(0, 1, 2, 3, 4), reverse=True)
@@ -310,8 +332,8 @@ def set_scoreboard(payload, battle_number, mystats):
 	payload["players"] = []
 	for n in xrange(len(full_scoreboard)):
 		detail = {
-			"team": "my" if full_scoreboard[n][-2] == 1 else "his",
-			"is_me": "yes" if full_scoreboard[n][-1] == 1 else "no",
+			"team": "my" if full_scoreboard[n][9] == 1 else "his",
+			"is_me": "yes" if full_scoreboard[n][10] == 1 else "no",
 			"weapon": full_scoreboard[n][5],
 			"level": full_scoreboard[n][6],
 			"rank_in_team": n + 1 if n < 4 else n - 3,
@@ -319,7 +341,8 @@ def set_scoreboard(payload, battle_number, mystats):
 			"death": full_scoreboard[n][3],
 			"kill_or_assist": full_scoreboard[n][1],
 			"special": full_scoreboard[n][4],
-			"point": full_scoreboard[n][-3]
+			"point": full_scoreboard[n][8],
+			"name": full_scoreboard[n][11]
 		}
 		if mode == "gachi":
 			detail["rank"] = full_scoreboard[n][-4]
@@ -533,6 +556,15 @@ def post_battle(i, results, s_flag, t_flag, debug):
 				image_result = requests.get(image_result_url, stream=True)
 				if image_result.status_code == requests.codes.ok:
 					payload["image_result"] = BytesIO(image_result.content).getvalue()
+		url_profile = "https://app.splatoon2.nintendo.net/api/share/profile"
+		settings = {'stage': stage, 'color': "pink"}
+		share_result = requests.post(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE), data=settings)
+		if share_result.status_code == requests.codes.ok:
+			profile_result_url = share_result.json().get("url")
+			if profile_result_url:
+				profile_result = requests.get(profile_result_url, stream=True)
+				if profile_result.status_code == requests.codes.ok:
+					payload["image_gear"] = BytesIO(profile_result.content).getvalue()
 
 	##########
 	## GEAR ## not in API v2 yet
