@@ -49,52 +49,16 @@ def log_in():
 
 	post_login = r.history[0].url
 
-	login_attempts = 0
-	while not authenticated and login_attempts < 5:
-		username = raw_input("Enter your username: ")
-		password = getpass.getpass("Enter your password: ")
-
-		msg = '{}:{}:{}'.format(username, password, csrf_token)
-		h = hmac.new(csrf_token[-8:].encode(), msg=msg.encode(), digestmod=hashlib.sha256).hexdigest()
-
-		app_head = {
-			'Referer':                   r.url,
-			'Accept-Encoding':           'gzip',
-			'User-Agent':                'OnlineLounge/1.0.4 NASDKAPI Android'
-			}
-
-		body = {
-			'post_login_redirect_uri' : post_login,
-			'redirect_after'          : 5,
-			'display'                 : '',
-			'subject_id'              : username,
-			'subject_password'        : password,
-			'csrf_token'              : csrf_token,
-			'_h'                      : h,
-		}
-
-		url = 'https://accounts.nintendo.com/login'
-		r = session.post(url, headers=app_head, data=body)
-
-		try:
-			session_token_code = token.findall(r.text)[0]
-		except:
-			print "Couldn't sign you in. Check your credentials."
-			return
-
-		if len(session_token_code) == 413:
-			authenticated = True
-			return get_session_token(session_token_code, auth_code_verifier)
-		else:
-			print "Incorrect email or password." # could be either incorrect credentials or some other cause
-			login_attempts = login_attempts + 1
-
-	print "\nUnable to log in to your Nintendo Account. Please go to this URL in your browser: "
+	print "\nPlease go to this URL in your browser: "
 	print post_login
-	print "Log in, right click the [Use this account] button, copy the URL, and paste it in here."
-	use_account_url = raw_input("URL: ")
-	session_token_code = re.search('de=(.*)\&', use_account_url)
-	return get_session_token(session_token_code.group(1), auth_code_verifier)
+	while True:
+		try:
+			print "Log in, right click the [Use this account] button, copy the URL, and paste it in here."
+			use_account_url = raw_input("URL: ")
+			session_token_code = re.search('de=(.*)\&', use_account_url)
+			return get_session_token(session_token_code.group(1), auth_code_verifier)
+		except:
+			print "Malformed URL. Please try again, or press CTRL-C to exit."
 
 def get_session_token(session_token_code, auth_code_verifier):
 	app_head = {

@@ -1,0 +1,6 @@
+{
+    "cookie": "",
+    "session_token": "",
+    "statink_apikey": "replace_this",
+    "user_lang": "en-US"
+}

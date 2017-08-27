@@ -5,17 +5,28 @@ import requests, json, time, datetime
 import iksm, dbs
 from operator import itemgetter
 
-A_VERSION = "0.0.29"
+A_VERSION = "0.0.31"
 
-##############################
-######## CHANGE BELOW ######## (Keep these secret!)
-API_KEY       = "" # for stat.ink
-SESSION_TOKEN = "" # to generate new cookies in the future
-YOUR_COOKIE   = "" # iksm_session
-USER_LANG     = "en-US" # only works with your game region's supported languages
-                        # e.g. games purchased in NA will work with en-US, es-MX, or fr-CA, but not ja-JP
-######## CHANGE ABOVE ########
-##############################
+try:
+	config_file = open("config.txt", "r+")
+	config_data = json.load(config_file)
+except:
+	print "Could not read config.txt. Generating new config file."
+	config_data = {"cookie":"", "session_token":"", "statink_apikey": "replace_this", "user_lang": "en-US"}
+	config_file = open("config.txt", "w")
+	config_file.seek(0)
+	config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
+	config_file.close()
+	config_file = open("config.txt", "r+")
+	config_data = json.load(config_file)
+
+#########################
+## API KEYS AND TOKENS ##
+API_KEY       = config_data["statink_apikey"] # for stat.ink
+SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
+YOUR_COOKIE   = config_data["cookie"] # iksm_session
+USER_LANG     = config_data["user_lang"] # only works with your game region's supported languages
+#########################                # e.g. games purchased in NA will work with en-US, es-MX, or fr-CA, but not ja-JP
 
 debug = False
 
@@ -57,12 +68,27 @@ def gen_new_cookie(reason):
 			print "There was a problem logging you in. Please try again later."
 		else:
 			print "\nYour session_token is " + new_token
-			print "Please set this as SESSION_TOKEN and run the script again."
-			exit(0)
+			config_data["session_token"] = new_token
+			config_file.seek(0)
+			config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
+			config_file.flush()
+			refresh_token(config_data)
 	else:
 		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG)
-		print "New cookie: " + new_cookie + "\nPlease set this as YOUR_COOKIE and run the script again."
-		exit(0)
+		print "New cookie: " + new_cookie
+		config_data["cookie"] = new_cookie
+		config_file.seek(0)
+		config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
+		config_file.flush()
+		refresh_token(config_data)
+
+def refresh_token(tokens):
+	'''Updates the global token variables.'''
+
+	global SESSION_TOKEN
+	SESSION_TOKEN = tokens["session_token"]
+	global YOUR_COOKIE
+	YOUR_COOKIE   = tokens["cookie"]
 
 def load_json(bool):
 	'''Returns results JSON from online.'''
@@ -140,38 +166,40 @@ def monitor_battles(p_flag, t_flag, debug):
 def get_num_battles():
 	'''Returns number of battles to upload along with results json.'''
 
-	if filename != None:
-		if not os.path.exists(filename):
-			parser.error("File %s does not exist!" % filename) # exit
-		with open(filename) as data_file:
-			data = json.load(data_file)
-	else: # no argument
-		data = load_json(True)
+	while True:
+		if filename != None:
+			if not os.path.exists(filename):
+				parser.error("File %s does not exist!" % filename) # exit
+			with open(filename) as data_file:
+				data = json.load(data_file)
+		else: # no argument
+			data = load_json(True)
 
-	try:
-		results = data["results"]
-	except KeyError:
-		if YOUR_COOKIE == "":
-			reason = "blank"
-		elif data["code"] == "AUTHENTICATION_ERROR":
-			reason = "auth"
+		try:
+			results = data["results"]
+		except KeyError:
+			if YOUR_COOKIE == "":
+				reason = "blank"
+			elif data["code"] == "AUTHENTICATION_ERROR":
+				reason = "auth"
+			else:
+				reason = "other"
+			gen_new_cookie(reason)
+			continue
+
+		try:
+			n = int(raw_input("Number of recent battles to upload (0-50)? "))
+		except ValueError:
+			print "Please enter an integer between 0 and 50."
+			exit(1)
+		if n == 0:
+			print "Exiting without uploading anything."
+			exit(0)
+		elif n > 50:
+			print "SplatNet 2 only stores the 50 most recent battles. Exiting."
+			exit(0)
 		else:
-			reason = "other"
-		gen_new_cookie(reason)
-
-	try:
-		n = int(raw_input("Number of recent battles to upload (0-50)? "))
-	except ValueError:
-		print "Please enter an integer between 0 and 50."
-		exit(1)
-	if n == 0:
-		print "Exiting without uploading anything."
-		exit(0)
-	elif n > 50:
-		print "SplatNet 2 only stores the 50 most recent battles. Exiting."
-		exit(0)
-	else:
-		return n, results;
+			return n, results;
 
 def set_scoreboard(payload, battle_number, mystats):
 	'''Returns a new payload with the players key (scoreboard) present.'''
@@ -544,8 +572,8 @@ def post_battle(i, results, payload, p_flag, t_flag, debug):
 		print json.dumps(payload).replace("\"", "'")
 	else:
 		# POST to stat.ink
-		if API_KEY == "":
-			print "Please enter your stat.ink API key and run the script again."
+		if len(API_KEY) != 43:
+			print "Please enter your stat.ink API key in config.txt and run the script again."
 			exit(1)
 		url     = 'https://stat.ink/api/v2/battle'
 		auth    = {'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/json'}
