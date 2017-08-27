@@ -11,7 +11,7 @@ The `-M` flag runs the script in realtime monitoring mode, uploading new battle 
 
 The `-s` flag suppresses uploading the scoreboard result image. (stat.ink does not support blacking out other players' names at this time.)
 
-The `-i` flag allows users to specify the path to a JSON file to be used as input. Without this, the file is pulled from [https://app.splatoon2.nintendo.net/api/results](https://app.splatoon2.nintendo.net/api/results), given a valid cookie.
+The `-i` flag allows users to specify the path to a results JSON file to be used as input. Without this, the file is pulled from [https://app.splatoon2.nintendo.net/api/results](https://app.splatoon2.nintendo.net/api/results), given a valid cookie.
 
 The `-t` flag sends the data to stat.ink as a dry run, without uploading, for testing/validation purposes.
 
@@ -34,9 +34,9 @@ The `-t` flag sends the data to stat.ink as a dry run, without uploading, for te
 
 ## Setup instructions
 
-1. Download and install [Python 2.7](https://www.python.org/downloads/) and the package manager [`pip`](https://pip.pypa.io/en/stable/installing/).
+1. Download and install [Python 2.7](https://www.python.org/downloads/) (pre-installed on macOS) and the package manager [pip](https://pip.pypa.io/en/stable/installing/).
 
-2. Install the required Python libraries:
+2. From the command line (macOS: Terminal; Windows: Command Prompt), install the required Python libraries:
 ```
 pip install requests
 pip install msgpack-python
@@ -51,5 +51,3 @@ pip install msgpack-python
 If you wish to access SplatNet 2 from your browser, navigate to [https://app.splatoon2.nintendo.net/home](https://app.splatoon2.nintendo.net/home) (it should show a forbidden error). Use a cookie editor (such as [EditThisCookie](https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg?hl=en) for Chrome) to edit the `iksm_session` cookie to be the same value as `cookie` in `config.txt` (generated after running the script for the first time), and refresh.
 
 *Splatoon 2* stage rotation information and current SplatNet gear are viewable at [https://splatoon2.ink/](https://splatoon2.ink/).
-
-If you wish to download the results JSON detailing your past 50 battles (for use with the `-i` flag), save the webpage at [https://app.splatoon2.nintendo.net/api/results](https://app.splatoon2.nintendo.net/api/results).
