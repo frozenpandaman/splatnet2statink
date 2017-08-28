@@ -369,3 +369,13 @@ abilities = {
 	110: 'object_shredder',
 	111: 'drop_roller'
 }
+
+# Colors for the profile image's background 
+profile_colors = {
+	0: 'pink',
+	1: 'green',
+	2: 'yellow',
+	3: 'purple',
+	4: 'blue',
+	5: 'sun-yellow'
+}

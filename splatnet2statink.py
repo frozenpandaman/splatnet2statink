@@ -1,13 +1,13 @@
 # eli fessler
 # clovervidia
 import os.path, argparse, sys
-import requests, json, time, datetime
+import requests, json, time, datetime, random
 import msgpack
 import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.33"
+A_VERSION = "0.0.34"
 
 try:
 	config_file = open("config.txt", "r+")
@@ -50,6 +50,7 @@ translate_stages = dbs.stages
 # translate_clothing = dbs.clothes
 # translate_shoes = dbs.shoes
 # translate_ability = dbs.abilities
+translate_profile_color = dbs.profile_colors
 
 def gen_new_cookie(reason):
 	'''Attempts to generate new cookie in case provided one is invalid.'''
@@ -557,7 +558,7 @@ def post_battle(i, results, s_flag, t_flag, debug):
 				if image_result.status_code == requests.codes.ok:
 					payload["image_result"] = BytesIO(image_result.content).getvalue()
 		url_profile = "https://app.splatoon2.nintendo.net/api/share/profile"
-		settings = {'stage': stage, 'color': "pink"}
+		settings = {'stage': stage, 'color': translate_profile_color[random.randrange(0, 7)]}
 		share_result = requests.post(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE), data=settings)
 		if share_result.status_code == requests.codes.ok:
 			profile_result_url = share_result.json().get("url")
@@ -621,9 +622,6 @@ def post_battle(i, results, s_flag, t_flag, debug):
 	else:
 		# POST to stat.ink
 		# https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/request-body.md
-		if len(API_KEY) != 43:
-			print "Invalid stat.ink API key. Please re-check your API key in config.txt and try again."
-			exit(1)
 		url     = 'https://stat.ink/api/v2/battle'
 		auth    = {'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/x-msgpack'}
 
