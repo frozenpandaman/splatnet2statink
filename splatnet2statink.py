@@ -125,13 +125,16 @@ def main():
 	return is_m, is_s, is_t, filename;
 
 def check_statink_key():
-	'''Checks if there is a stat.ink API key entered, and if not, prompts to enter one.'''
+	'''Check if a valid length API key has been provided and, if not, prompts the user to enter one.'''
 
 	if len(API_KEY) != 43:
 		new_api_key = ""
 		while len(new_api_key) != 43:
-			print "Invalid stat.ink API key. Please enter your API key below."
-			new_api_key = raw_input("API key: ")
+			if new_api_key == "" and API_KEY == "":
+				new_api_key = raw_input("stat.ink API key: ")
+			else:
+				print "Invalid stat.ink API key. Please re-enter it below."
+				new_api_key = raw_input("API key: ")
 			config_data["api_key"] = new_api_key
 		config_file.seek(0)
 		config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
