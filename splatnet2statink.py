@@ -259,9 +259,12 @@ def set_scoreboard(payload, battle_number, mystats):
 		ally_stats.append(battledata["my_team_members"][n]["player"]["player_rank"])
 		if mode == "gachi":
 			ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower()) # might have to apply a forced C- if no rank in a private battle
-			ally_stats.append(None) # points of turf inked is null if ranked battle
+			ally_stats.append(None) # points of turf inked is null in ranked battle
+		elif mode == "league":
+			ally_stats.append(None) # udemae (rank) is null in league
+			ally_stats.append(None) # points of turf inked is null in league
 		elif rule == "turf_war":
-			ally_stats.append(None) # udemae (rank) is null if turf war
+			ally_stats.append(None) # udemae (rank) is null in turf war
 			if result == "victory":
 				ally_stats.append(battledata["my_team_members"][n]["game_paint_point"] + 1000)
 			else:
@@ -282,6 +285,9 @@ def set_scoreboard(payload, battle_number, mystats):
 	if mode == "gachi":
 		my_stats.append(rank_before)
 		my_stats.append(None) # points of turf inked is null if ranked battle
+	elif mode == "league":
+		my_stats.append(None) # udemae (rank) is null in league
+		my_stats.append(None) # points of turf inked is null in league
 	elif mode == "regular" or mode == "fest":
 		my_stats.append(None) # udemae (rank) is null if turf war
 		if result == "victory":
@@ -297,8 +303,8 @@ def set_scoreboard(payload, battle_number, mystats):
 	sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 2, 3, 4), reverse=True)
 
 	for n in xrange(len(sorted_ally_scoreboard)):
-		if sorted_ally_scoreboard[n][-1] == 1:
-			payload["rank_in_team"] = n + 1
+		if sorted_ally_scoreboard[n][10] == 1: # if it's me, position in sorted list is my rank in team
+			payload["rank_in_team"] = n + 1 # account for 0 indexing
 			break
 
 	enemy_scoreboard = []
@@ -315,7 +321,10 @@ def set_scoreboard(payload, battle_number, mystats):
 		if mode == "gachi":
 			enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower())  # might have to apply a forced C- if no rank in a private battle
 			enemy_stats.append(None)
-		elif rule == "turf_war":
+		elif mode == "league":
+			enemy_stats.append(None) # udemae (rank) is null in league
+			enemy_stats.append(None) # points of turf inked is null in league
+		elif mode == "regular" or mode == "fest":
 			enemy_stats.append(None)
 			if result == "defeat":
 				enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"] + 1000)
@@ -332,21 +341,22 @@ def set_scoreboard(payload, battle_number, mystats):
 
 	payload["players"] = []
 	for n in xrange(len(full_scoreboard)):
+		# sort score, k/a, assists, deaths, specials, weapon, level, rank, turf inked, is my team, is me, nickname
 		detail = {
-			"team": "my" if full_scoreboard[n][9] == 1 else "his",
-			"is_me": "yes" if full_scoreboard[n][10] == 1 else "no",
-			"weapon": full_scoreboard[n][5],
-			"level": full_scoreboard[n][6],
-			"rank_in_team": n + 1 if n < 4 else n - 3,
-			"kill": full_scoreboard[n][1] - full_scoreboard[n][2],
-			"death": full_scoreboard[n][3],
+			"team":           "my" if full_scoreboard[n][9] == 1 else "his",
+			"is_me":          "yes" if full_scoreboard[n][10] == 1 else "no",
+			"weapon":         full_scoreboard[n][5],
+			"level":          full_scoreboard[n][6],
+			"rank_in_team":   n + 1 if n < 4 else n - 3,
 			"kill_or_assist": full_scoreboard[n][1],
-			"special": full_scoreboard[n][4],
-			"point": full_scoreboard[n][8],
-			"name": full_scoreboard[n][11]
+			"kill":           full_scoreboard[n][1] - full_scoreboard[n][2],
+			"death":          full_scoreboard[n][3],
+			"special":        full_scoreboard[n][4],
+			"point":          full_scoreboard[n][8],
+			"name":           full_scoreboard[n][11]
 		}
 		if mode == "gachi":
-			detail["rank"] = full_scoreboard[n][-4]
+			detail["rank"] = full_scoreboard[n][7]
 		payload["players"].append(detail)
 
 	return payload # return new payload w/ players key
