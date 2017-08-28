@@ -7,7 +7,7 @@ import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.34"
+A_VERSION = "0.0.35"
 
 try:
 	config_file = open("config.txt", "r+")
@@ -496,6 +496,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug):
 	try: # only occur in either TW xor ranked
 		rank_before = results[i]["player_result"]["player"]["udemae"]["name"].lower()
 		rank_after  = results[i]["udemae"]["name"].lower()
+		rank_exp = results[i]["player_result"]["player"]["udemae"]["s_plus_number"]
+		rank_exp_after = results[i]["udemae"]["s_plus_number"]
 		if rank_before == None:
 			rank_before = "c-"
 			rank_after = "c-"
@@ -505,6 +507,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug):
 	if rule != "turf_war": # only upload if ranked
 		payload["rank"]       = rank_before
 		payload["rank_after"] = rank_after
+		payload["rank_exp"] = rank_exp
+		payload["rank_exp_after"] = rank_exp_after
 
 	#####################
 	## START/END TIMES ##
