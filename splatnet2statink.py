@@ -134,7 +134,7 @@ def check_statink_key():
 				new_api_key = raw_input("stat.ink API key: ")
 			else:
 				print "Invalid stat.ink API key. Please re-enter it below."
-				new_api_key = raw_input("API key: ")
+				new_api_key = raw_input("stat.ink API key: ")
 			config_data["api_key"] = new_api_key
 		config_file.seek(0)
 		config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
@@ -166,8 +166,8 @@ def monitor_battles(s_flag, t_flag, debug):
 	for result in results:
 		battles.append(int(result["battle_number"]))
 
-	secs = 180
-	print "Waiting for new battles... (checking every 3 minutes)" # allow this to be customized?
+	secs = 90
+	print "Waiting for new battles... (checking every 1.5 minutes)" # allow this to be customized?
 
 	try:
 		while True:
@@ -182,7 +182,7 @@ def monitor_battles(s_flag, t_flag, debug):
 				if int(result["battle_number"]) not in battles:
 					print "New battle result detected at %s!" % datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0")
 					battles.append(int(result["battle_number"]))
-					post_battle(0, [result], s_flag, t_flag, debug)
+					post_battle(0, [result], s_flag, t_flag, is_m, debug)
 	except KeyboardInterrupt:
 		print "\nBye!"
 
@@ -365,7 +365,7 @@ def set_scoreboard(payload, battle_number, mystats):
 	return payload # return new payload w/ players key
 
 # https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md
-def post_battle(i, results, s_flag, t_flag, debug):
+def post_battle(i, results, s_flag, t_flag, m_flag, debug):
 	'''Uploads battle #i from the provided dictionary.'''
 
 	#############
@@ -570,15 +570,16 @@ def post_battle(i, results, s_flag, t_flag, debug):
 				image_result = requests.get(image_result_url, stream=True)
 				if image_result.status_code == requests.codes.ok:
 					payload["image_result"] = BytesIO(image_result.content).getvalue()
-		url_profile = "https://app.splatoon2.nintendo.net/api/share/profile"
-		settings = {'stage': stage, 'color': translate_profile_color[random.randrange(0, 6)]}
-		share_result = requests.post(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE), data=settings)
-		if share_result.status_code == requests.codes.ok:
-			profile_result_url = share_result.json().get("url")
-			if profile_result_url:
-				profile_result = requests.get(profile_result_url, stream=True)
-				if profile_result.status_code == requests.codes.ok:
-					payload["image_gear"] = BytesIO(profile_result.content).getvalue()
+		if not m_flag:
+			url_profile = "https://app.splatoon2.nintendo.net/api/share/profile"
+			settings = {'stage': stage, 'color': translate_profile_color[random.randrange(0, 6)]}
+			share_result = requests.post(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE), data=settings)
+			if share_result.status_code == requests.codes.ok:
+				profile_result_url = share_result.json().get("url")
+				if profile_result_url:
+					profile_result = requests.get(profile_result_url, stream=True)
+					if profile_result.status_code == requests.codes.ok:
+						payload["image_gear"] = BytesIO(profile_result.content).getvalue()
 
 	##########
 	## GEAR ## not in API v2 yet
@@ -665,6 +666,6 @@ if __name__ == "__main__":
 	else:
 		n, results = get_num_battles()
 		for i in reversed(xrange(n)):
-			post_battle(i, results, is_s, is_t, debug)
+			post_battle(i, results, is_s, is_t, is_m, debug)
 		if debug:
 			print ""
