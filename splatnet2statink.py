@@ -574,7 +574,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug):
 				image_result = requests.get(image_result_url, stream=True)
 				if image_result.status_code == requests.codes.ok:
 					payload["image_result"] = BytesIO(image_result.content).getvalue()
-		if not m_flag:
+		if m_flag:
 			url_profile = "https://app.splatoon2.nintendo.net/api/share/profile"
 			settings = {'stage': stage, 'color': translate_profile_color[random.randrange(0, 6)]}
 			share_result = requests.post(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE), data=settings)
