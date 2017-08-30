@@ -7,7 +7,7 @@ import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.35"
+A_VERSION = "0.0.36"
 
 try:
 	config_file = open("config.txt", "r+")
@@ -577,7 +577,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug):
 		if m_flag:
 			url_profile = "https://app.splatoon2.nintendo.net/api/share/profile"
 			settings = {'stage': stage, 'color': translate_profile_color[random.randrange(0, 6)]}
-			share_result = requests.post(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE), data=settings)
+			share_result = requests.post(url_profile, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE), data=settings)
 			if share_result.status_code == requests.codes.ok:
 				profile_result_url = share_result.json().get("url")
 				if profile_result_url:
