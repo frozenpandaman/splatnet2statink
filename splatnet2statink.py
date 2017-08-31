@@ -524,6 +524,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug):
 	## BATTLE NUMBER ##
 	###################
 	bn = results[i]["battle_number"]
+	payload["private_note"] = "Battle #" + bn
 
 	############################
 	## SPLATFEST TITLES/POWER ##
