@@ -16,7 +16,7 @@ weapons = {
 	50:   '52gal',                # .52 Gal
 	60:   'nzap85',               # N-ZAP '85
 	70:   'prime',                # Splattershot Pro
-	71:   'prime_collabo'         # Forge Splattershot Pro
+	71:   'prime_collabo',        # Forge Splattershot Pro
 	80:   '96gal',                # .96 Gal
 	90:   'jetsweeper',           # Jet Squelcher
 	200:  'nova',                 # Luna Blaster
