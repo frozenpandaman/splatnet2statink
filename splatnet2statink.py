@@ -260,18 +260,12 @@ def set_scoreboard(payload, battle_number, mystats):
 		ally_stats.append(battledata["my_team_members"][n]["special_count"])
 		ally_stats.append(translate_weapons[int(battledata["my_team_members"][n]["player"]["weapon"]["id"])])
 		ally_stats.append(battledata["my_team_members"][n]["player"]["player_rank"])
-		if mode == "gachi":
+		if mode == "gachi" or mode == "league":
 			try:
 				ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower())
 			except:
 				ally_stats.append("c-")
-			ally_stats.append(None) # points of turf inked is null in ranked battle
-		elif mode == "league":
-			try:
-				ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower())
-			except:
-				ally_stats.append("c-")
-			ally_stats.append(None) # points of turf inked is null in league
+			ally_stats.append(None) # points of turf inked is null in ranked/league battle
 		elif rule == "turf_war":
 			ally_stats.append(None) # udemae (rank) is null in turf war
 			if result == "victory":
@@ -291,12 +285,9 @@ def set_scoreboard(payload, battle_number, mystats):
 	my_stats.append(special)
 	my_stats.append(translate_weapons[int(weapon)])
 	my_stats.append(level_before)
-	if mode == "gachi":
+	if mode == "gachi" or mode == "league":
 		my_stats.append(rank_before)
-		my_stats.append(None) # points of turf inked is null if ranked battle
-	elif mode == "league":
-		my_stats.append(rank_before)
-		my_stats.append(None) # points of turf inked is null in league
+		my_stats.append(None) # points of turf inked is null if ranked/league battle
 	elif mode == "regular" or mode == "fest":
 		my_stats.append(None) # udemae (rank) is null if turf war
 		if result == "victory":
@@ -327,13 +318,7 @@ def set_scoreboard(payload, battle_number, mystats):
 		enemy_stats.append(battledata["other_team_members"][n]["special_count"])
 		enemy_stats.append(translate_weapons[int(battledata["other_team_members"][n]["player"]["weapon"]["id"])])
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_rank"])
-		if mode == "gachi":
-			try:
-				enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower())
-			except:
-				enemy_stats.append("c-")
-			enemy_stats.append(None)
-		elif mode == "league":
+		if mode == "gachi" or mode == "league":
 			try:
 				enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower())
 			except:
