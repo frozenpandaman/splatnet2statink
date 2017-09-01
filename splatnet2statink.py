@@ -7,7 +7,7 @@ import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.36"
+A_VERSION = "0.0.37"
 
 try:
 	config_file = open("config.txt", "r+")
@@ -261,10 +261,16 @@ def set_scoreboard(payload, battle_number, mystats):
 		ally_stats.append(translate_weapons[int(battledata["my_team_members"][n]["player"]["weapon"]["id"])])
 		ally_stats.append(battledata["my_team_members"][n]["player"]["player_rank"])
 		if mode == "gachi":
-			ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower()) # might have to apply a forced C- if no rank in a private battle
+			try:
+				ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower())
+			except:
+				ally_stats.append("c-")
 			ally_stats.append(None) # points of turf inked is null in ranked battle
 		elif mode == "league":
-			ally_stats.append(None) # udemae (rank) is null in league
+			try:
+				ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower())
+			except:
+				ally_stats.append("c-")
 			ally_stats.append(None) # points of turf inked is null in league
 		elif rule == "turf_war":
 			ally_stats.append(None) # udemae (rank) is null in turf war
@@ -289,7 +295,7 @@ def set_scoreboard(payload, battle_number, mystats):
 		my_stats.append(rank_before)
 		my_stats.append(None) # points of turf inked is null if ranked battle
 	elif mode == "league":
-		my_stats.append(None) # udemae (rank) is null in league
+		my_stats.append(rank_before)
 		my_stats.append(None) # points of turf inked is null in league
 	elif mode == "regular" or mode == "fest":
 		my_stats.append(None) # udemae (rank) is null if turf war
@@ -322,10 +328,16 @@ def set_scoreboard(payload, battle_number, mystats):
 		enemy_stats.append(translate_weapons[int(battledata["other_team_members"][n]["player"]["weapon"]["id"])])
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_rank"])
 		if mode == "gachi":
-			enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower())  # might have to apply a forced C- if no rank in a private battle
+			try:
+				enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower())
+			except:
+				enemy_stats.append("c-")
 			enemy_stats.append(None)
 		elif mode == "league":
-			enemy_stats.append(None) # udemae (rank) is null in league
+			try:
+				enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower())
+			except:
+				enemy_stats.append("c-")
 			enemy_stats.append(None) # points of turf inked is null in league
 		elif mode == "regular" or mode == "fest":
 			enemy_stats.append(None)
@@ -358,7 +370,7 @@ def set_scoreboard(payload, battle_number, mystats):
 			"point":          full_scoreboard[n][8],
 			"name":           full_scoreboard[n][11]
 		}
-		if mode == "gachi":
+		if mode == "gachi" or mode == "league":
 			detail["rank"] = full_scoreboard[n][7]
 		payload["players"].append(detail)
 
