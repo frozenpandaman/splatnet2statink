@@ -162,7 +162,7 @@ headgears = {
 }
 clothes = {
 	2:     'basic_tee',
-	# white_tee
+	1000:  'white_tee',
 	1001:  'black_squideye',
 	1006:  'black_tee',
 	1007:  'sunny_day_tee',
@@ -259,7 +259,7 @@ clothes = {
 	10005: 'grape_hoodie',
 	10006: 'gray_hoodie',
 	21000: 'squiddor_polo',
-	# 21001: 'anchor_life_vest',
+	21001: 'anchor_life_vest',
 	# 21002: 'juice_parka',
 	25000: 'school_uniform',
 	25001: 'samurai_jacket',
