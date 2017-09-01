@@ -7,7 +7,7 @@ import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.37"
+A_VERSION = "0.0.38"
 
 try:
 	config_file = open("config.txt", "r+")
@@ -255,9 +255,9 @@ def set_scoreboard(payload, battle_number, mystats):
 		ally_stats.append(battledata["my_team_members"][n]["sort_score"])
 		ally_stats.append(battledata["my_team_members"][n]["kill_count"] +
 						  battledata["my_team_members"][n]["assist_count"])
-		ally_stats.append(battledata["my_team_members"][n]["assist_count"])
-		ally_stats.append(battledata["my_team_members"][n]["death_count"])
+		ally_stats.append(battledata["my_team_members"][n]["kill_count"])
 		ally_stats.append(battledata["my_team_members"][n]["special_count"])
+		ally_stats.append(battledata["my_team_members"][n]["death_count"])
 		ally_stats.append(translate_weapons[int(battledata["my_team_members"][n]["player"]["weapon"]["id"])])
 		ally_stats.append(battledata["my_team_members"][n]["player"]["player_rank"])
 		if mode == "gachi" or mode == "league":
@@ -280,9 +280,9 @@ def set_scoreboard(payload, battle_number, mystats):
 	my_stats = []
 	my_stats.append(battledata["player_result"]["sort_score"])
 	my_stats.append(k_or_a)
-	my_stats.append(battledata["player_result"]["assist_count"])
-	my_stats.append(death)
+	my_stats.append(battledata["player_result"]["kill_count"])
 	my_stats.append(special)
+	my_stats.append(death)
 	my_stats.append(translate_weapons[int(weapon)])
 	my_stats.append(level_before)
 	if mode == "gachi" or mode == "league":
@@ -299,8 +299,9 @@ def set_scoreboard(payload, battle_number, mystats):
 	my_stats.append(battledata["player_result"]["player"]["nickname"])
 	ally_scoreboard.append(my_stats)
 
-	# scoreboard sorted by sort_score, then kills + assists, assists, deaths (higher = better, for some reason), & finally specials
-	sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 2, 3, 4), reverse=True)
+	# scoreboard sorted by sort_score, then k+a, then k, then s, then d (more = better), then name
+	# discussion: https://github.com/frozenpandaman/splatnet2statink/issues/6
+	sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 2, 3, 4, 11), reverse=True)
 
 	for n in xrange(len(sorted_ally_scoreboard)):
 		if sorted_ally_scoreboard[n][10] == 1: # if it's me, position in sorted list is my rank in team
@@ -313,9 +314,9 @@ def set_scoreboard(payload, battle_number, mystats):
 		enemy_stats.append(battledata["other_team_members"][n]["sort_score"])
 		enemy_stats.append(battledata["other_team_members"][n]["kill_count"] +
 						   battledata["other_team_members"][n]["assist_count"])
-		enemy_stats.append(battledata["other_team_members"][n]["assist_count"])
-		enemy_stats.append(battledata["other_team_members"][n]["death_count"])
+		enemy_stats.append(battledata["other_team_members"][n]["kill_count"])
 		enemy_stats.append(battledata["other_team_members"][n]["special_count"])
+		enemy_stats.append(battledata["other_team_members"][n]["death_count"])
 		enemy_stats.append(translate_weapons[int(battledata["other_team_members"][n]["player"]["weapon"]["id"])])
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_rank"])
 		if mode == "gachi" or mode == "league":
@@ -335,7 +336,7 @@ def set_scoreboard(payload, battle_number, mystats):
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["nickname"])
 		enemy_scoreboard.append(enemy_stats)
 
-	sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(0, 1, 2, 3, 4), reverse=True)
+	sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(0, 1, 2, 3, 4, 11), reverse=True)
 
 	full_scoreboard = sorted_ally_scoreboard + sorted_enemy_scoreboard
 
