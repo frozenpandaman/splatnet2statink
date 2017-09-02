@@ -288,7 +288,7 @@ def set_scoreboard(payload, battle_number, mystats):
 	if mode == "gachi" or mode == "league":
 		my_stats.append(rank_before)
 		my_stats.append(None) # points of turf inked is null if ranked/league battle
-	elif mode == "regular" or mode == "fest":
+	elif mode == "regular" or mode == "fes":
 		my_stats.append(None) # udemae (rank) is null if turf war
 		if result == "victory":
 			my_stats.append(turfinked + 1000)
@@ -325,7 +325,7 @@ def set_scoreboard(payload, battle_number, mystats):
 			except:
 				enemy_stats.append("c-")
 			enemy_stats.append(None) # points of turf inked is null in league
-		elif mode == "regular" or mode == "fest":
+		elif mode == "regular" or mode == "fes":
 			enemy_stats.append(None)
 			if result == "defeat":
 				enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"] + 1000)
