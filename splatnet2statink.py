@@ -250,9 +250,10 @@ def set_scoreboard(payload, battle_number, mystats):
 	rank_before  = mystats[8]
 	turfinked    = mystats[9]
 	try:
-		title_before = mystats[10]
+		title_before = translate_fest_rank[mystats[10]]
 	except:
 		pass
+	principal_id = mystats[11]
 
 	ally_scoreboard = []
 	for n in xrange(len(battledata["my_team_members"])):
@@ -284,6 +285,7 @@ def set_scoreboard(payload, battle_number, mystats):
 			ally_stats.append(translate_fest_rank[battledata["my_team_members"][n]["player"]["fes_grade"]["rank"]])
 		else:
 			ally_stats.append(None)
+		ally_stats.append(battledata["my_team_members"][n]["player"]["principal_id"])
 		ally_scoreboard.append(ally_stats)
 
 	my_stats = []
@@ -310,6 +312,7 @@ def set_scoreboard(payload, battle_number, mystats):
 		my_stats.append(title_before)
 	else:
 		my_stats.append(None)
+	my_stats.append(principal_id)
 	ally_scoreboard.append(my_stats)
 
 	# scoreboard sorted by sort_score, then k+a, then k, then s, then d (more = better), then name
@@ -351,6 +354,7 @@ def set_scoreboard(payload, battle_number, mystats):
 			enemy_stats.append(translate_fest_rank[battledata["other_team_members"][n]["player"]["fes_grade"]["rank"]])
 		else:
 			enemy_stats.append(None)
+		enemy_stats.append(battledata["other_team_members"][n]["player"]["principal_id"])
 		enemy_scoreboard.append(enemy_stats)
 
 	sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(0, 1, 2, 3, 4, 11), reverse=True)
@@ -359,7 +363,7 @@ def set_scoreboard(payload, battle_number, mystats):
 
 	payload["players"] = []
 	for n in xrange(len(full_scoreboard)):
-		# sort score, k/a, kills, specials, deaths, weapon, level, rank, turf inked, is my team, is me, nickname, splatfest rank
+		# sort score, k/a, kills, specials, deaths, weapon, level, rank, turf inked, is my team, is me, nickname, splatfest rank, splatnet principal_id
 		detail = {
 			"team":           "my" if full_scoreboard[n][9] == 1 else "his",
 			"is_me":          "yes" if full_scoreboard[n][10] == 1 else "no",
@@ -371,7 +375,8 @@ def set_scoreboard(payload, battle_number, mystats):
 			"death":          full_scoreboard[n][4],
 			"special":        full_scoreboard[n][3],
 			"point":          full_scoreboard[n][8],
-			"name":           full_scoreboard[n][11]
+			"name":           full_scoreboard[n][11],
+			"splatnet_id":    full_scoreboard[n][13]
 		}
 		if mode == "gachi" or mode == "league":
 			detail["rank"] = full_scoreboard[n][7]
@@ -466,6 +471,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug):
 		pass
 
 	mode = results[i]["type"] # regular, gachi, league, fes
+	mode = "fes"
 	if mode == "regular" or mode == "fes":
 		payload["my_team_percent"] = my_percent
 		payload["his_team_percent"] = their_percent
@@ -538,14 +544,18 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug):
 	payload["end_at"]   = results[i]["start_time"] + elapsed_time
 
 	###################
-	## BATTLE NUMBER ##
+	## SPLATNET DATA ##
 	###################
 	bn = results[i]["battle_number"]
 	payload["private_note"] = "Battle #" + bn
+	payload["splatnet_number"] = bn
+	principal_id = results[i]["player_result"]["player"]["principal_id"]
+	if mode == "league":
+		payload["my_team_id"] = results[i]["tag_id"]
 
 	############################
 	## SPLATFEST TITLES/POWER ##
-	############################ https://github.com/fetus-hina/stat.ink/blob/master/API.md
+	############################ https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md#fest_title-fest_title_after
 	if mode == "fes":
 		title_before = results[i]["player_result"]["player"]["fes_grade"]["rank"]
 		title_after = results[i]["fes_grade"]["rank"]
@@ -554,15 +564,14 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug):
 		payload["his_team_power"] = results[i]["other_estimate_fes_power"]
 		payload["fest_title"] = translate_fest_rank[title_before]
 		payload["fest_title_after"] = translate_fest_rank[title_after]
+	else:
+		title_before = None
 
 	################
 	## SCOREBOARD ##
 	################
 	if YOUR_COOKIE != "": # if no cookie set, don't do this, as it requires online & will fail
-		if mode == "fes":
-			mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked, title_before]
-		else:
-			mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked]
+		mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked, title_before, principal_id]
 		payload = set_scoreboard(payload, bn, mystats)
 
 	##################
