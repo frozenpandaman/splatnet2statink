@@ -471,7 +471,6 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug):
 		pass
 
 	mode = results[i]["type"] # regular, gachi, league, fes
-	mode = "fes"
 	if mode == "regular" or mode == "fes":
 		payload["my_team_percent"] = my_percent
 		payload["his_team_percent"] = their_percent
