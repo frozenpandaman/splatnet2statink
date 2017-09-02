@@ -380,3 +380,12 @@ profile_colors = {
 	4: 'blue',
 	5: 'sun-yellow'
 }
+
+# Splatfest ranks
+fest_ranks = {
+	0: 'fanboy',
+	1: 'fiend',
+	2: 'defender',
+	3: 'champion',
+	4: 'king'
+}

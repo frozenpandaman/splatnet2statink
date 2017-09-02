@@ -7,7 +7,7 @@ import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.38"
+A_VERSION = "0.0.39"
 
 try:
 	config_file = open("config.txt", "r+")
@@ -51,6 +51,7 @@ translate_stages = dbs.stages
 # translate_shoes = dbs.shoes
 # translate_ability = dbs.abilities
 translate_profile_color = dbs.profile_colors
+translate_fest_rank = dbs.fest_ranks
 
 def gen_new_cookie(reason):
 	'''Attempts to generate new cookie in case provided one is invalid.'''
@@ -248,6 +249,10 @@ def set_scoreboard(payload, battle_number, mystats):
 	level_before = mystats[7]
 	rank_before  = mystats[8]
 	turfinked    = mystats[9]
+	try:
+		title_before = mystats[10]
+	except:
+		pass
 
 	ally_scoreboard = []
 	for n in xrange(len(battledata["my_team_members"])):
@@ -266,7 +271,7 @@ def set_scoreboard(payload, battle_number, mystats):
 			except:
 				ally_stats.append("c-")
 			ally_stats.append(None) # points of turf inked is null in ranked/league battle
-		elif rule == "turf_war":
+		elif mode == "regular" or mode == "fes":
 			ally_stats.append(None) # udemae (rank) is null in turf war
 			if result == "victory":
 				ally_stats.append(battledata["my_team_members"][n]["game_paint_point"] + 1000)
@@ -275,6 +280,10 @@ def set_scoreboard(payload, battle_number, mystats):
 		ally_stats.append(1) # my team? (yes)
 		ally_stats.append(0) # is me? (no)
 		ally_stats.append(battledata["my_team_members"][n]["player"]["nickname"])
+		if mode == "fes":
+			ally_stats.append(translate_fest_rank[battledata["my_team_members"][n]["player"]["fes_grade"]["rank"]])
+		else:
+			ally_stats.append(None)
 		ally_scoreboard.append(ally_stats)
 
 	my_stats = []
@@ -297,6 +306,10 @@ def set_scoreboard(payload, battle_number, mystats):
 	my_stats.append(1) # my team? (yes)
 	my_stats.append(1) # is me? (yes)
 	my_stats.append(battledata["player_result"]["player"]["nickname"])
+	if mode == "fes":
+		my_stats.append(title_before)
+	else:
+		my_stats.append(None)
 	ally_scoreboard.append(my_stats)
 
 	# scoreboard sorted by sort_score, then k+a, then k, then s, then d (more = better), then name
@@ -334,6 +347,10 @@ def set_scoreboard(payload, battle_number, mystats):
 		enemy_stats.append(0) # my team? (no)
 		enemy_stats.append(0) # is me? (no)
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["nickname"])
+		if mode == "fes":
+			enemy_stats.append(translate_fest_rank[battledata["other_team_members"][n]["player"]["fes_grade"]["rank"]])
+		else:
+			enemy_stats.append(None)
 		enemy_scoreboard.append(enemy_stats)
 
 	sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(0, 1, 2, 3, 4, 11), reverse=True)
@@ -342,7 +359,7 @@ def set_scoreboard(payload, battle_number, mystats):
 
 	payload["players"] = []
 	for n in xrange(len(full_scoreboard)):
-		# sort score, k/a, assists, deaths, specials, weapon, level, rank, turf inked, is my team, is me, nickname
+		# sort score, k/a, kills, specials, deaths, weapon, level, rank, turf inked, is my team, is me, nickname, splatfest rank
 		detail = {
 			"team":           "my" if full_scoreboard[n][9] == 1 else "his",
 			"is_me":          "yes" if full_scoreboard[n][10] == 1 else "no",
@@ -358,6 +375,8 @@ def set_scoreboard(payload, battle_number, mystats):
 		}
 		if mode == "gachi" or mode == "league":
 			detail["rank"] = full_scoreboard[n][7]
+		if mode == "fes":
+			detail["fest_title"] = full_scoreboard[n][12]
 		payload["players"].append(detail)
 
 	return payload # return new payload w/ players key
@@ -533,32 +552,17 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug):
 		payload["fest_power"] = results[i]["fes_power"]
 		payload["my_team_power"] = results[i]["my_estimate_fes_power"]
 		payload["his_team_power"] = results[i]["other_estimate_fes_power"]
-		if title_before == 0:
-			payload["fest_title"] = "fanboy"
-		elif title_before == 1:
-			payload["fest_title"] = "fiend"
-		elif title_before == 2:
-			payload["fest_title"] = "defender"
-		elif title_before == 3:
-			payload["fest_title"] = "champion"
-		elif title_before == 4:
-			payload["fest_title"] = "king"
-		if title_after == 0:
-			payload["fest_title_after"] = "fanboy"
-		elif title_after == 1:
-			payload["fest_title_after"] = "fiend"
-		elif title_after == 2:
-			payload["fest_title_after"] = "defender"
-		elif title_after == 3:
-			payload["fest_title_after"] = "champion"
-		elif title_after == 4:
-			payload["fest_title_after"] = "king"
+		payload["fest_title"] = translate_fest_rank[title_before]
+		payload["fest_title_after"] = translate_fest_rank[title_after]
 
 	################
 	## SCOREBOARD ##
 	################
 	if YOUR_COOKIE != "": # if no cookie set, don't do this, as it requires online & will fail
-		mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked]
+		if mode == "fes":
+			mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked, title_before]
+		else:
+			mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked]
 		payload = set_scoreboard(payload, bn, mystats)
 
 	##################
