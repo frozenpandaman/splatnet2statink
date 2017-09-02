@@ -7,7 +7,7 @@ import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.39"
+A_VERSION = "0.0.40"
 
 try:
 	config_file = open("config.txt", "r+")
@@ -106,6 +106,8 @@ def load_json(bool):
 def main():
 	'''I/O and setup.'''
 
+	print "splatnet2statink v" + A_VERSION
+
 	check_statink_key()
 
 	parser = argparse.ArgumentParser()
@@ -130,6 +132,7 @@ def check_statink_key():
 
 	if len(API_KEY) != 43:
 		new_api_key = ""
+		print "stat.ink API key is blank. Please enter it below."
 		while len(new_api_key) != 43:
 			if new_api_key == "" and API_KEY == "":
 				new_api_key = raw_input("stat.ink API key: ")
@@ -317,7 +320,10 @@ def set_scoreboard(payload, battle_number, mystats):
 
 	# scoreboard sorted by sort_score, then k+a, then k, then s, then d (more = better), then name
 	# discussion: https://github.com/frozenpandaman/splatnet2statink/issues/6
-	sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 2, 3, 4, 11), reverse=True)
+	if rule != "turf_war":
+		sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 2, 3, 4, 11), reverse=True)
+	else:
+		sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(8, 1, 2, 3, 4, 11), reverse=True)
 
 	for n in xrange(len(sorted_ally_scoreboard)):
 		if sorted_ally_scoreboard[n][10] == 1: # if it's me, position in sorted list is my rank in team
@@ -357,7 +363,10 @@ def set_scoreboard(payload, battle_number, mystats):
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["principal_id"])
 		enemy_scoreboard.append(enemy_stats)
 
-	sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(0, 1, 2, 3, 4, 11), reverse=True)
+	if rule != "turf_war":
+		sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(0, 1, 2, 3, 4, 11), reverse=True)
+	else:
+		sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(8, 1, 2, 3, 4, 11), reverse=True)
 
 	full_scoreboard = sorted_ally_scoreboard + sorted_enemy_scoreboard
 
