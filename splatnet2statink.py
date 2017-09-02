@@ -350,9 +350,9 @@ def set_scoreboard(payload, battle_number, mystats):
 			"level":          full_scoreboard[n][6],
 			"rank_in_team":   n + 1 if n < 4 else n - 3,
 			"kill_or_assist": full_scoreboard[n][1],
-			"kill":           full_scoreboard[n][1] - full_scoreboard[n][2],
-			"death":          full_scoreboard[n][3],
-			"special":        full_scoreboard[n][4],
+			"kill":           full_scoreboard[n][2],
+			"death":          full_scoreboard[n][4],
+			"special":        full_scoreboard[n][3],
 			"point":          full_scoreboard[n][8],
 			"name":           full_scoreboard[n][11]
 		}
