@@ -49,9 +49,9 @@ def log_in():
 
 	post_login = r.history[0].url
 
-	print "\nNavigate to this URL in your browser: "
+	print "\nNavigate to this URL in your browser:"
 	print post_login
-	print "Log in, right click the \"Use this account\" button, copy the link address, and paste it here:",
+	print "Log in, right click the \"Use this account\" button, copy the link address, and paste it below:"
 	while True:
 		try:
 			use_account_url = raw_input("")
