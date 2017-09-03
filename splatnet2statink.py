@@ -7,11 +7,12 @@ import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.40"
+A_VERSION = "0.0.41"
 
 try:
-	config_file = open("config.txt", "r+")
+	config_file = open("config.txt", "r")
 	config_data = json.load(config_file)
+	config_file.close()
 except:
 	print "Could not read config.txt. Generating new config file."
 	config_data = {"api_key": "", "cookie": "", "session_token": "", "user_lang": "en-US"}
@@ -19,8 +20,9 @@ except:
 	config_file.seek(0)
 	config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
 	config_file.close()
-	config_file = open("config.txt", "r+")
+	config_file = open("config.txt", "r")
 	config_data = json.load(config_file)
+	config_file.close()
 
 #########################
 ## API KEYS AND TOKENS ##
@@ -60,7 +62,7 @@ def gen_new_cookie(reason):
 		print "Blank cookie. Trying to generate one given your session_token..."
 	elif reason == "auth": # authentication error
 		print "Bad cookie. Trying to generate a new one given your session_token..."
-	else: # server error or the player hasn't played online before
+	else: # server error or player hasn't battled before
 		print "Cannot access SplatNet 2 without having played at least one battle online."
 		exit(1)
 	if SESSION_TOKEN == "":
@@ -69,22 +71,24 @@ def gen_new_cookie(reason):
 		if new_token == None:
 			print "There was a problem logging you in. Please try again later."
 		else:
-			print "\nWrote session_token to config.txt."
 			config_data["session_token"] = new_token
+			config_file = open("config.txt", "w")
 			config_file.seek(0)
 			config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
-			config_file.flush()
-			refresh_token(config_data)
-	else:
-		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG)
-		print "Wrote iksm_session cookie to config.txt.\nYour cookie: " + new_cookie
+			config_file.close()
+			print "\nWrote session_token to config.txt."
+			refresh_tokens(config_data)
+
+		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG) # error handling in get_cookie()
 		config_data["cookie"] = new_cookie
+		config_file = open("config.txt", "w")
 		config_file.seek(0)
 		config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
-		config_file.flush()
-		refresh_token(config_data)
+		config_file.close()
+		print "Wrote iksm_session cookie to config.txt.\nYour cookie: " + new_cookie
+		refresh_tokens(config_data)
 
-def refresh_token(tokens):
+def refresh_tokens(tokens):
 	'''Updates the global variables.'''
 
 	global API_KEY
@@ -102,6 +106,27 @@ def load_json(bool):
 	url = "https://app.splatoon2.nintendo.net/api/results"
 	r = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
 	return json.loads(r.text)
+
+def check_statink_key():
+	'''Check if a valid length API key has been provided and, if not, prompts the user to enter one.'''
+
+	if len(API_KEY) != 43:
+		new_api_key = ""
+		while len(new_api_key.strip()) != 43:
+			if new_api_key.strip() == "" and API_KEY.strip() == "":
+				new_api_key = raw_input("stat.ink API key: ")
+			else:
+				print "Invalid stat.ink API key. Please re-enter it below."
+				new_api_key = raw_input("stat.ink API key: ")
+			config_data["api_key"] = new_api_key
+
+		config_file = open("config.txt", "w")
+		config_file.seek(0)
+		config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
+		config_file.close()
+		refresh_tokens(config_data)
+
+	return
 
 def main():
 	'''I/O and setup.'''
@@ -127,24 +152,6 @@ def main():
 	filename = parser_result.filename;
 	return is_m, is_s, is_t, filename;
 
-def check_statink_key():
-	'''Check if a valid length API key has been provided and, if not, prompts the user to enter one.'''
-
-	if len(API_KEY) != 43:
-		new_api_key = ""
-		while len(new_api_key.strip()) != 43:
-			if new_api_key.strip() == "" and API_KEY.strip() == "":
-				new_api_key = raw_input("stat.ink API key: ")
-			else:
-				print "Invalid stat.ink API key. Please re-enter it below."
-				new_api_key = raw_input("stat.ink API key: ")
-			config_data["api_key"] = new_api_key
-		config_file.seek(0)
-		config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
-		config_file.flush()
-		refresh_token(config_data)
-	return
-
 def monitor_battles(s_flag, t_flag, debug):
 	'''Monitor JSON for changes/new battles and upload them.'''
 
@@ -163,6 +170,12 @@ def monitor_battles(s_flag, t_flag, debug):
 		else:
 			reason = "other" # server error or player hasn't battled before
 		gen_new_cookie(reason)
+		data = load_json(False)
+		try:
+			results = data["results"] # try again with correct tokens; shouldn't get an error now...
+		except: # ...as long as there are actually battles to fetch (i.e. has played online)
+			print "Cannot access SplatNet 2 without having played at least one battle online."
+			exit(1)
 
 	# don't upload any of the ones already in the file
 	battles = []
