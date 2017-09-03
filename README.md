@@ -9,7 +9,7 @@ $ python splatnet2statink.py [-M] [-s] [-i path/to/results.json] [-t]
 
 The `-M` flag runs the script in realtime monitoring mode, uploading new battle results as you play games.
 
-The `-s` flag suppresses uploading the scoreboard result image. (stat.ink does not support blacking out other players' names at this time.)
+The `-s` flag suppresses uploading the scoreboard result image.
 
 The `-i` flag allows users to specify the path to a results JSON file to be used as input. Without this, the file is pulled from [https://app.splatoon2.nintendo.net/api/results](https://app.splatoon2.nintendo.net/api/results), given a valid cookie.
 
@@ -17,7 +17,7 @@ The `-t` flag sends the data to stat.ink as a dry run, without uploading, for te
 
 ## Working features
 - [x] Complete battle stats
-  - [x] Lobby/Mode, Stage, Weapon
+  - [x] Lobby/mode, stage, weapon
   - [x] Result, final count/percent, turf inked
   - [x] Kills, deaths, assists, specials
   - [x] Rank & rank after, level & level after
@@ -36,15 +36,18 @@ The `-t` flag sends the data to stat.ink as a dry run, without uploading, for te
 
 1. Download and install [Python 2.7](https://www.python.org/downloads/) (pre-installed on macOS) and the package manager [pip](https://pip.pypa.io/en/stable/installing/).
 
-2. From the command line (macOS: Terminal; Windows: Command Prompt), install the required Python libraries:
-```
-pip install requests
-pip install msgpack-python
-```
+2. From the command line (macOS: Terminal; Windows: Command Prompt/PowerShell), install the required Python libraries:
+    ```
+    pip install requests
+    pip install msgpack-python
+    ```
+    If you're on Windows with multiple versions of Python installed, you'll have to use `py -2 -m pip` instead.
 
 3. Running the script for the first time will prompt you to enter your stat.ink API key, which can be found in your [profile settings](https://stat.ink/profile). You will then be asked to navigate to a specific URL on Nintendo.com, log in, and follow simple instructions to obtain your `session_token`. This token will automatically be entered into `config.txt` for you, and a cookie (used to access your SplatNet battle results) will be generated. You're now ready to upload battles!
 
 4. For players using the app in a language other than English, you can change `user_lang` in `config.txt` to match your game's [language](https://github.com/frozenpandaman/splatnet2statink/wiki/languages).
+
+Have any questions, issues, or suggestions? Feel free to message me on [Twitter](https://twitter.com/frozenpandaman) or [Reddit](https://www.reddit.com/user/frozenpandaman).
 
 ### Accessing SplatNet 2 from your browser
 
