@@ -132,8 +132,8 @@ def check_statink_key():
 
 	if len(API_KEY) != 43:
 		new_api_key = ""
-		while len(new_api_key.trim()) != 43:
-			if new_api_key.trim() == "" and API_KEY.trim() == "":
+		while len(new_api_key.strip()) != 43:
+			if new_api_key.strip() == "" and API_KEY.strip() == "":
 				new_api_key = raw_input("stat.ink API key: ")
 			else:
 				print "Invalid stat.ink API key. Please re-enter it below."
