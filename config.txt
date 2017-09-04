@@ -1,6 +1,0 @@
-{
-    "api_key":       "",
-    "cookie":        "",
-    "session_token": "",
-    "user_lang":     "en-US"
-}

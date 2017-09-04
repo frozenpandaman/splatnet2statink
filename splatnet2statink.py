@@ -1,13 +1,15 @@
 # eli fessler
 # clovervidia
 import os.path, argparse, sys
-import requests, json, time, datetime, random
+import requests, json, time, datetime, random, re
 import msgpack
 import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.41"
+A_VERSION = "0.0.42"
+
+print "splatnet2statink v" + A_VERSION
 
 try:
 	config_file = open("config.txt", "r")
@@ -15,7 +17,7 @@ try:
 	config_file.close()
 except:
 	print "Could not read config.txt. Generating new config file."
-	config_data = {"api_key": "", "cookie": "", "session_token": "", "user_lang": "en-US"}
+	config_data = {"api_key": "", "cookie": "", "session_token": "", "user_lang": ""}
 	config_file = open("config.txt", "w")
 	config_file.seek(0)
 	config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
@@ -72,31 +74,35 @@ def gen_new_cookie(reason):
 			print "There was a problem logging you in. Please try again later."
 		else:
 			config_data["session_token"] = new_token
-			config_file = open("config.txt", "w")
-			config_file.seek(0)
-			config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
-			config_file.close()
+			write_config(config_data)
 			print "\nWrote session_token to config.txt."
-			refresh_tokens(config_data)
 
 		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG) # error handling in get_cookie()
 		config_data["cookie"] = new_cookie
-		config_file = open("config.txt", "w")
-		config_file.seek(0)
-		config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
-		config_file.close()
+		write_config(config_data)
 		print "Wrote iksm_session cookie to config.txt.\nYour cookie: " + new_cookie
-		refresh_tokens(config_data)
 
-def refresh_tokens(tokens):
-	'''Updates the global variables.'''
+def write_config(tokens):
+	'''Writes config file and updates the global variables.'''
+
+	config_file = open("config.txt", "w")
+	config_file.seek(0)
+	config_file.write(json.dumps(tokens, indent=4, sort_keys=True, separators=(',', ': ')))
+	config_file.close()
+
+	config_file = open("config.txt", "r")
+	config_data = json.load(config_file)
 
 	global API_KEY
-	API_KEY = tokens["api_key"]
+	API_KEY = config_data["api_key"]
 	global SESSION_TOKEN
-	SESSION_TOKEN = tokens["session_token"]
+	SESSION_TOKEN = config_data["session_token"]
 	global YOUR_COOKIE
-	YOUR_COOKIE = tokens["cookie"]
+	YOUR_COOKIE = config_data["cookie"]
+	global USER_LANG
+	USER_LANG = config_data["user_lang"]
+
+	config_file.close()
 
 def load_json(bool):
 	'''Returns results JSON from online.'''
@@ -119,21 +125,35 @@ def check_statink_key():
 				print "Invalid stat.ink API key. Please re-enter it below."
 				new_api_key = raw_input("stat.ink API key: ")
 			config_data["api_key"] = new_api_key
+		write_config(config_data)
+	return
 
-		config_file = open("config.txt", "w")
-		config_file.seek(0)
-		config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
-		config_file.close()
-		refresh_tokens(config_data)
+def set_language():
+	'''Prompts the user to set their game language.'''
+
+	if USER_LANG == "":
+		print "Default game language is en-US. Press Enter to accept, or type in a language code.\nSee readme for language codes."
+		language_code = raw_input("")
+
+		if language_code == "":
+			config_data["user_lang"] = "en-US"
+			write_config(config_data)
+			return
+		else:
+			while re.findall("^[a-z]{2}", language_code) == []:
+				print "Invalid language code. Please try entering it again."
+				language_code = raw_input("")
+			config_data["user_lang"] = language_code
+			write_config(config_data)
 
 	return
 
 def main():
 	'''I/O and setup.'''
 
-	print "splatnet2statink v" + A_VERSION
-
 	check_statink_key()
+
+	set_language()
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-M", required=False, action="store_true",
