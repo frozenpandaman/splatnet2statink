@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # eli fessler
 # clovervidia
 import os.path, argparse, sys
@@ -619,25 +620,26 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug):
 	##################
 	## IMAGE RESULT ##
 	##################
-	if not s_flag:
-		url = "https://app.splatoon2.nintendo.net/api/share/results/%s" % bn
-		share_result = requests.post(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
-		if share_result.status_code == requests.codes.ok:
-			image_result_url = share_result.json().get("url")
-			if image_result_url:
-				image_result = requests.get(image_result_url, stream=True)
-				if image_result.status_code == requests.codes.ok:
-					payload["image_result"] = BytesIO(image_result.content).getvalue()
-		if m_flag:
-			url_profile = "https://app.splatoon2.nintendo.net/api/share/profile"
-			settings = {'stage': stage, 'color': translate_profile_color[random.randrange(0, 6)]}
-			share_result = requests.post(url_profile, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE), data=settings)
+	if not debug:
+		if not s_flag:
+			url = "https://app.splatoon2.nintendo.net/api/share/results/%s" % bn
+			share_result = requests.post(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
 			if share_result.status_code == requests.codes.ok:
-				profile_result_url = share_result.json().get("url")
-				if profile_result_url:
-					profile_result = requests.get(profile_result_url, stream=True)
-					if profile_result.status_code == requests.codes.ok:
-						payload["image_gear"] = BytesIO(profile_result.content).getvalue()
+				image_result_url = share_result.json().get("url")
+				if image_result_url:
+					image_result = requests.get(image_result_url, stream=True)
+					if image_result.status_code == requests.codes.ok:
+						payload["image_result"] = BytesIO(image_result.content).getvalue()
+			if m_flag:
+				url_profile = "https://app.splatoon2.nintendo.net/api/share/profile"
+				settings = {'stage': stage, 'color': translate_profile_color[random.randrange(0, 6)]}
+				share_result = requests.post(url_profile, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE), data=settings)
+				if share_result.status_code == requests.codes.ok:
+					profile_result_url = share_result.json().get("url")
+					if profile_result_url:
+						profile_result = requests.get(profile_result_url, stream=True)
+						if profile_result.status_code == requests.codes.ok:
+							payload["image_gear"] = BytesIO(profile_result.content).getvalue()
 
 	##########
 	## GEAR ## not in API v2 yet
