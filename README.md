@@ -54,3 +54,7 @@ Have any questions, issues, or suggestions? Feel free to message me on [Twitter]
 If you wish to access the SplatNet site from your computer rather than via the phone app, navigate to [https://app.splatoon2.nintendo.net/home](https://app.splatoon2.nintendo.net/home) (it should show a forbidden error). Use a cookie editor (such as [EditThisCookie](https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg?hl=en) for Chrome) to edit the `iksm_session` cookie to be the same value as `cookie` in `config.txt` (generated after running the script for the first time), and refresh the page.
 
 *Splatoon 2* stage rotation information and current SplatNet gear are viewable at [https://splatoon2.ink/](https://splatoon2.ink/).
+
+## License
+
+[GPLv3](https://www.gnu.org/licenses/gpl-3.0.html)
