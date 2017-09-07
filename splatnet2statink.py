@@ -1,8 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# eli fessler
-# clovervidia
+"""
+splatnet2statink.py
+Takes battle data from the SplatNet 2 app and uploads it to stat.ink.
+
+Copyright (C) 2017 eli fessler
+Copyright (C) 2017 clovervidia
+Copyright (C) 2017 RoyXiang
+Copyright (C) 2017 mkody
+Copyright (C) 2017 Tiryoh
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 import os.path, argparse, sys
 import requests, json, time, datetime, random, re
 import msgpack
