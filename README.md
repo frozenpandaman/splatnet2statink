@@ -41,7 +41,11 @@ The `-t` flag sends the data to stat.ink as a dry run, without uploading, for te
     pip install requests
     pip install msgpack-python
     ```
-    If you're on Windows with multiple versions of Python installed, you'll have to use `py -2 -m pip` instead.
+    If you're on Windows with multiple versions of Python installed, you'll have to use `py -2 -m pip` instead.  
+    You can also use requirements file to install libraries.
+    ```
+    pip install -r requirements.txt
+    ```
 
 3. Running the script for the first time will prompt you to enter your stat.ink API key, which can be found in your [profile settings](https://stat.ink/profile). You will then be asked to navigate to a specific URL on Nintendo.com, log in, and follow simple instructions to obtain your `session_token`. This token will automatically be entered into `config.txt` for you, and a cookie (used to access your SplatNet battle results) will be generated. You're now ready to upload battles!
 
