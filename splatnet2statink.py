@@ -7,7 +7,7 @@ import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.42"
+A_VERSION = "0.0.43"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -306,7 +306,7 @@ def set_scoreboard(payload, battle_number, mystats):
 				ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower())
 			except:
 				ally_stats.append("c-")
-			ally_stats.append(None) # points of turf inked is null in ranked/league battle
+			ally_stats.append(battledata["my_team_members"][n]["game_paint_point"])
 		elif mode == "regular" or mode == "fes":
 			ally_stats.append(None) # udemae (rank) is null in turf war
 			if result == "victory":
@@ -333,7 +333,7 @@ def set_scoreboard(payload, battle_number, mystats):
 	my_stats.append(level_before)
 	if mode == "gachi" or mode == "league":
 		my_stats.append(rank_before)
-		my_stats.append(None) # points of turf inked is null if ranked/league battle
+		my_stats.append(turfinked)
 	elif mode == "regular" or mode == "fes":
 		my_stats.append(None) # udemae (rank) is null if turf war
 		if result == "victory":
@@ -378,7 +378,7 @@ def set_scoreboard(payload, battle_number, mystats):
 				enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower())
 			except:
 				enemy_stats.append("c-")
-			enemy_stats.append(None) # points of turf inked is null in league
+			enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"])
 		elif mode == "regular" or mode == "fes":
 			enemy_stats.append(None)
 			if result == "defeat":
@@ -532,6 +532,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug):
 			payload["my_point"] = turfinked + 1000 # win bonus
 		else:
 			payload["my_point"] = turfinked
+	else:
+		payload["my_point"] = turfinked
 
 	#################
 	## KILLS, ETC. ##
