@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # eli fessler
 # clovervidia
 import os.path, argparse, sys
