@@ -64,16 +64,28 @@ weapons = {
 # Stage database
 # https://app.splatoon2.nintendo.net/api/data/stages (needs auth)
 stages = {
-	0: 'battera',   # The Reef
-	1: 'fujitsubo', # Musselforge Fitness
-	2: 'gangaze',   # Starfish Mainstage
-	3: 'chozame',   # Sturgeon Shipyard
-	4: 'ama',       # Inkblot Art Academy
-	5: 'combu',     # Humpback Pump Track
-	6: 'manta',     # Manta Maria
-	7: 'hokke',     # Port Mackerel
-	8: 'tachiuo',   # Moray Towers
-	9999: 'mystery' # Shifty Station (Splatfest only)
+	0: 'battera',    # The Reef
+	1: 'fujitsubo',  # Musselforge Fitness
+	2: 'gangaze',    # Starfish Mainstage
+	3: 'chozame',    # Sturgeon Shipyard
+	4: 'ama',        # Inkblot Art Academy
+	5: 'combu',      # Humpback Pump Track
+	6: 'manta',      # Manta Maria
+	7: 'hokke',      # Port Mackerel
+	8: 'tachiuo',    # Moray Towers
+	9999: 'mystery', # Shifty Station (Splatfest only)
+
+	# clearly the funniest way to go about doing this
+	'battera':   'Reef',
+	'fujitsubo': 'Fitness',
+	'gangaze':   'Mainstage',
+	'chozame':   'Shipyard',
+	'ama':       'Academy',
+	'combu':     'Track',
+	'manta':     'Manta',
+	'hokke':     'Port',
+	'tachiuo':   'Towers',
+	'mystery':   'Shifty'
 }
 
 # Gear database

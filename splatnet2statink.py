@@ -2,13 +2,13 @@
 # eli fessler
 # clovervidia
 import os.path, argparse, sys
-import requests, json, time, datetime, random, re
+import requests, json, time, datetime, random
 import msgpack
 import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.43"
+A_VERSION = "0.0.44"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -16,8 +16,8 @@ try:
 	config_file = open("config.txt", "r")
 	config_data = json.load(config_file)
 	config_file.close()
-except:
-	print "Could not read config.txt. Generating new config file."
+except IOError:
+	print "Generating new config file."
 	config_data = {"api_key": "", "cookie": "", "session_token": "", "user_lang": ""}
 	config_file = open("config.txt", "w")
 	config_file.seek(0)
@@ -35,7 +35,7 @@ SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the fu
 USER_LANG     = config_data["user_lang"] # only works with your game region's supported languages
 #########################
 
-debug = False
+debug = False # print out payload and exit
 
 app_head = {
 	'Host': 'app.splatoon2.nintendo.net',
@@ -49,14 +49,14 @@ app_head = {
 	'Accept-Language': USER_LANG
 }
 
-translate_weapons = dbs.weapons
-translate_stages = dbs.stages
-# translate_headgear = dbs.headgears
-# translate_clothing = dbs.clothes
-# translate_shoes = dbs.shoes
-# translate_ability = dbs.abilities
+translate_weapons       = dbs.weapons
+translate_stages        = dbs.stages
 translate_profile_color = dbs.profile_colors
-translate_fest_rank = dbs.fest_ranks
+translate_fest_rank     = dbs.fest_ranks
+# translate_headgear      = dbs.headgears
+# translate_clothing      = dbs.clothes
+# translate_shoes         = dbs.shoes
+# translate_ability       = dbs.abilities
 
 def gen_new_cookie(reason):
 	'''Attempts to generate new cookie in case provided one is invalid.'''
@@ -133,7 +133,7 @@ def set_language():
 	'''Prompts the user to set their game language.'''
 
 	if USER_LANG == "":
-		print "Default game language is en-US. Press Enter to accept, or type in a language code.\nSee readme for language codes."
+		print "Default locale is en-US. Press Enter to accept, or enter your own (see readme for list)."
 		language_code = raw_input("")
 
 		if language_code == "":
@@ -141,7 +141,8 @@ def set_language():
 			write_config(config_data)
 			return
 		else:
-			while re.findall("^[a-z]{2}", language_code) == []:
+			language_list = ["en-US", "es-MX", "fr-CA", "ja-JP", "en-GB", "es-ES", "fr-FR", "de-DE", "it-IT", "nl-NL", "ru"]
+			while language_code not in language_list:
 				print "Invalid language code. Please try entering it again."
 				language_code = raw_input("")
 			config_data["user_lang"] = language_code
@@ -153,7 +154,6 @@ def main():
 	'''I/O and setup.'''
 
 	check_statink_key()
-
 	set_language()
 
 	parser = argparse.ArgumentParser()
@@ -217,9 +217,11 @@ def monitor_battles(s_flag, t_flag, debug):
 			results = data["results"]
 			for result in results[::-1]: # reversed chrono order
 				if int(result["battle_number"]) not in battles:
-					print "New battle result detected at %s!" % datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0")
+					worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
+					mapname = translate_stages[translate_stages[int(result["stage"]["id"])]]
+					print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
-					post_battle(0, [result], s_flag, t_flag, is_m, debug)
+					post_battle(0, [result], s_flag, t_flag, is_m, debug, True)
 	except KeyboardInterrupt:
 		print "\nBye!"
 
@@ -250,7 +252,7 @@ def get_num_battles():
 		try:
 			n = int(raw_input("Number of recent battles to upload (0-50)? "))
 		except ValueError:
-			print "Please enter an integer between 0 and 50."
+			print "Please enter an integer between 0 and 50. Exiting."
 			exit(0)
 		if n < 1:
 			print "Exiting without uploading anything."
@@ -429,7 +431,7 @@ def set_scoreboard(payload, battle_number, mystats):
 	return payload # return new payload w/ players key
 
 # https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md
-def post_battle(i, results, s_flag, t_flag, m_flag, debug):
+def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 	'''Uploads battle #i from the provided dictionary.'''
 
 	#############
@@ -528,7 +530,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug):
 	## TURF INKED ##
 	################
 	turfinked = results[i]["player_result"]["game_paint_point"] # without bonus
-	if rule == "turf_war": # only upload if TW
+	if rule == "turf_war":
 		if result == "victory":
 			payload["my_point"] = turfinked + 1000 # win bonus
 		else:
@@ -706,7 +708,10 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug):
 
 		# Response
 		try:
-			print "Battle #" + str(i+1) + " uploaded to " + r2.headers.get('location') # display url
+			if not ismonitor:
+				print "Battle #" + str(i+1) + " uploaded to " + r2.headers.get('location') # display url
+			else: # monitoring mode
+				print "Battle uploaded to " + r2.headers.get('location')
 		except TypeError: # r.headers.get is likely NoneType, i.e. we received an error
 			if t_flag:
 				print "Battle #" + str(i+1) + " - message from server:"

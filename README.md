@@ -43,9 +43,9 @@ The `-t` flag sends the data to stat.ink as a dry run, without uploading, for te
     ```
     If you're on Windows with multiple versions of Python installed, you'll have to use `py -2 -m pip` instead.
 
-3. Running the script for the first time will prompt you to enter your stat.ink API key, which can be found in your [profile settings](https://stat.ink/profile). You will then be asked to navigate to a specific URL on Nintendo.com, log in, and follow simple instructions to obtain your `session_token`. This token will automatically be entered into `config.txt` for you, and a cookie (used to access your SplatNet battle results) will be generated. You're now ready to upload battles!
+3. Running the script for the first time will prompt you to enter your stat.ink API key, which can be found in your [profile settings](https://stat.ink/profile). If you're using the app in a language other than English, you may choose choose to enter your [language code](https://github.com/frozenpandaman/splatnet2statink/wiki/languages) (locale) as well.
 
-4. For players using the app in a language other than English, you can change `user_lang` in `config.txt` to match your game's [language](https://github.com/frozenpandaman/splatnet2statink/wiki/languages).
+4. You will then be asked to navigate to a specific URL on Nintendo.com, log in, and follow simple instructions to obtain your `session_token`. This token, along with your stat.ink API key and language, will automatically be saved into `config.txt` for you, and a cookie (used to access your SplatNet battle results) will be generated. You're now ready to upload battles!
 
 Have any questions, issues, or suggestions? Feel free to message me on [Twitter](https://twitter.com/frozenpandaman) or [Reddit](https://www.reddit.com/user/frozenpandaman).
 
@@ -53,7 +53,7 @@ Have any questions, issues, or suggestions? Feel free to message me on [Twitter]
 
 If you wish to access the SplatNet site from your computer rather than via the phone app, navigate to [https://app.splatoon2.nintendo.net/home](https://app.splatoon2.nintendo.net/home) (it should show a forbidden error). Use a cookie editor (such as [EditThisCookie](https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg?hl=en) for Chrome) to edit the `iksm_session` cookie to be the same value as `cookie` in `config.txt` (generated after running the script for the first time), and refresh the page.
 
-*Splatoon 2* stage rotation information and current SplatNet gear are viewable at [https://splatoon2.ink/](https://splatoon2.ink/).
+*Splatoon 2* stage rotation information (including Salmon Run) and current SplatNet gear are viewable at [https://splatoon2.ink/](https://splatoon2.ink/).
 
 ## License
 
