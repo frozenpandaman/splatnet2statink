@@ -7,6 +7,7 @@
 weapons = {
 	0:    'bold',                 # Sploosh-o-matic
 	10:   'wakaba',               # Splattershot Jr.
+	11:   'momiji',               # Custom Splattershot Jr.
 	20:   'sharp',                # Splash-o-matic
 	30:   'promodeler_mg',        # Aerospray MG
 	31:   'promodeler_rg',        # Aerospray RG
