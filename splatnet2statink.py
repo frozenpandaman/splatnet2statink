@@ -18,7 +18,7 @@ try:
 	config_file.close()
 except IOError:
 	print "Generating new config file."
-	config_data = {"api_key": "", "cookie": "", "session_token": "", "user_lang": ""}
+	config_data = {"api_key": "", "cookie": "", "session_token": "", "user_lang": "", "monitor_timer": 90}
 	config_file = open("config.txt", "w")
 	config_file.seek(0)
 	config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
@@ -33,6 +33,7 @@ API_KEY       = config_data["api_key"] # for stat.ink
 YOUR_COOKIE   = config_data["cookie"] # iksm_session
 SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
 USER_LANG     = config_data["user_lang"] # only works with your game region's supported languages
+MONITOR_TIMER = config_data["monitor_timer"] #delay between requests when running in monitor mode
 #########################
 
 debug = False # print out payload and exit
@@ -78,10 +79,10 @@ def gen_new_cookie(reason):
 			write_config(config_data)
 			print "\nWrote session_token to config.txt."
 
-		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG) # error handling in get_cookie()
-		config_data["cookie"] = new_cookie
-		write_config(config_data)
-		print "Wrote iksm_session cookie to config.txt.\nYour cookie: " + new_cookie
+	new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG) # error handling in get_cookie()
+	config_data["cookie"] = new_cookie
+	write_config(config_data)
+	print "Wrote iksm_session cookie to config.txt.\nYour cookie: " + new_cookie
 
 def write_config(tokens):
 	'''Writes config file and updates the global variables.'''
@@ -102,6 +103,8 @@ def write_config(tokens):
 	YOUR_COOKIE = config_data["cookie"]
 	global USER_LANG
 	USER_LANG = config_data["user_lang"]
+	global MONITOR_TIMER
+	MONITOR_TIME = config_data["monitor_timer"]
 
 	config_file.close()
 
@@ -203,8 +206,9 @@ def monitor_battles(s_flag, t_flag, debug):
 	for result in results:
 		battles.append(int(result["battle_number"]))
 
-	secs = 90
-	print "Waiting for new battles... (checking every 1.5 minutes)" # allow this to be customized?
+	global MONITOR_TIMER
+	secs = MONITOR_TIMER
+	print "Waiting for new battles... (checking every " + str(secs) + " seconds)" 
 
 	try:
 		while True:
