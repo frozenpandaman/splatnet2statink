@@ -12,13 +12,15 @@ A_VERSION = "0.0.44"
 
 print "splatnet2statink v" + A_VERSION
 
+config_data = {"api_key": "", "cookie": "", "session_token": "", "user_lang": "", "monitor_timer": 90}
+default_config_data = config_data
+
 try:
 	config_file = open("config.txt", "r")
 	config_data = json.load(config_file)
 	config_file.close()
-except IOError:
+except (IOError, ValueError): #If something goes wrong reading the config file, generate a new one.
 	print "Generating new config file."
-	config_data = {"api_key": "", "cookie": "", "session_token": "", "user_lang": "", "monitor_timer": 90}
 	config_file = open("config.txt", "w")
 	config_file.seek(0)
 	config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
@@ -29,11 +31,22 @@ except IOError:
 
 #########################
 ## API KEYS AND TOKENS ##
-API_KEY       = config_data["api_key"] # for stat.ink
-YOUR_COOKIE   = config_data["cookie"] # iksm_session
-SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
-USER_LANG     = config_data["user_lang"] # only works with your game region's supported languages
-MONITOR_TIMER = config_data["monitor_timer"] #delay between requests when running in monitor mode
+done = False
+while not done:
+	try :
+		API_KEY       = config_data["api_key"] # for stat.ink
+		YOUR_COOKIE   = config_data["cookie"] # iksm_session
+		SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
+		USER_LANG     = config_data["user_lang"] # only works with your game region's supported languages
+		MONITOR_TIMER = config_data["monitor_timer"] #delay between requests when running in monitor mode
+		done = True
+	except KeyError as e: #Any value missing from the config file gets reset to default
+		print "Missing " + e[0] + " from config file, using default."
+		config_data[e[0]] = default_config_data[e[0]]
+		config_file = open("config.txt", "w")
+		config_file.seek(0)
+		config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
+		config_file.close()
 #########################
 
 debug = False # print out payload and exit
@@ -104,10 +117,7 @@ def write_config(tokens):
 	global USER_LANG
 	USER_LANG = config_data["user_lang"]
 	global MONITOR_TIMER
-	try:
-		MONITOR_TIME = config_data["monitor_timer"]
-	except KeyError:
-		MONITOR_TIME = 90 # fix for using an old config file
+	MONITOR_TIME = config_data["monitor_timer"]
 
 	config_file.close()
 
