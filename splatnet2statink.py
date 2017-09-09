@@ -104,7 +104,10 @@ def write_config(tokens):
 	global USER_LANG
 	USER_LANG = config_data["user_lang"]
 	global MONITOR_TIMER
-	MONITOR_TIME = config_data["monitor_timer"]
+	try:
+		MONITOR_TIME = config_data["monitor_timer"]
+	except KeyError:
+		MONITOR_TIME = 90 # fix for using an old config file
 
 	config_file.close()
 
