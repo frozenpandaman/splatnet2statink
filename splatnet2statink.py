@@ -218,7 +218,10 @@ def monitor_battles(s_flag, t_flag, secs, debug):
 	for result in results:
 		battles.append(int(result["battle_number"]))
 
-	print "Waiting for new battles... (checking every {} minutes)".format(round(float(secs)/60.0,2))
+	mins = str(round(float(secs)/60.0,2))
+	if mins[-2:] == ".0":
+		mins = mins[:-2]
+	print "Waiting for new battles... (checking every {} minutes)".format(mins)
 
 	try:
 		while True:
@@ -235,7 +238,7 @@ def monitor_battles(s_flag, t_flag, secs, debug):
 					mapname = translate_stages[translate_stages[int(result["stage"]["id"])]]
 					print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
-					post_battle(0, [result], s_flag, t_flag, is_m, debug, True)
+					post_battle(0, [result], s_flag, t_flag, secs, debug, True)
 	except KeyboardInterrupt:
 		# do a final check
 		print "\nBye!"
@@ -716,7 +719,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 		url     = 'https://stat.ink/api/v2/battle'
 		auth    = {'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/x-msgpack'}
 
-		if payload["agent"] != os.path.splitext(sys.argv[0])[0]:
+		if payload["agent"] != os.path.splitext(sys.argv[0])[0] and \
+		   payload["agent"] != os.path.splitext(sys.argv[0])[0][2:].strip():
 			print "Could not upload. Please contact @frozenpandaman on Twitter/GitHub for assistance."
 			exit(1)
 		r2 = requests.post(url, headers=auth, data=msgpack.packb(payload))
