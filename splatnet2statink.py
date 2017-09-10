@@ -8,7 +8,7 @@ import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.45"
+A_VERSION = "0.0.46"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -615,6 +615,11 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 	principal_id = results[i]["player_result"]["player"]["principal_id"]
 	if mode == "league":
 		payload["my_team_id"] = results[i]["tag_id"]
+		payload["league_point"] = results[i]["league_point"]
+		payload["my_team_estimate_league_point"] = results[i]["my_estimate_league_point"]
+		payload["his_team_estimate_league_point"] = results[i]["other_estimate_league_point"]
+	if mode == "gachi":
+		payload["estimate_gachi_power"] = results[i]["estimate_gachi_power"]
 
 	############################
 	## SPLATFEST TITLES/POWER ##
