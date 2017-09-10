@@ -51,6 +51,8 @@ Note: Executing the script via `./splatnet2statink.py` is also possible on macOS
 
 Have any questions, issues, or suggestions? Feel free to message me on [Twitter](https://twitter.com/frozenpandaman) or [Reddit](https://www.reddit.com/user/frozenpandaman).
 
+質問があれば、ツイッター([@frozenpandaman](https://twitter.com/frozenpandaman))で連絡してください。日本語OK。
+
 ### Accessing SplatNet 2 from your browser
 
 If you wish to access the SplatNet site from your computer rather than via the phone app, navigate to [https://app.splatoon2.nintendo.net/home](https://app.splatoon2.nintendo.net/home) (it should show a forbidden error). Use a cookie editor (such as [EditThisCookie](https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg?hl=en) for Chrome) to edit the `iksm_session` cookie to be the same value as `cookie` in `config.txt` (generated after running the script for the first time), and refresh the page.
