@@ -8,7 +8,7 @@ import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.44"
+A_VERSION = "0.0.45"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -16,7 +16,7 @@ try:
 	config_file = open("config.txt", "r")
 	config_data = json.load(config_file)
 	config_file.close()
-except IOError:
+except (IOError, ValueError):
 	print "Generating new config file."
 	config_data = {"api_key": "", "cookie": "", "session_token": "", "user_lang": ""}
 	config_file = open("config.txt", "w")
@@ -78,10 +78,10 @@ def gen_new_cookie(reason):
 			write_config(config_data)
 			print "\nWrote session_token to config.txt."
 
-		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG) # error handling in get_cookie()
-		config_data["cookie"] = new_cookie
-		write_config(config_data)
-		print "Wrote iksm_session cookie to config.txt.\nYour cookie: " + new_cookie
+	new_cookie, nickname = iksm.get_cookie(SESSION_TOKEN, USER_LANG) # error handling in get_cookie()
+	config_data["cookie"] = new_cookie
+	write_config(config_data)
+	print "Wrote iksm_session cookie to config.txt.\nCookie for {}: {}".format(nickname, new_cookie)
 
 def write_config(tokens):
 	'''Writes config file and updates the global variables.'''
@@ -157,23 +157,38 @@ def main():
 	set_language()
 
 	parser = argparse.ArgumentParser()
-	parser.add_argument("-M", required=False, action="store_true",
-						help="run in realtime monitoring mode")
+	parser.add_argument("-M", dest="N", required=False, nargs="?", action="store",
+						help="monitoring mode; pull data every N secs (default: 300)", const=300)
 	parser.add_argument("-s", required=False, action="store_true",
 						help="don't upload scoreboard result image")
 	parser.add_argument("-i", dest="filename", required=False,
-						help="results JSON file", metavar="file.json")
+						help="use local results JSON file", metavar="file.json")
 	parser.add_argument("-t", required=False, action="store_true",
 						help="dry run for testing (won't upload to stat.ink)")
 	parser_result = parser.parse_args()
 
-	is_m = parser_result.M
+	if parser_result.N != None:
+		try:
+			m_value = int(parser_result.N)
+		except ValueError:
+			print "Number provided must be an integer. Exiting."
+			exit(1)
+		if m_value < 0:
+				print "No."
+				exit(1)
+		elif m_value < 60:
+				print "Minimum number of seconds in monitoring mode is 60. Exiting."
+				exit(1)
+	else:
+		m_value = -1
+
 	is_s = parser_result.s
 	is_t = parser_result.t
 	filename = parser_result.filename;
-	return is_m, is_s, is_t, filename;
 
-def monitor_battles(s_flag, t_flag, debug):
+	return m_value, is_s, is_t, filename;
+
+def monitor_battles(s_flag, t_flag, secs, debug):
 	'''Monitor JSON for changes/new battles and upload them.'''
 
 	if filename != None: # local file provided
@@ -203,13 +218,12 @@ def monitor_battles(s_flag, t_flag, debug):
 	for result in results:
 		battles.append(int(result["battle_number"]))
 
-	secs = 90
-	print "Waiting for new battles... (checking every 1.5 minutes)" # allow this to be customized?
+	print "Waiting for new battles... (checking every {} minutes)".format(round(float(secs)/60.0,2))
 
 	try:
 		while True:
 			for i in range(secs, -1, -1):
-				sys.stdout.write("Press Ctrl+C to exit. " + str(i) + "  ")
+				sys.stdout.write("Press Ctrl+C to exit. " + str(i) + " ")
 				sys.stdout.flush()
 				time.sleep(1)
 				sys.stdout.write("\r")
@@ -223,6 +237,7 @@ def monitor_battles(s_flag, t_flag, debug):
 					battles.append(int(result["battle_number"]))
 					post_battle(0, [result], s_flag, t_flag, is_m, debug, True)
 	except KeyboardInterrupt:
+		# do a final check
 		print "\nBye!"
 
 def get_num_battles():
@@ -231,7 +246,7 @@ def get_num_battles():
 	while True:
 		if filename != None:
 			if not os.path.exists(filename):
-				argparse.ArgumentParser().error("File %s does not exist!" % filename) # exit
+				argparse.ArgumentParser().error("File {} does not exist!".format(filename)) # exit
 			with open(filename) as data_file:
 				data = json.load(data_file)
 		else: # no argument
@@ -624,7 +639,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 	##################
 	if not debug:
 		if not s_flag:
-			url = "https://app.splatoon2.nintendo.net/api/share/results/%s" % bn
+			url = "https://app.splatoon2.nintendo.net/api/share/results/{}".format(bn)
 			share_result = requests.post(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
 			if share_result.status_code == requests.codes.ok:
 				image_result_url = share_result.json().get("url")
@@ -725,12 +740,12 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 					exit(1)
 
 if __name__ == "__main__":
-	is_m, is_s, is_t, filename = main()
-	if is_m:
-		monitor_battles(is_s, is_t, debug)
+	m_value, is_s, is_t, filename = main()
+	if m_value != -1: # m flag exists
+		monitor_battles(is_s, is_t, m_value, debug)
 	else:
 		n, results = get_num_battles()
 		for i in reversed(xrange(n)):
-			post_battle(i, results, is_s, is_t, is_m, debug)
+			post_battle(i, results, is_s, is_t, m_value, debug)
 		if debug:
 			print ""

@@ -123,13 +123,15 @@ def get_cookie(session_token, userLang):
 			'Accept-Encoding': 'gzip'
 		}
 	except:
-		print "Not a valid authorization request. (Did you enter your session_token correctly?)"
+		print "Not a valid authorization request. Please delete config.txt and try again."
 		print "Error from Nintendo:\n" + json.dumps(id_response, indent=2)
 		exit(1)
 	url = "https://api.accounts.nintendo.com/2.0.0/users/me"
 
 	r = requests.get(url, headers=app_head)
 	user_info = json.loads(r.text)
+
+	nickname = user_info["nickname"]
 
 	# get access token
 	app_head = {
@@ -217,4 +219,4 @@ def get_cookie(session_token, userLang):
 
 	r = requests.get(url, headers=app_head)
 
-	return r.cookies["iksm_session"]
+	return r.cookies["iksm_session"], nickname
