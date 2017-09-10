@@ -15,6 +15,8 @@ The `-i` flag allows users to specify the path to a results JSON file to be used
 
 The `-t` flag sends the data to stat.ink as a dry run, without uploading, for testing/validation purposes.
 
+Note: Executing the script via `./splatnet2statink.py` is also possible on macOS or Linux. If you've downloaded this repository using the "Clone or download" button above (instead of via `git clone`), the script must first be made executable by running `chmod +x splatnet2statink.py`.
+
 ## Working features
 - [x] Complete battle stats
   - [x] Lobby/mode, stage, weapon
@@ -41,7 +43,7 @@ The `-t` flag sends the data to stat.ink as a dry run, without uploading, for te
     pip install requests
     pip install msgpack-python
     ```
-    If you're on Windows with multiple versions of Python installed, you'll have to use `py -2 -m pip` instead.
+    If you're on Windows with multiple versions of Python installed, you'll have to use `py -2 -m pip` instead. If the `py` command is not recognized, use `\Python27\python.exe \Python27\Scripts\pip.exe` (given you've installed Python 2.7 in the default directory).
 
 3. Running the script for the first time will prompt you to enter your stat.ink API key, which can be found in your [profile settings](https://stat.ink/profile). If you're using the app in a language other than English, you may choose choose to enter your [language code](https://github.com/frozenpandaman/splatnet2statink/wiki/languages) (locale) as well.
 
