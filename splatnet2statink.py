@@ -724,8 +724,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 		url     = 'https://stat.ink/api/v2/battle'
 		auth    = {'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/x-msgpack'}
 
-		if payload["agent"] != os.path.splitext(sys.argv[0])[0] and \
-		   payload["agent"] != os.path.splitext(sys.argv[0])[0][2:].strip():
+		if payload["agent"] != os.path.basename(__file__)[:-3]:
 			print "Could not upload. Please contact @frozenpandaman on Twitter/GitHub for assistance."
 			exit(1)
 		r2 = requests.post(url, headers=auth, data=msgpack.packb(payload))
