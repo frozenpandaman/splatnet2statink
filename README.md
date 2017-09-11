@@ -25,6 +25,7 @@ Note: Executing the script via `./splatnet2statink.py` is also possible on macOS
   - [x] Rank & rank after, level & level after
   - [x] Battle start & end times
   - [x] Splatfest title & power
+  - [x] Ranked power level & league power
 - [x] Monitoring for new battle results in real-time
 - [x] Scoreboard stats & player ranking
 - [x] Scoreboard/battle result image upload
@@ -51,11 +52,11 @@ Note: Executing the script via `./splatnet2statink.py` is also possible on macOS
 
 Have any questions, issues, or suggestions? Feel free to message me on [Twitter](https://twitter.com/frozenpandaman) or [Reddit](https://www.reddit.com/user/frozenpandaman).
 
-質問があれば、ツイッター([@frozenpandaman](https://twitter.com/frozenpandaman))で連絡してください。日本語OK。
+日本語のセットアップ手順は[こちら](https://aqraf.com/archives/327)。質問があれば、ツイッター([@frozenpandaman](https://twitter.com/frozenpandaman))で連絡してください。日本語OK。
 
 ### Accessing SplatNet 2 from your browser
 
-If you wish to access the SplatNet site from your computer rather than via the phone app, navigate to [https://app.splatoon2.nintendo.net/home](https://app.splatoon2.nintendo.net/home) (it should show a forbidden error). Use a cookie editor (such as [EditThisCookie](https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg?hl=en) for Chrome) to edit the `iksm_session` cookie to be the same value as `cookie` in `config.txt` (generated after running the script for the first time), and refresh the page.
+If you wish to access the SplatNet site from your computer rather than via the phone app, navigate to [https://app.splatoon2.nintendo.net/home](https://app.splatoon2.nintendo.net/home) (it should show a forbidden error). Use a cookie editor (such as [EditThisCookie](https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg?hl=en) for Chrome) to edit the `iksm_session` cookie to be the same value as `cookie` in `config.txt` (generated after running the script for the first time), and refresh the page. If you only wish to access SplatNet 2 and don't have a stat.ink API key, simply enter "skip" for this step during setup.
 
 *Splatoon 2* stage rotation information (including Salmon Run) and current SplatNet gear are viewable at [https://splatoon2.ink/](https://splatoon2.ink/).
 

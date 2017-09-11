@@ -118,9 +118,11 @@ def load_json(bool):
 def check_statink_key():
 	'''Check if a valid length API key has been provided and, if not, prompts the user to enter one.'''
 
-	if len(API_KEY) != 43:
+	if API_KEY == "skip":
+		return
+	elif len(API_KEY) != 43:
 		new_api_key = ""
-		while len(new_api_key.strip()) != 43:
+		while len(new_api_key.strip()) != 43 and new_api_key.strip() != "skip":
 			if new_api_key.strip() == "" and API_KEY.strip() == "":
 				new_api_key = raw_input("stat.ink API key: ")
 			else:
