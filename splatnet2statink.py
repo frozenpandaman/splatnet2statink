@@ -9,7 +9,7 @@ import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.46"
+A_VERSION = "0.0.47"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -194,6 +194,8 @@ def main():
 def monitor_battles(s_flag, t_flag, secs, debug):
 	'''Monitor JSON for changes/new battles and upload them.'''
 
+	# initial checks
+
 	if filename != None: # local file provided
 		print "Cannot run in monitoring mode provided a local file. Exiting."
 		exit(1)
@@ -216,10 +218,32 @@ def monitor_battles(s_flag, t_flag, secs, debug):
 			print "Cannot access SplatNet 2 without having played at least one battle online."
 			exit(1)
 
-	# don't upload any of the ones already in the file
-	battles = []
+	# check if there are any battles in splatnet that aren't on stat.ink
+
+	statink_battles = [] # 50 recent battles on stat.ink
+	battles = []         # 50 recent battles on splatnet
+
+	# get all recent battle_numbers
+	url   = 'https://stat.ink/api/v2/user-battle?only=splatnet_number&count=50' # &order=splatnet_desc
+	auth  = {'Authorization': 'Bearer ' + API_KEY}
+	resp  = requests.get(url, headers=auth)
+	respb = json.loads(resp.text)
+
+	# actually, check the type of respb first. if list, no need
+	for battle in respb:
+		statink_battles.append(battle)
+
 	for result in results:
-		battles.append(int(result["battle_number"]))
+		bn = int(result["battle_number"])
+		battles.append(bn) # for main process, don't upload any of the ones already in the file
+		printed = False
+		if bn not in statink_battles: # one of the splatnet battles isn't on stat.ink (unuploaded)
+			if not printed:
+				printed = True
+				print "Previously-unuploaded battles detected. Uploading now..."
+			post_battle(0, [result], s_flag, t_flag, secs, debug)
+
+	# main process
 
 	mins = str(round(float(secs)/60.0,2))
 	if mins[-2:] == ".0":
@@ -243,8 +267,23 @@ def monitor_battles(s_flag, t_flag, secs, debug):
 					battles.append(int(result["battle_number"]))
 					post_battle(0, [result], s_flag, t_flag, secs, debug, True)
 	except KeyboardInterrupt:
-		# do a final check
-		print "\nBye!"
+		print "\nChecking to see if there are unuploaded battles before exiting..."
+		data = load_json(False) # so much repeated code
+		results = data["results"]
+		foundany = False
+		for result in results[::-1]:
+				if int(result["battle_number"]) not in battles:
+					foundany = True
+					worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
+					mapname = translate_stages[translate_stages[int(result["stage"]["id"])]]
+					print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
+					battles.append(int(result["battle_number"]))
+					post_battle(0, [result], s_flag, t_flag, secs, debug, True)
+		if foundany:
+			print "Successfully uploaded remaining battles."
+		else:
+			print "No remaining battles found."
+		print "Bye!"
 
 def get_num_battles():
 	'''Returns number of battles to upload along with results json.'''
@@ -453,7 +492,7 @@ def set_scoreboard(payload, battle_number, mystats):
 
 # https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md
 def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
-	'''Uploads battle #i from the provided dictionary.'''
+	'''Uploads battle #i from the provided results dictionary.'''
 
 	#############
 	## PAYLOAD ##
@@ -658,7 +697,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 					image_result = requests.get(image_result_url, stream=True)
 					if image_result.status_code == requests.codes.ok:
 						payload["image_result"] = BytesIO(image_result.content).getvalue()
-			if m_flag:
+			if m_flag != -1:
 				url_profile = "https://app.splatoon2.nintendo.net/api/share/profile"
 				settings = {'stage': stage, 'color': translate_profile_color[random.randrange(0, 6)]}
 				share_result = requests.post(url_profile, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE), data=settings)
@@ -724,8 +763,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 	else:
 		# POST to stat.ink
 		# https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/request-body.md
-		url     = 'https://stat.ink/api/v2/battle'
-		auth    = {'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/x-msgpack'}
+		url  = 'https://stat.ink/api/v2/battle'
+		auth = {'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/x-msgpack'}
 
 		if payload["agent"] != os.path.basename(__file__)[:-3]:
 			print "Could not upload. Please contact @frozenpandaman on Twitter/GitHub for assistance."
