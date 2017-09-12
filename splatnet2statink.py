@@ -224,14 +224,10 @@ def monitor_battles(s_flag, t_flag, secs, debug):
 	battles = []         # 50 recent battles on splatnet
 
 	# get all recent battle_numbers
-	url   = 'https://stat.ink/api/v2/user-battle?only=splatnet_number&count=50' # &order=splatnet_desc
-	auth  = {'Authorization': 'Bearer ' + API_KEY}
-	resp  = requests.get(url, headers=auth)
-	respb = json.loads(resp.text)
-
-	# actually, check the type of respb first. if list, no need
-	for battle in respb:
-		statink_battles.append(battle)
+	url  = 'https://stat.ink/api/v2/user-battle?only=splatnet_number&count=50'
+	auth = {'Authorization': 'Bearer ' + API_KEY}
+	resp = requests.get(url, headers=auth)
+	statink_battles = json.loads(resp.text)
 
 	for result in results:
 		bn = int(result["battle_number"])
