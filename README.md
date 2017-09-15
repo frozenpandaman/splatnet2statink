@@ -3,6 +3,7 @@
 A script that uploads battle data from the SplatNet 2 app ("Nintendo Switch Online," for use with *Splatoon 2*) to [http://stat.ink/](http://stat.ink/), a site for visualizing and aggregating statistics from *Splatoon* and *Splatoon 2*.
 
 ## Usage
+
 ```
 $ python splatnet2statink.py [-M [N]] [-s] [-i path/to/results.json] [-t]
 ```
@@ -18,6 +19,7 @@ The `-t` flag sends the data to stat.ink as a dry run, without uploading, for te
 Note: Executing the script via `./splatnet2statink.py` is also possible on macOS or Linux. If you've downloaded this repository using the "Clone or download" button above (instead of via `git clone`), the script must first be made executable by running `chmod +x splatnet2statink.py`.
 
 ## Working features
+
 - [x] Complete battle stats
   - [x] Lobby/mode, stage, weapon
   - [x] Result, final count/percent, turf inked
@@ -33,6 +35,7 @@ Note: Executing the script via `./splatnet2statink.py` is also possible on macOS
 - [x] Non-English language game support
 
 ## To implement
+
 - [ ] Gear + ability recognition (waiting on stat.ink API v2)
 
 ## Setup instructions
@@ -50,7 +53,7 @@ Note: Executing the script via `./splatnet2statink.py` is also possible on macOS
 
 4. ~~You will then be asked to navigate to a specific URL on Nintendo.com, log in, and follow simple instructions to obtain your `session_token`. This token, along with your stat.ink API key and language, will automatically be saved into `config.txt` for you, and a cookie (used to access your SplatNet battle results) will be generated. You're now ready to upload battles!~~
 
-**UPDATE: The authentication process has changed in the 1.1.0 update to the Nintendo Switch Online app. Existing, non-expired cookies can still be used to run the script and access the site, but trying to generate a new cookie will now produce the message "Update required." We're working on a fix and will update these instructions shortly.**
+**UPDATE: The authentication process has changed in the 1.1.0 update to the Nintendo Switch Online app. Existing, non-expired cookies can still be used to run the script and access the site, but trying to generate a new cookie will now produce the message "Invalid token." We're working on a fix ASAP. For now, follow the mitmproxy instructions [here](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions).**
 
 Have any questions, issues, or suggestions? Feel free to message me on [Twitter](https://twitter.com/frozenpandaman) or [Reddit](https://www.reddit.com/user/frozenpandaman).
 
