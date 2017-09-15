@@ -52,6 +52,7 @@ weapons = {
 	3020: 'screwslosher',         # Sloshing Machine
 	4000: 'splatspinner',         # Mini Splatling
 	4010: 'barrelspinner',        # Heavy Splatling
+	4011: 'barrelspinner_deco',   # Heavy Splatling Deco
 	4015: 'herospinner_replica',  # Hero Splatling Replica
 	5000: 'sputtery',             # Dapple Dualies
 	5010: 'maneuver',             # Splat Dualies
