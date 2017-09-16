@@ -75,6 +75,7 @@ stages = {
 	6: 'manta',      # Manta Maria
 	7: 'hokke',      # Port Mackerel
 	8: 'tachiuo',    # Moray Towers
+	10: 'mozuku',    # Kelp Dome
 	9999: 'mystery', # Shifty Station (Splatfest only)
 
 	# clearly the funniest way to go about doing this
@@ -87,6 +88,7 @@ stages = {
 	'manta':     'Manta',
 	'hokke':     'Port',
 	'tachiuo':   'Towers',
+	'mozuku':    'Dome',
 	'mystery':   'Shifty'
 }
 
