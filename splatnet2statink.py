@@ -243,7 +243,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 					printed = True
 					print "Previously-unuploaded battles detected. Uploading now..."
 				post_battle(0, [result], s_flag, t_flag, secs, debug)
-	if not printed:
+	if r_flag and not printed:
 		print "No previously-unuploaded battles found."
 
 	# main process
