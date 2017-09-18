@@ -9,7 +9,7 @@ import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.48"
+A_VERSION = "0.0.49"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -483,6 +483,8 @@ def set_scoreboard(payload, battle_number, mystats):
 		if mode == "fes":
 			detail["fest_title"] = full_scoreboard[n][12]
 		payload["players"].append(detail)
+	
+	payload["splatnet_json"] = battledata
 
 	return payload # return new payload w/ players key
 
