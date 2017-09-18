@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 # eli fessler
 # clovervidia
 import os.path, argparse, sys
@@ -9,7 +10,7 @@ import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.49"
+A_VERSION = "0.0.50"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -162,12 +163,14 @@ def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-M", dest="N", required=False, nargs="?", action="store",
 						help="monitoring mode; pull data every N secs (default: 300)", const=300)
+	parser.add_argument("-r", required=False, action="store_true",
+						help="retroactively post unuploaded battles; for use with -M")
 	parser.add_argument("-s", required=False, action="store_true",
-						help="don't upload scoreboard result image")
-	parser.add_argument("-i", dest="filename", required=False,
-						help="use local results JSON file", metavar="file.json")
+						help="don't post scoreboard result image")
 	parser.add_argument("-t", required=False, action="store_true",
-						help="dry run for testing (won't upload to stat.ink)")
+						help="dry run for testing (won't post to stat.ink)")
+	parser.add_argument("-i", dest="filename", required=False, help=argparse.SUPPRESS)
+
 	parser_result = parser.parse_args()
 
 	if parser_result.N != None:
@@ -187,16 +190,17 @@ def main():
 
 	is_s = parser_result.s
 	is_t = parser_result.t
+	is_r = parser_result.r
 	filename = parser_result.filename;
 
-	return m_value, is_s, is_t, filename;
+	return m_value, is_s, is_t, is_r, filename;
 
-def monitor_battles(s_flag, t_flag, secs, debug):
+def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 	'''Monitor JSON for changes/new battles and upload them.'''
 
 	# initial checks
 
-	if filename != None: # local file provided
+	if filename != None: # local file provided (users should not really be using this)
 		print "Cannot run in monitoring mode provided a local file. Exiting."
 		exit(1)
 
@@ -218,29 +222,31 @@ def monitor_battles(s_flag, t_flag, secs, debug):
 			print "Cannot access SplatNet 2 without having played at least one battle online."
 			exit(1)
 
-	# check if there are any battles in splatnet that aren't on stat.ink
+	battles = [] # 50 recent battles on splatnet
 
-	statink_battles = [] # 50 recent battles on stat.ink
-	battles = []         # 50 recent battles on splatnet
-
-	# get all recent battle_numbers
-	url  = 'https://stat.ink/api/v2/user-battle?only=splatnet_number&count=50'
-	auth = {'Authorization': 'Bearer ' + API_KEY}
-	resp = requests.get(url, headers=auth)
-	statink_battles = json.loads(resp.text)
+	# if r_flag, check if there are any battles in splatnet that aren't on stat.ink
+	if r_flag:
+		print "Checking if there are previously-unuploaded battles..."
+		statink_battles = [] # 50 recent battles on stat.ink
+		printed = False
+		url  = 'https://stat.ink/api/v2/user-battle?only=splatnet_number&count=50'
+		auth = {'Authorization': 'Bearer ' + API_KEY}
+		resp = requests.get(url, headers=auth)
+		statink_battles = json.loads(resp.text)
 
 	for result in results:
-		bn = int(result["battle_number"])
+		bn = int(result["battle_number"]) # get all recent battle_numbers
 		battles.append(bn) # for main process, don't upload any of the ones already in the file
-		printed = False
-		if bn not in statink_battles: # one of the splatnet battles isn't on stat.ink (unuploaded)
-			if not printed:
-				printed = True
-				print "Previously-unuploaded battles detected. Uploading now..."
-			post_battle(0, [result], s_flag, t_flag, secs, debug)
+		if r_flag:
+			if bn not in statink_battles: # one of the splatnet battles isn't on stat.ink (unuploaded)
+				if not printed:
+					printed = True
+					print "Previously-unuploaded battles detected. Uploading now..."
+				post_battle(0, [result], s_flag, t_flag, secs, debug)
+	if not printed:
+		print "No previously-unuploaded battles found."
 
 	# main process
-
 	mins = str(round(float(secs)/60.0,2))
 	if mins[-2:] == ".0":
 		mins = mins[:-2]
@@ -483,7 +489,7 @@ def set_scoreboard(payload, battle_number, mystats):
 		if mode == "fes":
 			detail["fest_title"] = full_scoreboard[n][12]
 		payload["players"].append(detail)
-	
+
 	payload["splatnet_json"] = battledata
 
 	return payload # return new payload w/ players key
@@ -790,9 +796,9 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 					exit(1)
 
 if __name__ == "__main__":
-	m_value, is_s, is_t, filename = main()
+	m_value, is_s, is_t, is_r, filename = main()
 	if m_value != -1: # m flag exists
-		monitor_battles(is_s, is_t, m_value, debug)
+		monitor_battles(is_s, is_t, is_r, m_value, debug)
 	else:
 		n, results = get_num_battles()
 		for i in reversed(xrange(n)):
