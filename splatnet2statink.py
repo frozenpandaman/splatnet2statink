@@ -9,7 +9,7 @@ import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 
-A_VERSION = "0.0.47"
+A_VERSION = "0.0.48"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -494,6 +494,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 	## PAYLOAD ##
 	#############
 	payload = {'agent': 'splatnet2statink', 'agent_version': A_VERSION}
+	agent_variables = {'upload_mode': "Monitoring" if ismonitor == True else "Manual"}
+	payload["agent_variables"] = agent_variables
 
 	##################
 	## LOBBY & MODE ##
