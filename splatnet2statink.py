@@ -4,13 +4,14 @@
 # eli fessler
 # clovervidia
 import os.path, argparse, sys
-import requests, json, time, datetime, random
+import requests, json, time, datetime, random, re
 import msgpack
 import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
+from distutils.version import StrictVersion
 
-A_VERSION = "0.0.50"
+A_VERSION = "0.0.51"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -113,8 +114,8 @@ def load_json(bool):
 	if bool:
 		print "Pulling data from online..." # grab data from SplatNet 2
 	url = "https://app.splatoon2.nintendo.net/api/results"
-	r = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
-	return json.loads(r.text)
+	results_list = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
+	return json.loads(results_list.text)
 
 def check_statink_key():
 	'''Check if a valid length API key has been provided and, if not, prompts the user to enter one.'''
@@ -154,8 +155,34 @@ def set_language():
 
 	return
 
+def check_for_updates():
+	'''Checks the version of the script against the latest version in the repo and updates dbs.py.'''
+
+	latest_script = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/splatnet2statink.py")
+	try:
+		update_available = (StrictVersion(re.search("= \"([\d.]*)\"", latest_script.text).group(1)) > StrictVersion(A_VERSION))
+	except: # if there's a problem connecting to github
+		pass # then we assume there's no update available
+
+	if update_available == True:
+		print "There is a new version available.\nIf you're using git, run \'git pull\' to update.\nOtherwise, visit the site below and download the latest version:"
+		print "https://github.com/frozenpandaman/splatnet2statink\n"
+	
+	dbs_freshness = time.time() - os.path.getmtime("dbs.py")
+	if dbs_freshness > 86400: # that's 24 hours
+		latest_db = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/dbs.py")
+		try:
+			if latest_db.status_code == 200: # only attempt to write to the file if we get a proper response from github
+				local_db = open("dbs.py", "w")
+				local_db.write(latest_db.text)
+				local_db.close()
+		except: # if we can't open the file
+			pass # then we don't modify the database
+
 def main():
 	'''I/O and setup.'''
+
+	check_for_updates()
 
 	check_statink_key()
 	set_language()
@@ -199,7 +226,6 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 	'''Monitor JSON for changes/new battles and upload them.'''
 
 	# initial checks
-
 	if filename != None: # local file provided (users should not really be using this)
 		print "Cannot run in monitoring mode provided a local file. Exiting."
 		exit(1)
@@ -400,7 +426,7 @@ def set_scoreboard(payload, battle_number, mystats):
 		my_stats.append(rank_before)
 		my_stats.append(turfinked)
 	elif mode == "regular" or mode == "fes":
-		my_stats.append(None) # udemae (rank) is null if turf war
+		my_stats.append(None) # udemae (rank) is null in turf war
 		if result == "victory":
 			my_stats.append(turfinked + 1000)
 		else:
@@ -445,7 +471,7 @@ def set_scoreboard(payload, battle_number, mystats):
 				enemy_stats.append("c-")
 			enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"])
 		elif mode == "regular" or mode == "fes":
-			enemy_stats.append(None)
+			enemy_stats.append(None)  # udemae (rank) is null in turf war
 			if result == "defeat":
 				enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"] + 1000)
 			else:
@@ -775,20 +801,20 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 		if payload["agent"] != os.path.basename(__file__)[:-3]:
 			print "Could not upload. Please contact @frozenpandaman on Twitter/GitHub for assistance."
 			exit(1)
-		r2 = requests.post(url, headers=auth, data=msgpack.packb(payload))
+		post_battle = requests.post(url, headers=auth, data=msgpack.packb(payload))
 
 		# Response
 		try:
 			if not ismonitor:
-				print "Battle #" + str(i+1) + " uploaded to " + r2.headers.get('location') # display url
+				print "Battle #" + str(i+1) + " uploaded to " + post_battle.headers.get('location') # display url
 			else: # monitoring mode
-				print "Battle uploaded to " + r2.headers.get('location')
-		except TypeError: # r.headers.get is likely NoneType, i.e. we received an error
+				print "Battle uploaded to " + post_battle.headers.get('location')
+		except TypeError: # post_battle.headers.get is likely NoneType, i.e. we received an error
 			if t_flag:
 				print "Battle #" + str(i+1) + " - message from server:"
 			else:
 				print "Error uploading battle #" + str(i+1) + ". Message from server:"
-			print r2.content
+			print post_battle.content
 			if not t_flag:
 				cont = raw_input('Continue (y/n)? ')
 				if cont[0].lower() == "n":
