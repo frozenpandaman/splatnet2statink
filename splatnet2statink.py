@@ -11,7 +11,7 @@ from io import BytesIO
 from operator import itemgetter
 from distutils.version import StrictVersion
 
-A_VERSION = "0.0.51"
+A_VERSION = "0.0.52"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -167,7 +167,7 @@ def check_for_updates():
 	if update_available == True:
 		print "There is a new version available.\nIf you're using git, run \'git pull\' to update.\nOtherwise, visit the site below and download the latest version:"
 		print "https://github.com/frozenpandaman/splatnet2statink\n"
-	
+
 	dbs_freshness = time.time() - os.path.getmtime("dbs.py")
 	if dbs_freshness > 86400: # that's 24 hours
 		latest_db = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/dbs.py")

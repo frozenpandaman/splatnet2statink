@@ -26,6 +26,7 @@ weapons = {
 	215:  'heroblaster_replica',  # Hero Blaster Replica
 	230:  'clashblaster',         # Clash Blaster
 	240:  'rapid',                # Rapid Blaster
+	250:  'rapid_elite',          # Rapid Blaster Pro
 	300:  'l3reelgun',            # L-3 Nozzlenose
 	310:  'h3reelgun',            # H-3 Nozzlenose
 	1000: 'carbon',               # Carbon Roller
