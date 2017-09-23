@@ -160,11 +160,11 @@ def check_for_updates():
 
 	latest_script = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/splatnet2statink.py")
 	try:
-		update_available = (StrictVersion(re.search("= \"([\d.]*)\"", latest_script.text).group(1)) > StrictVersion(A_VERSION))
+		update_available = StrictVersion(re.search("= \"([\d.]*)\"", latest_script.text).group(1)) > StrictVersion(A_VERSION)
 	except: # if there's a problem connecting to github
 		pass # then we assume there's no update available
 
-	if update_available == True:
+	if update_available:
 		print "There is a new version available.\nIf you're using git, run \'git pull\' to update.\nOtherwise, visit the site below and download the latest version:"
 		print "https://github.com/frozenpandaman/splatnet2statink\n"
 
