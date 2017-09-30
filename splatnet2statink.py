@@ -307,6 +307,8 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 				if int(result["battle_number"]) not in battles:
 					foundany = True
 					worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
+					wins = wins + 1 if worl == "Won" else wins
+					losses = losses + 1 if worl == "Lost" else losses
 					mapname = translate_stages[translate_stages[int(result["stage"]["id"])]]
 					print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
