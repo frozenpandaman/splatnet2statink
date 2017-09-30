@@ -61,7 +61,8 @@ weapons = {
 	5015: 'heromaneuver_replica', # Hero Dualie Replicas
 	5030: 'dualsweeper',          # Dualie Squelchers
 	6000: 'parashelter',          # Splat Brella
-	6005: 'heroshelter_replica'   # Hero Brella Replica
+	6005: 'heroshelter_replica',  # Hero Brella Replica
+	6010: 'campingshelter',       # Tenta Brella
 }
 
 # Stage database
