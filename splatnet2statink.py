@@ -11,7 +11,7 @@ from io import BytesIO
 from operator import itemgetter
 from distutils.version import StrictVersion
 
-A_VERSION = "0.0.52"
+A_VERSION = "0.0.53"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -160,7 +160,7 @@ def check_for_updates():
 
 	latest_script = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/splatnet2statink.py")
 	try:
-		update_available = StrictVersion(re.search("= \"([\d.]*)\"", latest_script.text).group(1)) > StrictVersion(A_VERSION)
+		update_available = StrictVersion(re.search("= \"([\d.]*)\"", latest_script.text).group(1)) != StrictVersion(A_VERSION)
 	except: # if there's a problem connecting to github
 		pass # then we assume there's no update available
 
@@ -249,6 +249,8 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 			exit(1)
 
 	battles = [] # 50 recent battles on splatnet
+	wins = 0
+	losses = 0
 
 	# if r_flag, check if there are any battles in splatnet that aren't on stat.ink
 	if r_flag:
@@ -290,6 +292,8 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 			for result in results[::-1]: # reversed chrono order
 				if int(result["battle_number"]) not in battles:
 					worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
+					wins = wins + 1 if worl == "Won" else wins
+					losses = losses + 1 if worl == "Lost" else losses
 					mapname = translate_stages[translate_stages[int(result["stage"]["id"])]]
 					print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
@@ -311,6 +315,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 			print "Successfully uploaded remaining battles."
 		else:
 			print "No remaining battles found."
+		print "%d wins and %d losses this session." % (wins, losses)
 		print "Bye!"
 
 def get_num_battles():
