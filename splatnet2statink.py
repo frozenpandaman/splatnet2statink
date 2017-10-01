@@ -317,7 +317,9 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 			print "Successfully uploaded remaining battles."
 		else:
 			print "No remaining battles found."
-		print "%d wins and %d losses this session." % (wins, losses)
+		w_plural = "" if wins == 1 else "s"
+		l_plural = "" if losses == 1 else "es"
+		print "%d win%s and %d loss%s this session." % (wins, w_plural, losses, l_plural)
 		print "Bye!"
 
 def get_num_battles():
