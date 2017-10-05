@@ -119,7 +119,7 @@ headgears = {
 	# 2003:  'sporty_bobble_hat',
 	2004:  'special_forces_beret',
 	# 2005:  'squid_nordic',
-	2009:  'knitted_hat',
+	2008:  'knitted_hat',
 	2009:  'annaki_beret',
 	3000:  'retro_specs',
 	3002:  'pilot_goggles',
