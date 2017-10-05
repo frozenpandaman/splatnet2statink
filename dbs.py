@@ -77,6 +77,7 @@ stages = {
 	6: 'manta',      # Manta Maria
 	7: 'hokke',      # Port Mackerel
 	8: 'tachiuo',    # Moray Towers
+	9: 'engawa',     # Snapper Canal
 	10: 'mozuku',    # Kelp Dome
 	9999: 'mystery', # Shifty Station (Splatfest only)
 
@@ -90,8 +91,9 @@ stages = {
 	'manta':     'Manta',
 	'hokke':     'Port',
 	'tachiuo':   'Towers',
+	'engawa':    'Canal',
 	'mozuku':    'Dome',
-	'mystery':   'Shifty'
+	'mystery':   'Shifty',
 }
 
 # Gear database
