@@ -46,6 +46,7 @@ weapons = {
 	2021: 'splatscope_collabo',   # Firefin Splatterscope
 	2030: 'liter4k',              # E-liter 4K
 	2040: 'liter4k_scope',        # E-liter 4K Scope
+	2050: 'bamboo14mk1',          # Bamboozler 14 Mk I
 	2060: 'soytuber',             # Goo Tuber
 	3000: 'bucketslosher',        # Slosher
 	3005: 'heroslosher_replica',  # Hero Slosher Replica
