@@ -11,7 +11,7 @@ from io import BytesIO
 from operator import itemgetter
 from distutils.version import StrictVersion
 
-A_VERSION = "0.0.53"
+A_VERSION = "0.0.54"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -270,7 +270,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 				if not printed:
 					printed = True
 					print "Previously-unuploaded battles detected. Uploading now..."
-				post_battle(0, [result], s_flag, t_flag, secs, debug)
+				post_battle(0, [result], s_flag, t_flag, secs, debug, True)
 	if r_flag and not printed:
 		print "No previously-unuploaded battles found."
 
