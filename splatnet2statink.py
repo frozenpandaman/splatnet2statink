@@ -262,7 +262,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 		resp = requests.get(url, headers=auth)
 		statink_battles = json.loads(resp.text)
 
-	for result in results:
+	for result in results[::-1]:
 		bn = int(result["battle_number"]) # get all recent battle_numbers
 		battles.append(bn) # for main process, don't upload any of the ones already in the file
 		if r_flag:
