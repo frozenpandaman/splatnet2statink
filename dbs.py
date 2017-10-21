@@ -24,6 +24,7 @@ weapons = {
 	210:  'hotblaster',           # Blaster
 	211:  'hotblaster_custom',    # Custom Blaster
 	215:  'heroblaster_replica',  # Hero Blaster Replica
+	220:  'longblaster',          # Range Blaster
 	230:  'clashblaster',         # Clash Blaster
 	240:  'rapid',                # Rapid Blaster
 	250:  'rapid_elite',          # Rapid Blaster Pro
