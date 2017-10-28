@@ -35,6 +35,7 @@ weapons = {
 	1011: 'splatroller_collabo',  # Krak-On Splat Roller
 	1015: 'heroroller_replica',   # Hero Roller Replica
 	1020: 'dynamo',               # Dynamo Roller
+	1021: 'dynamo_tesla',         # Gold Dynamo Roller
 	1030: 'variableroller',       # Flingza Roller
 	1100: 'pablo',                # Inkbrush
 	1110: 'hokusai',              # Octobrush
@@ -46,7 +47,7 @@ weapons = {
 	2020: 'splatscope',           # Splatterscope
 	2021: 'splatscope_collabo',   # Firefin Splatterscope
 	2030: 'liter4k',              # E-liter 4K
-	2031: 'liter4k_custom',        # Custom E-liter 4K
+	2031: 'liter4k_custom',       # Custom E-liter 4K
 	2040: 'liter4k_scope',        # E-liter 4K Scope
 	2041: 'liter4k_scope_custom', # Custom E-liter 4K Scope
 	2050: 'bamboo14mk1',          # Bamboozler 14 Mk I
@@ -83,6 +84,7 @@ stages = {
 	8: 'tachiuo',    # Moray Towers
 	9: 'engawa',     # Snapper Canal
 	10: 'mozuku',    # Kelp Dome
+	11: 'bbass',     # Blackbelly Skatepark
 	9999: 'mystery', # Shifty Station (Splatfest only)
 
 	# clearly the funniest way to go about doing this
@@ -97,6 +99,7 @@ stages = {
 	'tachiuo':   'Towers',
 	'engawa':    'Canal',
 	'mozuku':    'Dome',
+	'bbass':     'Skatepark',
 	'mystery':   'Shifty',
 }
 
