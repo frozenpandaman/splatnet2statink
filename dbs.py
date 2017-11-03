@@ -20,6 +20,7 @@ weapons = {
 	71:   'prime_collabo',        # Forge Splattershot Pro
 	80:   '96gal',                # .96 Gal
 	90:   'jetsweeper',           # Jet Squelcher
+	91:   'jetsweeper_custom',    # Custom Jet Squelcher
 	200:  'nova',                 # Luna Blaster
 	210:  'hotblaster',           # Blaster
 	211:  'hotblaster_custom',    # Custom Blaster
