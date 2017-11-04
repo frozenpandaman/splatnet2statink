@@ -11,7 +11,7 @@ from io import BytesIO
 from operator import itemgetter
 from distutils.version import StrictVersion
 
-A_VERSION = "0.0.58"
+A_VERSION = "0.0.59"
 
 print "splatnet2statink v" + A_VERSION
 
