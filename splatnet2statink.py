@@ -544,6 +544,10 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 	## LOBBY & MODE ##
 	##################
 	lobby = results[i]["game_mode"]["key"] # regular, league_team, league_pair, private, fes_solo, fes_team
+
+	if lobby == "private":
+		return
+
 	if lobby == "regular": # turf war solo
 		payload["lobby"] = "standard"
 		payload["mode"] = "regular"
