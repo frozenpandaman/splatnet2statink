@@ -11,7 +11,7 @@ from io import BytesIO
 from operator import itemgetter
 from distutils.version import StrictVersion
 
-A_VERSION = "0.0.59"
+A_VERSION = "0.0.60"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -65,26 +65,17 @@ def gen_new_cookie(reason):
 	'''Attempts to generate new cookie in case provided one is invalid.'''
 
 	if reason == "blank":
-		print "Blank cookie. Trying to generate one given your session_token..."
+		print "Blank cookie."
 	elif reason == "auth": # authentication error
-		print "Bad cookie. Trying to generate a new one given your session_token..."
+		print "The stored cookie has expired."
 	else: # server error or player hasn't battled before
 		print "Cannot access SplatNet 2 without having played at least one battle online."
 		exit(1)
-	if SESSION_TOKEN == "":
-		print "session_token is blank. Please log in to your Nintendo Account to obtain your session_token."
-		new_token = iksm.log_in()
-		if new_token == None:
-			print "There was a problem logging you in. Please try again later."
-		else:
-			config_data["session_token"] = new_token
-			write_config(config_data)
-			print "\nWrote session_token to config.txt."
 
-	new_cookie, nickname = iksm.get_cookie(SESSION_TOKEN, USER_LANG) # error handling in get_cookie()
+	new_cookie = iksm.enter_cookie() # error handling in enter_cookie()
 	config_data["cookie"] = new_cookie
 	write_config(config_data)
-	print "Wrote iksm_session cookie to config.txt.\nCookie for {}: {}".format(nickname, new_cookie)
+	print "Wrote iksm_session cookie to config.txt."
 
 def write_config(tokens):
 	'''Writes config file and updates the global variables.'''
@@ -161,12 +152,14 @@ def check_for_updates():
 	latest_script = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/splatnet2statink.py")
 	try:
 		update_available = StrictVersion(re.search("= \"([\d.]*)\"", latest_script.text).group(1)) != StrictVersion(A_VERSION)
+		if update_available:
+			print "There is a new version available."
+			if os.path.isdir(".git"):
+				print "Run \'git pull\' to update.\n"
+			else:
+				print "Visit the site below to update:\nhttps://github.com/frozenpandaman/splatnet2statink\n"
 	except: # if there's a problem connecting to github
 		pass # then we assume there's no update available
-
-	if update_available:
-		print "There is a new version available.\nIf you're using git, run \'git pull\' to update.\nOtherwise, visit the site below and download the latest version:"
-		print "https://github.com/frozenpandaman/splatnet2statink\n"
 
 	dbs_freshness = time.time() - os.path.getmtime("dbs.py")
 	if dbs_freshness > 86400: # that's 24 hours
@@ -218,9 +211,9 @@ def main():
 	is_s = parser_result.s
 	is_t = parser_result.t
 	is_r = parser_result.r
-	filename = parser_result.filename;
+	filename = parser_result.filename
 
-	return m_value, is_s, is_t, is_r, filename;
+	return m_value, is_s, is_t, is_r, filename
 
 def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 	'''Monitor JSON for changes/new battles and upload them.'''
@@ -255,12 +248,11 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 	# if r_flag, check if there are any battles in splatnet that aren't on stat.ink
 	if r_flag:
 		print "Checking if there are previously-unuploaded battles..."
-		statink_battles = [] # 50 recent battles on stat.ink
 		printed = False
 		url  = 'https://stat.ink/api/v2/user-battle?only=splatnet_number&count=50'
 		auth = {'Authorization': 'Bearer ' + API_KEY}
 		resp = requests.get(url, headers=auth)
-		statink_battles = json.loads(resp.text)
+		statink_battles = json.loads(resp.text) # 50 recent battles on stat.ink
 
 	for result in results[::-1]:
 		bn = int(result["battle_number"]) # get all recent battle_numbers
@@ -358,7 +350,7 @@ def get_num_battles():
 			print "SplatNet 2 only stores the 50 most recent battles. Exiting."
 			exit(0)
 		else:
-			return n, results;
+			return n, results
 
 def set_scoreboard(payload, battle_number, mystats):
 	'''Returns a new payload with the players key (scoreboard) present.'''

@@ -221,3 +221,11 @@ def get_cookie(session_token, userLang):
 	r = requests.get(url, headers=app_head)
 
 	return r.cookies["iksm_session"], nickname
+
+def enter_cookie():
+	'''Prompts the user to enter their iksm_session cookie'''
+
+	new_cookie = raw_input("Go to the page below to find instructions to obtain your iksm_session cookie:\nhttps://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions\nEnter it here: ")
+	while len(new_cookie) != 40:
+		new_cookie = raw_input("Cookie is invalid. Please enter it again.\nCookie: ")
+	return new_cookie
