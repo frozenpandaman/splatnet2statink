@@ -11,7 +11,7 @@ from io import BytesIO
 from operator import itemgetter
 from distutils.version import StrictVersion
 
-A_VERSION = "0.0.60"
+A_VERSION = "0.0.61"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -286,7 +286,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 					worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
 					wins = wins + 1 if worl == "Won" else wins
 					losses = losses + 1 if worl == "Lost" else losses
-					mapname = translate_stages[translate_stages[int(result["stage"]["id"])]]
+					mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
 					print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
 					post_battle(0, [result], s_flag, t_flag, secs, debug, True)
@@ -301,7 +301,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 					worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
 					wins = wins + 1 if worl == "Won" else wins
 					losses = losses + 1 if worl == "Lost" else losses
-					mapname = translate_stages[translate_stages[int(result["stage"]["id"])]]
+					mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
 					print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
 					post_battle(0, [result], s_flag, t_flag, secs, debug, True)
@@ -391,7 +391,7 @@ def set_scoreboard(payload, battle_number, mystats):
 		ally_stats.append(battledata["my_team_members"][n]["kill_count"])
 		ally_stats.append(battledata["my_team_members"][n]["special_count"])
 		ally_stats.append(battledata["my_team_members"][n]["death_count"])
-		ally_stats.append(translate_weapons[int(battledata["my_team_members"][n]["player"]["weapon"]["id"])])
+		ally_stats.append(translate_weapons.get(int(battledata["my_team_members"][n]["player"]["weapon"]["id"]), ""))
 		ally_stats.append(battledata["my_team_members"][n]["player"]["player_rank"])
 		if mode == "gachi" or mode == "league":
 			try:
@@ -421,7 +421,7 @@ def set_scoreboard(payload, battle_number, mystats):
 	my_stats.append(battledata["player_result"]["kill_count"])
 	my_stats.append(special)
 	my_stats.append(death)
-	my_stats.append(translate_weapons[int(weapon)])
+	my_stats.append(translate_weapons.get(int(weapon), ""))
 	my_stats.append(level_before)
 	if mode == "gachi" or mode == "league":
 		my_stats.append(rank_before)
@@ -463,7 +463,7 @@ def set_scoreboard(payload, battle_number, mystats):
 		enemy_stats.append(battledata["other_team_members"][n]["kill_count"])
 		enemy_stats.append(battledata["other_team_members"][n]["special_count"])
 		enemy_stats.append(battledata["other_team_members"][n]["death_count"])
-		enemy_stats.append(translate_weapons[int(battledata["other_team_members"][n]["player"]["weapon"]["id"])])
+		enemy_stats.append(translate_weapons.get(int(battledata["other_team_members"][n]["player"]["weapon"]["id"]), ""))
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_rank"])
 		if mode == "gachi" or mode == "league":
 			try:
@@ -575,13 +575,13 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 	## STAGE ##
 	###########
 	stage = int(results[i]["stage"]["id"])
-	payload["stage"] = translate_stages[stage]
+	payload["stage"] = translate_stages.get(stage, "")
 
 	############
 	## WEAPON ##
 	############
 	weapon = int(results[i]["player_result"]["player"]["weapon"]["id"])
-	payload["weapon"] = translate_weapons[weapon]
+	payload["weapon"] = translate_weapons.get(weapon, "")
 
 	############
 	## RESULT ##
