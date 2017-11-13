@@ -106,7 +106,9 @@ stages = {
 }
 
 # Gear database
-# https://github.com/fetus-hina/stat.ink/blob/master/doc/api-1/constant/gear.md
+# https://stat.ink/api-info/gear2-headgear
+# https://stat.ink/api-info/gear2-clothing
+# https://stat.ink/api-info/gear2-shoes
 headgears = {
 	1:     'white_headband',
 	1000:  'urchins_cap',
@@ -370,9 +372,9 @@ shoes = {
 }
 
 # Ability database
-# https://github.com/fetus-hina/stat.ink/blob/master/doc/api-1/constant/ability.md
+# https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md#gear-ability
 abilities = {
-	-1:  '', # locked ("?") or does not exist
+	-1:  None, # locked ("?") or does not exist
 	0:   'ink_saver_main',
 	1:   'ink_saver_sub',
 	2:   'ink_recovery_up',

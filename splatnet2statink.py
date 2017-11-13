@@ -11,7 +11,7 @@ from io import BytesIO
 from operator import itemgetter
 from distutils.version import StrictVersion
 
-A_VERSION = "0.0.62"
+A_VERSION = "0.0.63"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -56,10 +56,10 @@ translate_weapons       = dbs.weapons
 translate_stages        = dbs.stages
 translate_profile_color = dbs.profile_colors
 translate_fest_rank     = dbs.fest_ranks
-# translate_headgear      = dbs.headgears
-# translate_clothing      = dbs.clothes
-# translate_shoes         = dbs.shoes
-# translate_ability       = dbs.abilities
+translate_headgear      = dbs.headgears
+translate_clothing      = dbs.clothes
+translate_shoes         = dbs.shoes
+translate_ability       = dbs.abilities
 
 def gen_new_cookie(reason):
 	'''Attempts to generate new cookie in case provided one is invalid.'''
@@ -742,44 +742,43 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 							payload["image_gear"] = BytesIO(profile_result.content).getvalue()
 
 	##########
-	## GEAR ## not in API v2 yet
-	########## https://github.com/fetus-hina/stat.ink/blob/master/API.md#gears
-	# headgear_id = results[i]["player_result"]["player"]["head"]["id"]
-	# clothing_id = results[i]["player_result"]["player"]["clothes"]["id"]
-	# shoes_id    = results[i]["player_result"]["player"]["shoes"]["id"]
-	# payload["headgear"] = translate_headgear[int(headgear_id)]
-	# payload["clothing"] = translate_clothing[int(clothing_id)]
-	# payload["shoes"]    = translate_shoes[int(shoes_id)]
+	## GEAR ##
+	########## https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md#gears-structure
+	headgear_id = results[i]["player_result"]["player"]["head"]["id"]
+	clothing_id = results[i]["player_result"]["player"]["clothes"]["id"]
+	shoes_id    = results[i]["player_result"]["player"]["shoes"]["id"]
+	payload["gears"] = {'headgear': {'secondary_abilities': []}, 'clothing': {'secondary_abilities': []}, 'shoes': {'secondary_abilities': []}}
+	payload["gears"]["headgear"]["gear"] = translate_headgear.get(int(headgear_id), "")
+	payload["gears"]["clothing"]["gear"] = translate_clothing.get(int(clothing_id), "")
+	payload["gears"]["shoes"]["gear"]    = translate_shoes.get(int(shoes_id), "")
 
 	###############
-	## ABILITIES ## not in API v2 yet
+	## ABILITIES ##
 	############### https://github.com/fetus-hina/stat.ink/blob/master/doc/api-1/constant/ability.md
-	# headgear_subs, clothing_subs, shoes_subs = ([-1,-1,-1] for i in xrange(3))
-	# for j in xrange(3):
-	# 	try:
-	# 		headgear_subs[j] = results[i]["player_result"]["player"]["head_skills"]["subs"][j]["id"]
-	# 	except:
-	# 		headgear_subs[j] = '-1'
-	# 	try:
-	# 		clothing_subs[j] = results[i]["player_result"]["player"]["clothes_skills"]["subs"][j]["id"]
-	# 	except:
-	# 		clothing_subs[j] = '-1'
-	# 	try:
-	# 		shoes_subs[j] = results[i]["player_result"]["player"]["shoes_skills"]["subs"][j]["id"]
-	# 	except:
-	# 		shoes_subs[j] = '-1'
-	# payload["headgear_main"]   = translate_ability[int(headgear_main)]
-	# payload["clothing_main"]   = translate_ability[int(clothing_main)]
-	# payload["shoes_main_name"] = translate_ability[int(shoes_main)]
-	# payload["headgear_sub1"] = translate_ability[int(headgear_subs[0])]
-	# payload["headgear_sub2"] = translate_ability[int(headgear_subs[1])]
-	# payload["headgear_sub3"] = translate_ability[int(headgear_subs[2])]
-	# payload["clothing_sub1"] = translate_ability[int(clothing_subs[0])]
-	# payload["clothing_sub2"] = translate_ability[int(clothing_subs[1])]
-	# payload["clothing_sub3"] = translate_ability[int(clothing_subs[2])]
-	# payload["shoes_sub1"]    = translate_ability[int(shoes_subs[0])]
-	# payload["shoes_sub2"]    = translate_ability[int(shoes_subs[1])]
-	# payload["shoes_sub3"]    = translate_ability[int(shoes_subs[2])]
+	headgear_subs, clothing_subs, shoes_subs = ([-1,-1,-1] for i in xrange(3))
+	for j in xrange(3):
+		try:
+			headgear_subs[j] = results[i]["player_result"]["player"]["head_skills"]["subs"][j]["id"]
+		except:
+			headgear_subs[j] = '-1'
+		try:
+			clothing_subs[j] = results[i]["player_result"]["player"]["clothes_skills"]["subs"][j]["id"]
+		except:
+			clothing_subs[j] = '-1'
+		try:
+			shoes_subs[j] = results[i]["player_result"]["player"]["shoes_skills"]["subs"][j]["id"]
+		except:
+			shoes_subs[j] = '-1'
+	headgear_main = results[i]["player_result"]["player"]["head_skills"]["main"]["id"]
+	clothing_main = results[i]["player_result"]["player"]["clothes_skills"]["main"]["id"]
+	shoes_main = results[i]["player_result"]["player"]["shoes_skills"]["main"]["id"]
+	payload["gears"]["headgear"]["primary_ability"]	= translate_ability.get(int(headgear_main), "")
+	payload["gears"]["clothing"]["primary_ability"]	= translate_ability.get(int(clothing_main), "")
+	payload["gears"]["shoes"]["primary_ability"]	= translate_ability.get(int(shoes_main), "")
+	for j in xrange(3):
+		payload["gears"]["headgear"]["secondary_abilities"].append(translate_ability.get(int(headgear_subs[j]), ""))
+		payload["gears"]["clothing"]["secondary_abilities"].append(translate_ability.get(int(clothing_subs[j]), ""))
+		payload["gears"]["shoes"]["secondary_abilities"].append(translate_ability.get(int(shoes_subs[j]), ""))
 
 	#############
 	## DRY RUN ##

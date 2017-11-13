@@ -33,10 +33,9 @@ Note: Executing the script via `./splatnet2statink.py` is also possible on macOS
 - [x] Scoreboard/battle result image upload
 - [x] Full automation of SplatNet cookie generation/acquisition via user log-in
 - [x] Non-English language game support
+- [x] Gear + ability recognition
 
 ## To implement
-
-- [ ] Gear + ability recognition (waiting on stat.ink API v2)
 
 ## Setup instructions
 
