@@ -35,8 +35,6 @@ Note: Executing the script via `./splatnet2statink.py` is also possible on macOS
 - [x] Non-English language game support
 - [x] Gear + ability recognition
 
-## To implement
-
 ## Setup instructions
 
 1. Download and install [Python 2.7](https://www.python.org/downloads/) (pre-installed on macOS) and the package manager [pip](https://pip.pypa.io/en/stable/installing/).
