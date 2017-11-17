@@ -10,8 +10,9 @@ import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 from distutils.version import StrictVersion
+from subprocess import call
 
-A_VERSION = "0.0.60"
+A_VERSION = "0.1.0"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -56,10 +57,10 @@ translate_weapons       = dbs.weapons
 translate_stages        = dbs.stages
 translate_profile_color = dbs.profile_colors
 translate_fest_rank     = dbs.fest_ranks
-# translate_headgear      = dbs.headgears
-# translate_clothing      = dbs.clothes
-# translate_shoes         = dbs.shoes
-# translate_ability       = dbs.abilities
+translate_headgear      = dbs.headgears
+translate_clothing      = dbs.clothes
+translate_shoes         = dbs.shoes
+translate_ability       = dbs.abilities
 
 def gen_new_cookie(reason):
 	'''Attempts to generate new cookie in case provided one is invalid.'''
@@ -143,39 +144,48 @@ def set_language():
 				language_code = raw_input("")
 			config_data["user_lang"] = language_code
 			write_config(config_data)
-
 	return
 
 def check_for_updates():
 	'''Checks the version of the script against the latest version in the repo and updates dbs.py.'''
 
 	latest_script = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/splatnet2statink.py")
+	new_version = re.search("= \"([\d.]*)\"", latest_script.text).group(1)
 	try:
-		update_available = StrictVersion(re.search("= \"([\d.]*)\"", latest_script.text).group(1)) != StrictVersion(A_VERSION)
+		update_available = StrictVersion(new_version) != StrictVersion(A_VERSION)
 		if update_available:
 			print "There is a new version available."
-			if os.path.isdir(".git"):
-				print "Run \'git pull\' to update.\n"
-			else:
+			if os.path.isdir(".git"): # git user
+				update_now = raw_input("Would you like to update now? (Y/n) ")
+				if update_now == "" or update_now[0].lower() == "y":
+					FNULL = open(os.devnull, "w")
+					call(["git", "checkout", "."], stdout=FNULL, stderr=FNULL)
+					call(["git", "checkout", "master"], stdout=FNULL, stderr=FNULL)
+					call(["git", "pull"], stdout=FNULL)
+					print "Successfully updated to v" + new_version +  ". Please restart splatnet2statink."
+					return True
+				else:
+					print "Remember to update later with \"git pull\" to get the latest database."
+			else: # non-git user
 				print "Visit the site below to update:\nhttps://github.com/frozenpandaman/splatnet2statink\n"
+				dbs_freshness = time.time() - os.path.getmtime("dbs.py")
+				if dbs_freshness > 86400:  # that's 24 hours
+					latest_db = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/dbs.py")
+					try:
+						if latest_db.status_code == 200:  # only attempt to write to the file if we get a proper response from github
+							local_db = open("dbs.py", "w")
+							local_db.write(latest_db.text)
+							local_db.close()
+					except: # if we can't open the file
+						pass # then we don't modify the database
 	except: # if there's a problem connecting to github
 		pass # then we assume there's no update available
-
-	dbs_freshness = time.time() - os.path.getmtime("dbs.py")
-	if dbs_freshness > 86400: # that's 24 hours
-		latest_db = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/dbs.py")
-		try:
-			if latest_db.status_code == 200: # only attempt to write to the file if we get a proper response from github
-				local_db = open("dbs.py", "w")
-				local_db.write(latest_db.text)
-				local_db.close()
-		except: # if we can't open the file
-			pass # then we don't modify the database
 
 def main():
 	'''I/O and setup.'''
 
-	check_for_updates()
+	if check_for_updates():
+		exit(0)
 
 	check_statink_key()
 	set_language()
@@ -286,7 +296,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 					worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
 					wins = wins + 1 if worl == "Won" else wins
 					losses = losses + 1 if worl == "Lost" else losses
-					mapname = translate_stages[translate_stages[int(result["stage"]["id"])]]
+					mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
 					print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
 					post_battle(0, [result], s_flag, t_flag, secs, debug, True)
@@ -301,7 +311,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 					worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
 					wins = wins + 1 if worl == "Won" else wins
 					losses = losses + 1 if worl == "Lost" else losses
-					mapname = translate_stages[translate_stages[int(result["stage"]["id"])]]
+					mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
 					print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
 					post_battle(0, [result], s_flag, t_flag, secs, debug, True)
@@ -391,7 +401,7 @@ def set_scoreboard(payload, battle_number, mystats):
 		ally_stats.append(battledata["my_team_members"][n]["kill_count"])
 		ally_stats.append(battledata["my_team_members"][n]["special_count"])
 		ally_stats.append(battledata["my_team_members"][n]["death_count"])
-		ally_stats.append(translate_weapons[int(battledata["my_team_members"][n]["player"]["weapon"]["id"])])
+		ally_stats.append(translate_weapons.get(int(battledata["my_team_members"][n]["player"]["weapon"]["id"]), ""))
 		ally_stats.append(battledata["my_team_members"][n]["player"]["player_rank"])
 		if mode == "gachi" or mode == "league":
 			try:
@@ -421,7 +431,7 @@ def set_scoreboard(payload, battle_number, mystats):
 	my_stats.append(battledata["player_result"]["kill_count"])
 	my_stats.append(special)
 	my_stats.append(death)
-	my_stats.append(translate_weapons[int(weapon)])
+	my_stats.append(translate_weapons.get(int(weapon), ""))
 	my_stats.append(level_before)
 	if mode == "gachi" or mode == "league":
 		my_stats.append(rank_before)
@@ -463,7 +473,7 @@ def set_scoreboard(payload, battle_number, mystats):
 		enemy_stats.append(battledata["other_team_members"][n]["kill_count"])
 		enemy_stats.append(battledata["other_team_members"][n]["special_count"])
 		enemy_stats.append(battledata["other_team_members"][n]["death_count"])
-		enemy_stats.append(translate_weapons[int(battledata["other_team_members"][n]["player"]["weapon"]["id"])])
+		enemy_stats.append(translate_weapons.get(int(battledata["other_team_members"][n]["player"]["weapon"]["id"]), ""))
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_rank"])
 		if mode == "gachi" or mode == "league":
 			try:
@@ -579,13 +589,13 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 	## STAGE ##
 	###########
 	stage = int(results[i]["stage"]["id"])
-	payload["stage"] = translate_stages[stage]
+	payload["stage"] = translate_stages.get(stage, "")
 
 	############
 	## WEAPON ##
 	############
 	weapon = int(results[i]["player_result"]["player"]["weapon"]["id"])
-	payload["weapon"] = translate_weapons[weapon]
+	payload["weapon"] = translate_weapons.get(weapon, "")
 
 	############
 	## RESULT ##
@@ -746,44 +756,43 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 							payload["image_gear"] = BytesIO(profile_result.content).getvalue()
 
 	##########
-	## GEAR ## not in API v2 yet
-	########## https://github.com/fetus-hina/stat.ink/blob/master/API.md#gears
-	# headgear_id = results[i]["player_result"]["player"]["head"]["id"]
-	# clothing_id = results[i]["player_result"]["player"]["clothes"]["id"]
-	# shoes_id    = results[i]["player_result"]["player"]["shoes"]["id"]
-	# payload["headgear"] = translate_headgear[int(headgear_id)]
-	# payload["clothing"] = translate_clothing[int(clothing_id)]
-	# payload["shoes"]    = translate_shoes[int(shoes_id)]
+	## GEAR ##
+	########## https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md#gears-structure
+	headgear_id = results[i]["player_result"]["player"]["head"]["id"]
+	clothing_id = results[i]["player_result"]["player"]["clothes"]["id"]
+	shoes_id    = results[i]["player_result"]["player"]["shoes"]["id"]
+	payload["gears"] = {'headgear': {'secondary_abilities': []}, 'clothing': {'secondary_abilities': []}, 'shoes': {'secondary_abilities': []}}
+	payload["gears"]["headgear"]["gear"] = translate_headgear.get(int(headgear_id), "")
+	payload["gears"]["clothing"]["gear"] = translate_clothing.get(int(clothing_id), "")
+	payload["gears"]["shoes"]["gear"]    = translate_shoes.get(int(shoes_id), "")
 
 	###############
-	## ABILITIES ## not in API v2 yet
+	## ABILITIES ##
 	############### https://github.com/fetus-hina/stat.ink/blob/master/doc/api-1/constant/ability.md
-	# headgear_subs, clothing_subs, shoes_subs = ([-1,-1,-1] for i in xrange(3))
-	# for j in xrange(3):
-	# 	try:
-	# 		headgear_subs[j] = results[i]["player_result"]["player"]["head_skills"]["subs"][j]["id"]
-	# 	except:
-	# 		headgear_subs[j] = '-1'
-	# 	try:
-	# 		clothing_subs[j] = results[i]["player_result"]["player"]["clothes_skills"]["subs"][j]["id"]
-	# 	except:
-	# 		clothing_subs[j] = '-1'
-	# 	try:
-	# 		shoes_subs[j] = results[i]["player_result"]["player"]["shoes_skills"]["subs"][j]["id"]
-	# 	except:
-	# 		shoes_subs[j] = '-1'
-	# payload["headgear_main"]   = translate_ability[int(headgear_main)]
-	# payload["clothing_main"]   = translate_ability[int(clothing_main)]
-	# payload["shoes_main_name"] = translate_ability[int(shoes_main)]
-	# payload["headgear_sub1"] = translate_ability[int(headgear_subs[0])]
-	# payload["headgear_sub2"] = translate_ability[int(headgear_subs[1])]
-	# payload["headgear_sub3"] = translate_ability[int(headgear_subs[2])]
-	# payload["clothing_sub1"] = translate_ability[int(clothing_subs[0])]
-	# payload["clothing_sub2"] = translate_ability[int(clothing_subs[1])]
-	# payload["clothing_sub3"] = translate_ability[int(clothing_subs[2])]
-	# payload["shoes_sub1"]    = translate_ability[int(shoes_subs[0])]
-	# payload["shoes_sub2"]    = translate_ability[int(shoes_subs[1])]
-	# payload["shoes_sub3"]    = translate_ability[int(shoes_subs[2])]
+	headgear_subs, clothing_subs, shoes_subs = ([-1,-1,-1] for i in xrange(3))
+	for j in xrange(3):
+		try:
+			headgear_subs[j] = results[i]["player_result"]["player"]["head_skills"]["subs"][j]["id"]
+		except:
+			headgear_subs[j] = '-1'
+		try:
+			clothing_subs[j] = results[i]["player_result"]["player"]["clothes_skills"]["subs"][j]["id"]
+		except:
+			clothing_subs[j] = '-1'
+		try:
+			shoes_subs[j] = results[i]["player_result"]["player"]["shoes_skills"]["subs"][j]["id"]
+		except:
+			shoes_subs[j] = '-1'
+	headgear_main = results[i]["player_result"]["player"]["head_skills"]["main"]["id"]
+	clothing_main = results[i]["player_result"]["player"]["clothes_skills"]["main"]["id"]
+	shoes_main = results[i]["player_result"]["player"]["shoes_skills"]["main"]["id"]
+	payload["gears"]["headgear"]["primary_ability"]	= translate_ability.get(int(headgear_main), "")
+	payload["gears"]["clothing"]["primary_ability"]	= translate_ability.get(int(clothing_main), "")
+	payload["gears"]["shoes"]["primary_ability"]	= translate_ability.get(int(shoes_main), "")
+	for j in xrange(3):
+		payload["gears"]["headgear"]["secondary_abilities"].append(translate_ability.get(int(headgear_subs[j]), ""))
+		payload["gears"]["clothing"]["secondary_abilities"].append(translate_ability.get(int(clothing_subs[j]), ""))
+		payload["gears"]["shoes"]["secondary_abilities"].append(translate_ability.get(int(shoes_subs[j]), ""))
 
 	#############
 	## DRY RUN ##
