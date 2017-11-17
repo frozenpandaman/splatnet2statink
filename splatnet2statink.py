@@ -12,7 +12,7 @@ from operator import itemgetter
 from distutils.version import StrictVersion
 from subprocess import call
 
-A_VERSION = "0.1.1"
+A_VERSION = "0.1.2"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -161,7 +161,7 @@ def check_for_updates():
 					FNULL = open(os.devnull, "w")
 					call(["git", "checkout", "."], stdout=FNULL, stderr=FNULL)
 					call(["git", "checkout", "master"], stdout=FNULL, stderr=FNULL)
-					call(["git", "pull"], stdout=FNULL)
+					call(["git", "pull"], stdout=FNULL, stderr=FNULL)
 					print "Successfully updated to v" + new_version +  ". Please restart splatnet2statink."
 					return True
 				else:
