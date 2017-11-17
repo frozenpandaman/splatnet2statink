@@ -12,7 +12,7 @@ from operator import itemgetter
 from distutils.version import StrictVersion
 from subprocess import call
 
-A_VERSION = "0.1.0"
+A_VERSION = "0.1.1"
 
 print "splatnet2statink v" + A_VERSION
 

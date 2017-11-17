@@ -38,6 +38,7 @@ weapons = {
 	1020: 'dynamo',               # Dynamo Roller
 	1021: 'dynamo_tesla',         # Gold Dynamo Roller
 	1030: 'variableroller',       # Flingza Roller
+	1031: 'variableroller_foil',  # Foil Flingza Roller
 	1100: 'pablo',                # Inkbrush
 	1101: 'pablo_hue',            # Inkbrush Nouveau
 	1110: 'hokusai',              # Octobrush
