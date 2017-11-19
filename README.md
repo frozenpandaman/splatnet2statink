@@ -52,7 +52,7 @@ Note: Executing the script via `./splatnet2statink.py` is also possible on macOS
 
 Have any questions, issues, or suggestions? Feel free to message me on [Twitter](https://twitter.com/frozenpandaman) or [Reddit](https://www.reddit.com/user/frozenpandaman).
 
-日本語のセットアップ手順は[こちら](https://aqraf.com/archives/327)。質問があれば、ツイッター([@frozenpandaman](https://twitter.com/frozenpandaman))で連絡してください。日本語OK。
+日本語のセットアップ手順は[こちら](https://archive.fo/td52p)。質問があれば、ツイッター([@frozenpandaman](https://twitter.com/frozenpandaman))で連絡してください。日本語OK。
 
 ### Accessing SplatNet 2 from your browser
 
