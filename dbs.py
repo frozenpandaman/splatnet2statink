@@ -63,6 +63,7 @@ weapons = {
 	4010: 'barrelspinner',        # Heavy Splatling
 	4011: 'barrelspinner_deco',   # Heavy Splatling Deco
 	4015: 'herospinner_replica',  # Hero Splatling Replica
+	4020: 'hydra',                # Hydra Splatling
 	5000: 'sputtery',             # Dapple Dualies
 	5010: 'maneuver',             # Splat Dualies
 	5011: 'maneuver_collabo',     # Enperry Splat Dualies
