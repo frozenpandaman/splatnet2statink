@@ -63,6 +63,7 @@ weapons = {
 	4010: 'barrelspinner',        # Heavy Splatling
 	4011: 'barrelspinner_deco',   # Heavy Splatling Deco
 	4015: 'herospinner_replica',  # Hero Splatling Replica
+	4020: 'hydra',                # Hydra Splatling
 	5000: 'sputtery',             # Dapple Dualies
 	5010: 'maneuver',             # Splat Dualies
 	5011: 'maneuver_collabo',     # Enperry Splat Dualies
@@ -88,6 +89,7 @@ stages = {
 	9: 'engawa',     # Snapper Canal
 	10: 'mozuku',    # Kelp Dome
 	11: 'bbass',     # Blackbelly Skatepark
+	13: 'zatou',     # MakoMart
 	9999: 'mystery', # Shifty Station (Splatfest only)
 
 	# clearly the funniest way to go about doing this
@@ -103,6 +105,7 @@ stages = {
 	'engawa':    'Canal',
 	'mozuku':    'Dome',
 	'bbass':     'Skatepark',
+	'zatou':     'Mart',
 	'mystery':   'Shifty',
 }
 

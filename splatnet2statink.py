@@ -12,7 +12,7 @@ from operator import itemgetter
 from distutils.version import StrictVersion
 from subprocess import call
 
-A_VERSION = "0.1.2"
+A_VERSION = "0.1.4"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -156,7 +156,7 @@ def check_for_updates():
 		if update_available:
 			print "There is a new version available."
 			if os.path.isdir(".git"): # git user
-				update_now = raw_input("Would you like to update now? (Y/n) ")
+				update_now = raw_input("Would you like to update now? [Y/n] ")
 				if update_now == "" or update_now[0].lower() == "y":
 					FNULL = open(os.devnull, "w")
 					call(["git", "checkout", "."], stdout=FNULL, stderr=FNULL)
@@ -169,15 +169,14 @@ def check_for_updates():
 			else: # non-git user
 				print "Visit the site below to update:\nhttps://github.com/frozenpandaman/splatnet2statink\n"
 				dbs_freshness = time.time() - os.path.getmtime("dbs.py")
-				if dbs_freshness > 86400:  # that's 24 hours
-					latest_db = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/dbs.py")
-					try:
-						if latest_db.status_code == 200:  # only attempt to write to the file if we get a proper response from github
-							local_db = open("dbs.py", "w")
-							local_db.write(latest_db.text)
-							local_db.close()
-					except: # if we can't open the file
-						pass # then we don't modify the database
+				latest_db = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/dbs.py")
+				try:
+					if latest_db.status_code == 200:  # only attempt to write to the file if we get a proper response from github
+						local_db = open("dbs.py", "w")
+						local_db.write(latest_db.text)
+						local_db.close()
+				except: # if we can't open the file
+					pass # then we don't modify the database
 	except: # if there's a problem connecting to github
 		pass # then we assume there's no update available
 
