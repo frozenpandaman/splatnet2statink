@@ -89,6 +89,7 @@ stages = {
 	9: 'engawa',     # Snapper Canal
 	10: 'mozuku',    # Kelp Dome
 	11: 'bbass',     # Blackbelly Skatepark
+	13: 'zatou',     # MakoMart
 	9999: 'mystery', # Shifty Station (Splatfest only)
 
 	# clearly the funniest way to go about doing this
@@ -104,6 +105,7 @@ stages = {
 	'engawa':    'Canal',
 	'mozuku':    'Dome',
 	'bbass':     'Skatepark',
+	'zatou':     'Mart',
 	'mystery':   'Shifty',
 }
 
