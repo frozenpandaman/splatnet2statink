@@ -12,7 +12,7 @@ from operator import itemgetter
 from distutils.version import StrictVersion
 from subprocess import call
 
-A_VERSION = "0.1.4"
+A_VERSION = "0.1.5"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -385,6 +385,7 @@ def set_scoreboard(payload, battle_number, mystats):
 	level_before = mystats[7]
 	rank_before  = mystats[8]
 	turfinked    = mystats[9]
+	star_rank    = mystats[12]
 	try:
 		title_before = translate_fest_rank[mystats[10]]
 	except:
@@ -422,6 +423,7 @@ def set_scoreboard(payload, battle_number, mystats):
 		else:
 			ally_stats.append(None)
 		ally_stats.append(battledata["my_team_members"][n]["player"]["principal_id"])
+		ally_stats.append(battledata["my_team_members"][n]["player"]["star_rank"])
 		ally_scoreboard.append(ally_stats)
 
 	my_stats = []
@@ -449,6 +451,7 @@ def set_scoreboard(payload, battle_number, mystats):
 	else:
 		my_stats.append(None)
 	my_stats.append(principal_id)
+	my_stats.append(star_rank)
 	ally_scoreboard.append(my_stats)
 
 	# scoreboard sorted by sort_score, then k+a, then k, then s, then d (more = better), then name
@@ -494,6 +497,7 @@ def set_scoreboard(payload, battle_number, mystats):
 		else:
 			enemy_stats.append(None)
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["principal_id"])
+		enemy_stats.append(battledata["other_team_members"][n]["player"]["star_rank"])
 		enemy_scoreboard.append(enemy_stats)
 
 	if rule != "turf_war":
@@ -505,7 +509,7 @@ def set_scoreboard(payload, battle_number, mystats):
 
 	payload["players"] = []
 	for n in xrange(len(full_scoreboard)):
-		# sort score, k/a, kills, specials, deaths, weapon, level, rank, turf inked, is my team, is me, nickname, splatfest rank, splatnet principal_id
+		# sort score, k/a, kills, specials, deaths, weapon, level, rank, turf inked, is my team, is me, nickname, splatfest rank, splatnet principal_id, star_rank
 		detail = {
 			"team":           "my" if full_scoreboard[n][9] == 1 else "his",
 			"is_me":          "yes" if full_scoreboard[n][10] == 1 else "no",
@@ -657,8 +661,10 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 	###########
 	level_before = results[i]["player_result"]["player"]["player_rank"]
 	level_after  = results[i]["player_rank"]
+	star_rank    = results[i]["star_rank"]
 	payload["level"]       = level_before
 	payload["level_after"] = level_after
+	payload["star_rank"]   = star_rank
 
 	##########
 	## RANK ##
@@ -723,7 +729,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 	## SCOREBOARD ##
 	################
 	if YOUR_COOKIE != "": # if no cookie set, don't do this, as it requires online & will fail
-		mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked, title_before, principal_id]
+		mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked, title_before, principal_id, star_rank]
 		payload = set_scoreboard(payload, bn, mystats)
 
 	##################
