@@ -66,7 +66,7 @@ def log_in():
 
 def get_session_token(session_token_code, auth_code_verifier):
 	app_head = {
-		'User-Agent':      'OnlineLounge/1.1.0 NASDKAPI Android',
+		'User-Agent':      'OnlineLounge/1.1.2 NASDKAPI Android',
 		'Accept-Language': 'en-US',
 		'Accept':          'application/json',
 		'Content-Type':    'application/x-www-form-urlencoded',
@@ -97,7 +97,7 @@ def get_cookie(session_token, userLang):
 		'Content-Length': '437',
 		'Accept': 'application/json',
 		'Connection': 'keep-alive',
-		'User-Agent': 'OnlineLounge/1.1.0 NASDKAPI Android'
+		'User-Agent': 'OnlineLounge/1.1.2 NASDKAPI Android'
 	}
 
 	body = {
@@ -114,7 +114,7 @@ def get_cookie(session_token, userLang):
 	# get user info
 	try:
 		app_head = {
-			'User-Agent': 'OnlineLounge/1.1.0 NASDKAPI Android',
+			'User-Agent': 'OnlineLounge/1.1.2 NASDKAPI Android',
 			'Accept-Language': userLang,
 			'Accept': 'application/json',
 			'Authorization': 'Bearer ' + id_response["access_token"],
@@ -137,9 +137,9 @@ def get_cookie(session_token, userLang):
 	app_head = {
 		'Host': 'api-lp1.znc.srv.nintendo.net',
 		'Accept-Language': userLang,
-		'User-Agent': 'com.nintendo.znca/1.1.0 (Android/7.1.2)',
+		'User-Agent': 'com.nintendo.znca/1.1.2 (Android/7.1.2)',
 		'Accept': 'application/json',
-		'X-ProductVersion': '1.1.0',
+		'X-ProductVersion': '1.1.2',
 		'Content-Type': 'application/json; charset=utf-8',
 		'Connection': 'keep-alive',
 		'Authorization': 'Bearer',
@@ -173,9 +173,9 @@ def get_cookie(session_token, userLang):
 		app_head = {
 			'Host': 'api-lp1.znc.srv.nintendo.net',
 			'Accept-Language': userLang,
-			'User-Agent': 'com.nintendo.znca/1.1.0 (Android/7.1.2)',
+			'User-Agent': 'com.nintendo.znca/1.1.2 (Android/7.1.2)',
 			'Accept': 'application/json',
-			'X-ProductVersion': '1.1.0',
+			'X-ProductVersion': '1.1.2',
 			'Content-Type': 'application/json; charset=utf-8',
 			'Connection': 'keep-alive',
 			'Authorization': 'Bearer ' + splatoon_token["result"]["webApiServerCredential"]["accessToken"],
