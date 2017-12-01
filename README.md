@@ -29,7 +29,7 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
   - [x] Result, final count/percent, turf inked
   - [x] Kills, deaths, assists, specials
   - [x] Rank & rank after, level & level after
-  - [x] Star levels (&#9733;) (waiting on stat.ink API)
+  - [x] Star levels (&#9733;)
   - [x] Battle start & end times
   - [x] Ranked power level & league power
   - [x] Splatfest title & power
