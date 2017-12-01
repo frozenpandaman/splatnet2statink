@@ -458,6 +458,7 @@ shoes = {
 	27004: 'armor_boot_replicas',
 	27101: 'hero_snowboots_replicas',
 	# 2023: 'amber_sea_slug_hi_tops',
+	# 21001: 'angry_rain_boots',
 	# : 'annaki_habaneros',
 	# : 'black_seahorses',
 	# : 'blue_laceless_dakroniks',
