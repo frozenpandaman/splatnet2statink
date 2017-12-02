@@ -138,7 +138,7 @@ def set_language():
 			write_config(config_data)
 			return
 		else:
-			language_list = ["en-US", "es-MX", "fr-CA", "ja-JP", "en-GB", "es-ES", "fr-FR", "de-DE", "it-IT", "nl-NL", "ru"]
+			language_list = ["en-US", "es-MX", "fr-CA", "ja-JP", "en-GB", "es-ES", "fr-FR", "de-DE", "it-IT", "nl-NL", "ru-RU"]
 			while language_code not in language_list:
 				print "Invalid language code. Please try entering it again."
 				language_code = raw_input("")
