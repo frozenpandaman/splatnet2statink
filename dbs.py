@@ -68,6 +68,7 @@ weapons = {
 	5010: 'maneuver',             # Splat Dualies
 	5011: 'maneuver_collabo',     # Enperry Splat Dualies
 	5015: 'heromaneuver_replica', # Hero Dualie Replicas
+	5020: 'kelvin525',            # Glooga Dualies
 	5030: 'dualsweeper',          # Dualie Squelchers
 	6000: 'parashelter',          # Splat Brella
 	6005: 'heroshelter_replica',  # Hero Brella Replica
