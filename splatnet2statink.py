@@ -538,7 +538,7 @@ def set_scoreboard(payload, battle_number, mystats):
 	return payload # return new payload w/ players key
 
 # https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md
-def post_battle(i, results, s_flag, t_flag, ignore_private_flag, secs, debug, ismonitor=False):
+def post_battle(i, results, s_flag, t_flag, ignore_private_flag, m_flag, debug, ismonitor=False):
 	'''Uploads battle #i from the provided results dictionary.'''
 
 	#############
