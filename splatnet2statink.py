@@ -198,6 +198,8 @@ def main():
 						help="don't post scoreboard result image")
 	parser.add_argument("-t", required=False, action="store_true",
 						help="dry run for testing (won't post to stat.ink)")
+	parser.add_argument("--ignore-private", dest="ignore_private", required=False, action="store_true",
+						help="don't post private matches")
 	parser.add_argument("-i", dest="filename", required=False, help=argparse.SUPPRESS)
 
 	parser_result = parser.parse_args()
@@ -220,9 +222,10 @@ def main():
 	is_s = parser_result.s
 	is_t = parser_result.t
 	is_r = parser_result.r
+	is_ignore_private = parser_result.ignore_private
 	filename = parser_result.filename
 
-	return m_value, is_s, is_t, is_r, filename
+	return m_value, is_s, is_t, is_r, is_ignore_private, filename
 
 def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 	'''Monitor JSON for changes/new battles and upload them.'''
@@ -271,7 +274,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 				if not printed:
 					printed = True
 					print "Previously-unuploaded battles detected. Uploading now..."
-				post_battle(0, [result], s_flag, t_flag, secs, debug, True)
+				post_battle(0, [result], s_flag, t_flag, ignore_private_flag, secs, debug, True)
 	if r_flag and not printed:
 		print "No previously-unuploaded battles found."
 
@@ -298,7 +301,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 					mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
 					print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
-					post_battle(0, [result], s_flag, t_flag, secs, debug, True)
+					post_battle(0, [result], s_flag, t_flag, ignore_private_flag, secs, debug, True)
 	except KeyboardInterrupt:
 		print "\nChecking to see if there are unuploaded battles before exiting..."
 		data = load_json(False) # so much repeated code
@@ -313,7 +316,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 					mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
 					print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
-					post_battle(0, [result], s_flag, t_flag, secs, debug, True)
+					post_battle(0, [result], s_flag, t_flag, ignore_private_flag, secs, debug, True)
 		if foundany:
 			print "Successfully uploaded remaining battles."
 		else:
@@ -535,7 +538,7 @@ def set_scoreboard(payload, battle_number, mystats):
 	return payload # return new payload w/ players key
 
 # https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md
-def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
+def post_battle(i, results, s_flag, t_flag, ignore_private_flag, m_flag, debug, ismonitor=False):
 	'''Uploads battle #i from the provided results dictionary.'''
 
 	#############
@@ -549,6 +552,10 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 	## LOBBY & MODE ##
 	##################
 	lobby = results[i]["game_mode"]["key"] # regular, league_team, league_pair, private, fes_solo, fes_team
+
+	if ignore_private_flag and lobby == "private":
+		return
+
 	if lobby == "regular": # turf war solo
 		payload["lobby"] = "standard"
 		payload["mode"] = "regular"
@@ -837,12 +844,12 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 					exit(1)
 
 if __name__ == "__main__":
-	m_value, is_s, is_t, is_r, filename = main()
+	m_value, is_s, is_t, is_r, is_ignore_private, filename = main()
 	if m_value != -1: # m flag exists
-		monitor_battles(is_s, is_t, is_r, m_value, debug)
+		monitor_battles(is_s, is_t, is_r, is_ignore_private, m_value, debug)
 	else:
 		n, results = get_num_battles()
 		for i in reversed(xrange(n)):
-			post_battle(i, results, is_s, is_t, m_value, debug)
+			post_battle(i, results, is_s, is_t, is_ignore_private, m_value, debug)
 		if debug:
 			print ""
