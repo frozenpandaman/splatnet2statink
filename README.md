@@ -28,16 +28,15 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
   - [x] Lobby/mode, stage, weapon
   - [x] Result, final count/percent, turf inked
   - [x] Kills, deaths, assists, specials
-  - [x] Rank & rank after, level & level after
-  - [x] Star levels (&#9733;)
+  - [x] Rank & rank after, level & level after, star levels (&#9733;)
   - [x] Battle start & end times
   - [x] Ranked power level & league power
   - [x] Splatfest title & power
 - [x] Gear + ability recognition
   - [x] New Ver. 2.0.0 gear
+  - [x] Gear & user profile image upload
 - [x] Monitoring for new battle results in real-time
-- [x] Scoreboard stats & player ranking
-- [x] Scoreboard/battle result image upload
+- [x] Scoreboard stats, player ranking & battle result image upload
 - [x] ~~Full automation of SplatNet cookie generation/acquisition via user log-in~~ ([more info](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions))
 - [x] Non-English language game support
 
