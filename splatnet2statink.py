@@ -12,7 +12,7 @@ from operator import itemgetter
 from distutils.version import StrictVersion
 from subprocess import call
 
-A_VERSION = "0.1.7"
+A_VERSION = "0.1.8"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -522,7 +522,8 @@ def set_scoreboard(payload, battle_number, mystats):
 			"special":        full_scoreboard[n][3],
 			"point":          full_scoreboard[n][8],
 			"name":           full_scoreboard[n][11],
-			"splatnet_id":    full_scoreboard[n][13]
+			"splatnet_id":    full_scoreboard[n][13],
+			"star_rank":      full_scoreboard[n][14],
 		}
 		if mode == "gachi" or mode == "league":
 			detail["rank"] = full_scoreboard[n][7]
