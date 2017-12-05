@@ -126,6 +126,7 @@ headgears = {
 	1006:  'camo_mesh',
 	1007:  'five_panel_cap',
 	1009:  'backwards_cap',
+	1010:  'two_stripe_mesh',
 	1012:  'cycling_cap',
 	1014:  'cycle_king_cap',
 	1019:  'king_flip_mesh',
@@ -210,7 +211,6 @@ headgears = {
 	# : 'short_beanie',
 	# : 'splash_goggles',
 	# : 'tulip_parasol',
-	# : 'two_stripe_mesh',
 }
 clothes = {
 	2:     'basic_tee',
