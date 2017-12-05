@@ -5,7 +5,7 @@ A script that uploads battle data from the SplatNet 2 app ("Nintendo Switch Onli
 ## Usage
 
 ```
-$ python splatnet2statink.py [-M [N]] [-r] [-s] [-t]
+$ python splatnet2statink.py [-M [N]] [-r] [-s] [--ignore-private] [-t]
 ```
 
 The `-M` flag runs the script in monitoring mode, uploading new battle results as you play games. The script checks for new battles every `N` seconds; if no `N` is provided, the script defaults to 300 (5 minutes).
@@ -13,6 +13,8 @@ The `-M` flag runs the script in monitoring mode, uploading new battle results a
 The `-r` flag, for use with monitoring mode, checks to see if there are recent battle records present on SplatNet 2 that haven't been uploaded to stat.ink and, if so, posts them.
 
 The `-s` flag suppresses uploading the scoreboard result image.
+
+The `--ignore-private` flag suppresses uploading private matches.
 
 The `-t` flag sends the data to stat.ink as a dry run, without uploading, for testing/validation purposes.
 
