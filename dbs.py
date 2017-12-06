@@ -162,6 +162,7 @@ headgears = {
 	4007:  'treasure_hunter',
 	4008:  'bucket_hat',
 	4009:  'patched_hat',
+	4010: 'tulip_parasol',
 	4011:  'fugu_bell_hat',
 	5000:  'studio_headphones',
 	5001:  'designer_headphones',
@@ -210,7 +211,6 @@ headgears = {
 	# : 'kaiser_cuff',
 	# : 'short_beanie',
 	# : 'splash_goggles',
-	# : 'tulip_parasol',
 }
 clothes = {
 	2:     'basic_tee',
