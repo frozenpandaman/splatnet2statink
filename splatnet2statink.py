@@ -12,7 +12,7 @@ from operator import itemgetter
 from distutils.version import StrictVersion
 from subprocess import call
 
-A_VERSION = "0.1.8"
+A_VERSION = "0.1.9"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -39,7 +39,7 @@ SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the fu
 USER_LANG     = config_data["user_lang"] # only works with your game region's supported languages
 #########################
 
-debug = False # print out payload and exit
+debug = False # print out payload and exit. can use with geargrabber2.py & saving battle jsons
 
 app_head = {
 	'Host': 'app.splatoon2.nintendo.net',
@@ -271,7 +271,8 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 				if not printed:
 					printed = True
 					print "Previously-unuploaded battles detected. Uploading now..."
-				post_battle(0, [result], s_flag, t_flag, secs, debug, True)
+				post_battle(0, [result], s_flag, t_flag, secs, False, debug, True)
+
 	if r_flag and not printed:
 		print "No previously-unuploaded battles found."
 
@@ -290,21 +291,22 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 				sys.stdout.write("\r")
 			data = load_json(False)
 			results = data["results"]
-			for result in results[::-1]: # reversed chrono order
+			for i, result in reversed(list(enumerate(results))): # reversed chrono order
 				if int(result["battle_number"]) not in battles:
 					worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
 					wins = wins + 1 if worl == "Won" else wins
 					losses = losses + 1 if worl == "Lost" else losses
 					mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
-					print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
+					print "New battle results detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
-					post_battle(0, [result], s_flag, t_flag, secs, debug, True)
+					# i will be 0 if most recent battle out of those since last posting
+					post_battle(0, [result], s_flag, t_flag, secs, True if i == 0 else False, debug, True)
 	except KeyboardInterrupt:
 		print "\nChecking to see if there are unuploaded battles before exiting..."
 		data = load_json(False) # so much repeated code
 		results = data["results"]
 		foundany = False
-		for result in results[::-1]:
+		for i, result in reversed(list(enumerate(results))):
 				if int(result["battle_number"]) not in battles:
 					foundany = True
 					worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
@@ -313,7 +315,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 					mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
 					print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
-					post_battle(0, [result], s_flag, t_flag, secs, debug, True)
+					post_battle(0, [result], s_flag, t_flag, secs, True if i == 0 else False, debug, True)
 		if foundany:
 			print "Successfully uploaded remaining battles."
 		else:
@@ -533,10 +535,10 @@ def set_scoreboard(payload, battle_number, mystats):
 
 	payload["splatnet_json"] = battledata
 
-	return payload # return new payload w/ players key
+	return payload # return modified payload w/ players key
 
 # https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md
-def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
+def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=False):
 	'''Uploads battle #i from the provided results dictionary.'''
 
 	#############
@@ -682,7 +684,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 		rank_before = "c-"
 		rank_after = "c-"
 	if rule != "turf_war": # only upload if ranked
-		payload["rank"]       = rank_before
+		payload["rank"] = rank_before
 		payload["rank_after"] = rank_after
 		payload["rank_exp"] = rank_exp
 		payload["rank_exp_after"] = rank_exp_after
@@ -746,16 +748,16 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 					image_result = requests.get(image_result_url, stream=True)
 					if image_result.status_code == requests.codes.ok:
 						payload["image_result"] = BytesIO(image_result.content).getvalue()
-			if m_flag != -1:
-				url_profile = "https://app.splatoon2.nintendo.net/api/share/profile"
-				settings = {'stage': stage, 'color': translate_profile_color[random.randrange(0, 6)]}
-				share_result = requests.post(url_profile, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE), data=settings)
-				if share_result.status_code == requests.codes.ok:
-					profile_result_url = share_result.json().get("url")
-					if profile_result_url:
-						profile_result = requests.get(profile_result_url, stream=True)
-						if profile_result.status_code == requests.codes.ok:
-							payload["image_gear"] = BytesIO(profile_result.content).getvalue()
+		if m_flag != -1 and sendgears: # if most recent in monitoring mode
+			url_profile = "https://app.splatoon2.nintendo.net/api/share/profile"
+			settings = {'stage': stage, 'color': translate_profile_color[random.randrange(0, 6)]}
+			share_result = requests.post(url_profile, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE), data=settings)
+			if share_result.status_code == requests.codes.ok:
+				profile_result_url = share_result.json().get("url")
+				if profile_result_url:
+					profile_result = requests.get(profile_result_url, stream=True)
+					if profile_result.status_code == requests.codes.ok:
+						payload["image_gear"] = BytesIO(profile_result.content).getvalue()
 
 	##########
 	## GEAR ##
@@ -817,20 +819,20 @@ def post_battle(i, results, s_flag, t_flag, m_flag, debug, ismonitor=False):
 		if payload["agent"] != os.path.basename(__file__)[:-3]:
 			print "Could not upload. Please contact @frozenpandaman on Twitter/GitHub for assistance."
 			exit(1)
-		post_battle = requests.post(url, headers=auth, data=msgpack.packb(payload))
+		postbattle = requests.post(url, headers=auth, data=msgpack.packb(payload))
 
 		# Response
 		try:
 			if not ismonitor:
-				print "Battle #" + str(i+1) + " uploaded to " + post_battle.headers.get('location') # display url
+				print "Battle #" + str(i+1) + " uploaded to " + postbattle.headers.get('location') # display url
 			else: # monitoring mode
-				print "Battle uploaded to " + post_battle.headers.get('location')
-		except TypeError: # post_battle.headers.get is likely NoneType, i.e. we received an error
+				print "Battle uploaded to " + postbattle.headers.get('location')
+		except TypeError: # postbattle.headers.get is likely NoneType, i.e. we received an error
 			if t_flag:
 				print "Battle #" + str(i+1) + " - message from server:"
 			else:
 				print "Error uploading battle #" + str(i+1) + ". Message from server:"
-			print post_battle.content
+			print postbattle.content
 			if not t_flag:
 				cont = raw_input('Continue (y/n)? ')
 				if cont[0].lower() == "n":
@@ -844,6 +846,6 @@ if __name__ == "__main__":
 	else:
 		n, results = get_num_battles()
 		for i in reversed(xrange(n)):
-			post_battle(i, results, is_s, is_t, m_value, debug)
+			post_battle(i, results, is_s, is_t, m_value, False, debug)
 		if debug:
 			print ""
