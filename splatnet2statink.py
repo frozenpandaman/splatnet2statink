@@ -12,7 +12,7 @@ from operator import itemgetter
 from distutils.version import StrictVersion
 from subprocess import call
 
-A_VERSION = "0.1.9"
+A_VERSION = "0.2.0"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -22,7 +22,7 @@ try:
 	config_file.close()
 except (IOError, ValueError):
 	print "Generating new config file."
-	config_data = {"api_key": "", "cookie": "", "session_token": "", "user_lang": ""}
+	config_data = {"api_key": "", "cookie": "", "user_lang": ""}
 	config_file = open("config.txt", "w")
 	config_file.seek(0)
 	config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
@@ -35,7 +35,7 @@ except (IOError, ValueError):
 ## API KEYS AND TOKENS ##
 API_KEY       = config_data["api_key"] # for stat.ink
 YOUR_COOKIE   = config_data["cookie"] # iksm_session
-SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
+# SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
 USER_LANG     = config_data["user_lang"] # only works with your game region's supported languages
 #########################
 
@@ -61,6 +61,17 @@ translate_headgear      = dbs.headgears
 translate_clothing      = dbs.clothes
 translate_shoes         = dbs.shoes
 translate_ability       = dbs.abilities
+
+def custom_key_exists_and_true(key):
+	if key not in ["ignore_private"]: # https://github.com/frozenpandaman/splatnet2statink/wiki/custom-keys
+		print "(!) checking unexpected custom key"
+	try:
+		if config_data[key] == "true":
+			return True
+		else:
+			return False # key set to false
+	except:
+		return False # key doesn't exist
 
 def gen_new_cookie(reason):
 	'''Attempts to generate new cookie in case provided one is invalid.'''
@@ -91,8 +102,8 @@ def write_config(tokens):
 
 	global API_KEY
 	API_KEY = config_data["api_key"]
-	global SESSION_TOKEN
-	SESSION_TOKEN = config_data["session_token"]
+	# global SESSION_TOKEN
+	# SESSION_TOKEN = config_data["session_token"]
 	global YOUR_COOKIE
 	YOUR_COOKIE = config_data["cookie"]
 	global USER_LANG
@@ -293,12 +304,16 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 			results = data["results"]
 			for i, result in reversed(list(enumerate(results))): # reversed chrono order
 				if int(result["battle_number"]) not in battles:
-					worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
-					wins = wins + 1 if worl == "Won" else wins
-					losses = losses + 1 if worl == "Lost" else losses
-					mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
-					print "New battle results detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
+					if result["game_mode"]["key"] == "private" and custom_key_exists_and_true("ignore_private"):
+						pass
+					else:
+						worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
+						wins = wins + 1 if worl == "Won" else wins
+						losses = losses + 1 if worl == "Lost" else losses
+						mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
+						print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
+					# if custom key prevents uploading, we deal with that in post_battle
 					# i will be 0 if most recent battle out of those since last posting
 					post_battle(0, [result], s_flag, t_flag, secs, True if i == 0 else False, debug, True)
 	except KeyboardInterrupt:
@@ -308,12 +323,15 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 		foundany = False
 		for i, result in reversed(list(enumerate(results))):
 				if int(result["battle_number"]) not in battles:
-					foundany = True
-					worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
-					wins = wins + 1 if worl == "Won" else wins
-					losses = losses + 1 if worl == "Lost" else losses
-					mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
-					print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
+					if result["game_mode"]["key"] == "private" and custom_key_exists_and_true("ignore_private"):
+						pass
+					else:
+						foundany = True
+						worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
+						wins = wins + 1 if worl == "Won" else wins
+						losses = losses + 1 if worl == "Lost" else losses
+						mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
+						print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
 					post_battle(0, [result], s_flag, t_flag, secs, True if i == 0 else False, debug, True)
 		if foundany:
@@ -810,6 +828,13 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	if debug:
 		print ""
 		print json.dumps(payload).replace("\"", "'")
+	# adding support for a custom key? add to custom_key_exists_and_true() method, and
+	# to "main process" section of monitor_battles, too. and the docs/wiki page of course
+	elif lobby == "private" and custom_key_exists_and_true("ignore_private"):
+		if m_flag != -1: # monitoring mode
+			pass
+		else:
+			print "Battle #" + str(i+1) + ": skipping upload based on ignore_private key."
 	else:
 		# POST to stat.ink
 		# https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/request-body.md
