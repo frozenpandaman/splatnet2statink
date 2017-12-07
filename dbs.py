@@ -109,6 +109,7 @@ stages = {
 	'zatou':     'Mart',
 	# 'hakofugu':  'Warehouse',
 	# 'arowana':   'Mall',
+	# 'devon' :    'Institute',
 	'mystery':   'Shifty',
 }
 
