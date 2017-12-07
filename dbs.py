@@ -275,6 +275,7 @@ clothes = {
 	5001:  'takoroka_nylon_vintage',
 	5002:  'berry_ski_jacket',
 	5003:  'varsity_jacket',
+	5004:  'school_jersey',
 	5006:  'black_inky_rider',
 	5007:  'white_inky_rider',
 	5010:  'forge_inkling_parka',
@@ -384,7 +385,6 @@ clothes = {
 	# : 'rodeo_shirt',
 	# : 'round_collar_shirt',
 	# : 'sage_polo',
-	# : 'school_jersey',
 	# : 'takoroka_galactic_tie_dye',
 	# : 'takoroka_rainbow_tie_dye',
 	# : 'tricolor_rugby',
@@ -436,6 +436,7 @@ shoes = {
 	3000:  'pink_trainers',
 	3001:  'orange_arrows',
 	3002:  'neon_sea_slugs',
+	3003:  'white_arrows',
 	3006:  'red_sea_slugs',
 	3007:  'purple_sea_slugs',
 	3008:  'crazy_arrows',
@@ -497,7 +498,6 @@ shoes = {
 	# : 'imperial_kaiser',
 	# : 'red_fishfry_sandals',
 	# : 'squink_wingtips',
-	# : 'white_arrows',
 	# : 'yellow_iromaki_750s',
 }
 
