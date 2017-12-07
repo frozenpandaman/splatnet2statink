@@ -428,6 +428,7 @@ shoes = {
 	2020:  'orca_hi_tops',
 	2022:  'navy_enperrials',
 	2023:  'amber_sea_slug_hi_tops',
+	2024:  'yellow_iromaki_750s',
 	2027:  'sun_and_shade_squidkid_iv',
 	2028:  'orca_woven_hi_tops',
 	2029:  'green_iromaki_750s',
@@ -498,7 +499,6 @@ shoes = {
 	# : 'imperial_kaiser',
 	# : 'red_fishfry_sandals',
 	# : 'squink_wingtips',
-	# : 'yellow_iromaki_750s',
 }
 
 # Ability database
