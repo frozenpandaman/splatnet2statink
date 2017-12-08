@@ -16,6 +16,7 @@ weapons = {
 	45:   'heroshooter_replica',  # Hero Shot Replica
 	50:   '52gal',                # .52 Gal
 	60:   'nzap85',               # N-ZAP '85
+	61:   'nzap89',               # N-ZAP '89
 	70:   'prime',                # Splattershot Pro
 	71:   'prime_collabo',        # Forge Splattershot Pro
 	80:   '96gal',                # .96 Gal
@@ -78,20 +79,20 @@ weapons = {
 # Stage database
 # https://app.splatoon2.nintendo.net/api/data/stages (needs auth)
 stages = {
-	0: 'battera',    # The Reef
-	1: 'fujitsubo',  # Musselforge Fitness
-	2: 'gangaze',    # Starfish Mainstage
-	3: 'chozame',    # Sturgeon Shipyard
-	4: 'ama',        # Inkblot Art Academy
-	5: 'combu',      # Humpback Pump Track
-	6: 'manta',      # Manta Maria
-	7: 'hokke',      # Port Mackerel
-	8: 'tachiuo',    # Moray Towers
-	9: 'engawa',     # Snapper Canal
-	10: 'mozuku',    # Kelp Dome
-	11: 'bbass',     # Blackbelly Skatepark
-	13: 'zatou',     # MakoMart
-	9999: 'mystery', # Shifty Station (Splatfest only)
+	0:    'battera',   # The Reef
+	1:    'fujitsubo', # Musselforge Fitness
+	2:    'gangaze',   # Starfish Mainstage
+	3:    'chozame',   # Sturgeon Shipyard
+	4:    'ama',       # Inkblot Art Academy
+	5:    'combu',     # Humpback Pump Track
+	6:    'manta',     # Manta Maria
+	7:    'hokke',     # Port Mackerel
+	8:    'tachiuo',   # Moray Towers
+	9:    'engawa',    # Snapper Canal
+	10:   'mozuku',    # Kelp Dome
+	11:   'bbass',     # Blackbelly Skatepark
+	13:   'zatou',     # MakoMart
+	9999: 'mystery',   # Shifty Station (Splatfest only)
 
 	# clearly the funniest way to go about doing this
 	'battera':   'Reef',
