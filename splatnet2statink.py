@@ -12,7 +12,7 @@ from operator import itemgetter
 from distutils.version import StrictVersion
 from subprocess import call
 
-A_VERSION = "0.2.0"
+A_VERSION = "0.2.1"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -351,21 +351,29 @@ def get_num_battles():
 			if not os.path.exists(filename):
 				argparse.ArgumentParser().error("File {} does not exist!".format(filename)) # exit
 			with open(filename) as data_file:
-				data = json.load(data_file)
+				try:
+					data = json.load(data_file)
+				except ValueError:
+					print "Could not decode JSON object in this file."
+					exit(1)
 		else: # no argument
 			data = load_json(True)
 
 		try:
 			results = data["results"]
-		except KeyError:
-			if YOUR_COOKIE == "":
-				reason = "blank"
-			elif data["code"] == "AUTHENTICATION_ERROR":
-				reason = "auth"
+		except KeyError: # either auth error json (online) or battle json (local file)
+			if filename != None: # local file given, so seems like battle instead of results json
+				data = json.loads("{\"results\": [" + json.dumps(data) + "]}")
+				results = data["results"]
 			else:
-				reason = "other"
-			gen_new_cookie(reason)
-			continue
+				if YOUR_COOKIE == "":
+					reason = "blank"
+				elif data["code"] == "AUTHENTICATION_ERROR":
+					reason = "auth"
+				else:
+					reason = "other"
+				gen_new_cookie(reason)
+				continue
 
 		try:
 			n = int(raw_input("Number of recent battles to upload (0-50)? "))
@@ -381,15 +389,18 @@ def get_num_battles():
 		else:
 			return n, results
 
-def set_scoreboard(payload, battle_number, mystats):
+def set_scoreboard(payload, battle_number, mystats, battle_payload=None):
 	'''Returns a new payload with the players key (scoreboard) present.'''
 
-	url = "https://app.splatoon2.nintendo.net/api/results/" + battle_number
-	battle = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
-	battledata = json.loads(battle.text)
+	if battle_payload != None:
+		battledata = battle_payload
+	else:
+		url = "https://app.splatoon2.nintendo.net/api/results/" + battle_number
+		battle = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
+		battledata = json.loads(battle.text)
 
 	try:
-		battledata["battle_number"]
+		battledata["my_team_members"] # only present in battle jsons
 	except KeyError:
 		print "Problem retrieving battle. Continuing without scoreboard statistics."
 		return payload # same payload as passed in, no modifications
@@ -749,9 +760,12 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	################
 	## SCOREBOARD ##
 	################
-	if YOUR_COOKIE != "": # if no cookie set, don't do this, as it requires online & will fail
+	if YOUR_COOKIE != "" or debug: # if no cookie set, don't do this, as it requires online (or battle json) & will fail
 		mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked, title_before, principal_id, star_rank]
-		payload = set_scoreboard(payload, bn, mystats)
+		if filename == None:
+			payload = set_scoreboard(payload, bn, mystats)
+		else:
+			payload = set_scoreboard(payload, bn, mystats, results[0])
 
 	##################
 	## IMAGE RESULT ##
