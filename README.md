@@ -55,6 +55,8 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
 
 4. You will then be asked to enter your `iksm_session` token. This can be obtained by following the mitmproxy instructions [here](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions). This token (used to access your SplatNet battle results) along with your stat.ink API key and language will automatically be saved into `config.txt` for you. You're now ready to upload battles!
 
+5. Optionally, add [custom keys](https://github.com/frozenpandaman/splatnet2statink/wiki/custom-keys) to your `config.txt` for specialized functionality (e.g. if running the script as a daemon).
+
 Have any questions, issues, or suggestions? Feel free to message me on [Twitter](https://twitter.com/frozenpandaman) or [Reddit](https://www.reddit.com/user/frozenpandaman).
 
 日本語のセットアップ手順は[こちら](https://archive.fo/td52p)。質問があれば、ツイッター([@frozenpandaman](https://twitter.com/frozenpandaman))で連絡してください。日本語OK。
