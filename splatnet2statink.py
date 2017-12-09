@@ -364,7 +364,11 @@ def get_num_battles():
 		except KeyError: # either auth error json (online) or battle json (local file)
 			if filename != None: # local file given, so seems like battle instead of results json
 				data = json.loads("{\"results\": [" + json.dumps(data) + "]}")
-				results = data["results"]
+				try:
+					results = data["results"]
+				except KeyError:
+					print "Ill-formatted JSON file."
+					exit(1)
 			else:
 				if YOUR_COOKIE == "":
 					reason = "blank"
