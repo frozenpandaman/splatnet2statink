@@ -483,6 +483,7 @@ shoes = {
 	8000:  'white_kicks',
 	8001:  'cherry_kicks',
 	8002:  'turquoise_kicks',
+	8003:  'squink_wingtips',
 	8004:  'roasted_brogues',
 	8005:  'kid_clams',
 	8006:  'smoky_wingtips',
@@ -500,7 +501,6 @@ shoes = {
 	27004: 'armor_boot_replicas',
 	27101: 'hero_snowboots_replicas',
 	# : 'imperial_kaiser',
-	# : 'squink_wingtips',
 }
 
 # Ability database
