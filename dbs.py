@@ -252,7 +252,7 @@ clothes = {
 	1043:  'hightide_era_band_tee',
 	1044:  'red_v_neck_limited_tee',
 	1045:  'green_v_neck_limited_tee',
-    1046:  'omega_3_tee',
+	1046:  'omega_3_tee',
 	1048:  'firewave_tee',
 	1050:  'takoroka_rainbow_tie_dye',
 	1054:  'tentatek_slogan_tee',
