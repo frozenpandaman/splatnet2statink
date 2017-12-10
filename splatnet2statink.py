@@ -12,7 +12,7 @@ from operator import itemgetter
 from distutils.version import StrictVersion
 from subprocess import call
 
-A_VERSION = "0.2.1"
+A_VERSION = "0.2.2"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -784,7 +784,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 					image_result = requests.get(image_result_url, stream=True)
 					if image_result.status_code == requests.codes.ok:
 						payload["image_result"] = BytesIO(image_result.content).getvalue()
-		if m_flag != -1 and sendgears: # if most recent in monitoring mode
+		if sendgears: # if most recent
 			url_profile = "https://app.splatoon2.nintendo.net/api/share/profile"
 			settings = {'stage': stage, 'color': translate_profile_color[random.randrange(0, 6)]}
 			share_result = requests.post(url_profile, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE), data=settings)
@@ -889,6 +889,6 @@ if __name__ == "__main__":
 	else:
 		n, results = get_num_battles()
 		for i in reversed(xrange(n)):
-			post_battle(i, results, is_s, is_t, m_value, False, debug)
+			post_battle(i, results, is_s, is_t, m_value, True if i == 0 else False, debug)
 		if debug:
 			print ""
