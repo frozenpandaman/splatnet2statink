@@ -254,6 +254,7 @@ clothes = {
 	1045:  'green_v_neck_limited_tee',
 	1046:  'omega_3_tee',
 	1048:  'firewave_tee',
+	1049:  'takoroka_galactic_tie_dye',
 	1050:  'takoroka_rainbow_tie_dye',
 	1054:  'tentatek_slogan_tee',
 	1055:  'icewave_tee',
@@ -272,6 +273,7 @@ clothes = {
 	2015:  'annaki_drive_tee',
 	2016:  'lime_easy_stripe_shirt',
 	2017:  'annaki_evolution_tee',
+	2019:  'zekko_long_radish_tee',
 	3000:  'white_layered_ls',
 	3001:  'yellow_layered_ls',
 	3004:  'zink_layered_ls',
@@ -390,10 +392,8 @@ clothes = {
 	# : 'orange_cardigan',
 	# : 'rodeo_shirt',
 	# : 'sage_polo',
-	# : 'takoroka_galactic_tie_dye',
 	# : 'tricolor_rugby',
 	# : 'zekko_long_carrot_tee',
-	# : 'zekko_long_radish_tee',
 }
 shoes = {
 	1:     'cream_basics',
