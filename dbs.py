@@ -285,6 +285,7 @@ clothes = {
 	3010:  'red_tentatek_tee',
 	3011:  'blue_tentatek_tee',
 	4000:  'shrimp_pink_polo',
+	4002:  'tricolor_rugby',
 	4004:  'black_polo',
 	4005:  'cycling_shirt',
 	4006:  'cycle_king_jersey',
@@ -392,7 +393,6 @@ clothes = {
 	# : 'orange_cardigan',
 	# : 'rodeo_shirt',
 	# : 'sage_polo',
-	# : 'tricolor_rugby',
 	# : 'zekko_long_carrot_tee',
 }
 shoes = {
