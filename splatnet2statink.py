@@ -62,11 +62,12 @@ translate_clothing      = dbs.clothes
 translate_shoes         = dbs.shoes
 translate_ability       = dbs.abilities
 
-def custom_key_exists_and_true(key):
-	if key not in ["ignore_private"]: # https://github.com/frozenpandaman/splatnet2statink/wiki/custom-keys
+def custom_key_exists_and_true(key): # https://github.com/frozenpandaman/splatnet2statink/wiki/custom-keys
+	'''Checks if a given custom key exists in config.txt.'''
+	if key not in ["ignore_private"]:
 		print "(!) checking unexpected custom key"
 	try:
-		if config_data[key] == "true":
+		if config_data[key].lower() == "true":
 			return True
 		else:
 			return False # key set to false
