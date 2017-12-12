@@ -274,6 +274,7 @@ clothes = {
 	2015:  'annaki_drive_tee',
 	2016:  'lime_easy_stripe_shirt',
 	2017:  'annaki_evolution_tee',
+	2018:  'zekko_long_carrot_tee',
 	2019:  'zekko_long_radish_tee',
 	3000:  'white_layered_ls',
 	3001:  'yellow_layered_ls',
@@ -393,7 +394,6 @@ clothes = {
 	# : 'king_bench_kaiser',
 	# : 'orange_cardigan',
 	# : 'sage_polo',
-	# : 'zekko_long_carrot_tee',
 }
 shoes = {
 	1:     'cream_basics',
