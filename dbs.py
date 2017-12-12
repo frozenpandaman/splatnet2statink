@@ -342,6 +342,7 @@ clothes = {
 	7012:  'annaki_red_cuff',
 	7013:  'n_pacer_sweat',
 	8000:  'lumberjack_shirt',
+	8001:  'rodeo_shirt',
 	8002:  'green_check_shirt',
 	8003:  'white_shirt',
 	8004:  'urchins_jersey',
@@ -391,7 +392,6 @@ clothes = {
 	# : 'aloha_shirt',
 	# : 'king_bench_kaiser',
 	# : 'orange_cardigan',
-	# : 'rodeo_shirt',
 	# : 'sage_polo',
 	# : 'zekko_long_carrot_tee',
 }
