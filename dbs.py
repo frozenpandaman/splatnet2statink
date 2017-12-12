@@ -300,6 +300,7 @@ clothes = {
 	5004:  'school_jersey',
 	5006:  'black_inky_rider',
 	5007:  'white_inky_rider',
+	5009:  'orange_cardigan',
 	5010:  'forge_inkling_parka',
 	5012:  'blue_sailor_suit',
 	5013:  'white_sailor_suit',
@@ -392,7 +393,6 @@ clothes = {
 	27101: 'hero_hoodie_replica',
 	# : 'aloha_shirt',
 	# : 'king_bench_kaiser',
-	# : 'orange_cardigan',
 	# : 'sage_polo',
 }
 shoes = {
