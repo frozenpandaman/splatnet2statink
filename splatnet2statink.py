@@ -12,7 +12,7 @@ from operator import itemgetter
 from distutils.version import StrictVersion
 from subprocess import call
 
-A_VERSION = "0.2.2"
+A_VERSION = "0.2.3"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -420,81 +420,81 @@ def set_scoreboard(payload, battle_number, mystats, battle_payload=None):
 	level_before = mystats[7]
 	rank_before  = mystats[8]
 	turfinked    = mystats[9]
-	star_rank    = mystats[12]
 	try:
 		title_before = translate_fest_rank[mystats[10]]
 	except:
 		pass
 	principal_id = mystats[11]
+	star_rank    = mystats[12]
 
 	ally_scoreboard = []
 	for n in xrange(len(battledata["my_team_members"])):
 		ally_stats = []
-		ally_stats.append(battledata["my_team_members"][n]["sort_score"])
+		ally_stats.append(battledata["my_team_members"][n]["sort_score"]) # 0
 		ally_stats.append(battledata["my_team_members"][n]["kill_count"] +
-						  battledata["my_team_members"][n]["assist_count"])
-		ally_stats.append(battledata["my_team_members"][n]["kill_count"])
-		ally_stats.append(battledata["my_team_members"][n]["special_count"])
-		ally_stats.append(battledata["my_team_members"][n]["death_count"])
-		ally_stats.append(translate_weapons.get(int(battledata["my_team_members"][n]["player"]["weapon"]["id"]), ""))
-		ally_stats.append(battledata["my_team_members"][n]["player"]["player_rank"])
+						  battledata["my_team_members"][n]["assist_count"]) # 1
+		ally_stats.append(battledata["my_team_members"][n]["kill_count"]) # 2
+		ally_stats.append(battledata["my_team_members"][n]["special_count"]) # 3
+		ally_stats.append(battledata["my_team_members"][n]["death_count"]) # 4
+		ally_stats.append(translate_weapons.get(int(battledata["my_team_members"][n]["player"]["weapon"]["id"]), "")) # 5
+		ally_stats.append(battledata["my_team_members"][n]["player"]["player_rank"]) # 6
 		if mode == "gachi" or mode == "league":
 			try:
-				ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower())
+				ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower()) # 7
 			except:
-				ally_stats.append("c-")
-			ally_stats.append(battledata["my_team_members"][n]["game_paint_point"])
+				ally_stats.append("c-") # 7
+			ally_stats.append(battledata["my_team_members"][n]["game_paint_point"]) # 8
 		elif mode == "regular" or mode == "fes":
-			ally_stats.append(None) # udemae (rank) is null in turf war
+			ally_stats.append(None) # 7 - udemae (rank) is null in turf war
 			if result == "victory":
-				ally_stats.append(battledata["my_team_members"][n]["game_paint_point"] + 1000)
+				ally_stats.append(battledata["my_team_members"][n]["game_paint_point"] + 1000) # 8
 			else:
-				ally_stats.append(battledata["my_team_members"][n]["game_paint_point"])
-		ally_stats.append(1) # my team? (yes)
-		ally_stats.append(0) # is me? (no)
-		ally_stats.append(battledata["my_team_members"][n]["player"]["nickname"])
+				ally_stats.append(battledata["my_team_members"][n]["game_paint_point"]) # 8
+		ally_stats.append(1) # 9 - my team? (yes)
+		ally_stats.append(0) # 10 - is me? (no)
+		ally_stats.append(battledata["my_team_members"][n]["player"]["nickname"]) # 11
 		if mode == "fes":
-			ally_stats.append(translate_fest_rank[battledata["my_team_members"][n]["player"]["fes_grade"]["rank"]])
+			ally_stats.append(translate_fest_rank[battledata["my_team_members"][n]["player"]["fes_grade"]["rank"]]) # 12
 		else:
-			ally_stats.append(None)
-		ally_stats.append(battledata["my_team_members"][n]["player"]["principal_id"])
-		ally_stats.append(battledata["my_team_members"][n]["player"]["star_rank"])
+			ally_stats.append(None) # 12
+		ally_stats.append(battledata["my_team_members"][n]["player"]["principal_id"]) # 13
+		ally_stats.append(battledata["my_team_members"][n]["player"]["star_rank"]) # 14
 		ally_scoreboard.append(ally_stats)
 
 	my_stats = []
-	my_stats.append(battledata["player_result"]["sort_score"])
-	my_stats.append(k_or_a)
-	my_stats.append(battledata["player_result"]["kill_count"])
-	my_stats.append(special)
-	my_stats.append(death)
-	my_stats.append(translate_weapons.get(int(weapon), ""))
-	my_stats.append(level_before)
+	my_stats.append(battledata["player_result"]["sort_score"]) # 0
+	my_stats.append(k_or_a) # 1
+	my_stats.append(battledata["player_result"]["kill_count"]) # 2
+	my_stats.append(special) # 3
+	my_stats.append(death) # 4
+	my_stats.append(translate_weapons.get(int(weapon), "")) # 5
+	my_stats.append(level_before) # 6
 	if mode == "gachi" or mode == "league":
-		my_stats.append(rank_before)
-		my_stats.append(turfinked)
+		my_stats.append(rank_before) # 7
+		my_stats.append(turfinked) # 8
 	elif mode == "regular" or mode == "fes":
-		my_stats.append(None) # udemae (rank) is null in turf war
+		my_stats.append(None) # 7 - udemae (rank) is null in turf war
 		if result == "victory":
-			my_stats.append(turfinked + 1000)
+			my_stats.append(turfinked + 1000) # 8
 		else:
-			my_stats.append(turfinked)
-	my_stats.append(1) # my team? (yes)
-	my_stats.append(1) # is me? (yes)
-	my_stats.append(battledata["player_result"]["player"]["nickname"])
+			my_stats.append(turfinked) # 8
+	my_stats.append(1) # 9 - my team? (yes)
+	my_stats.append(1) # 10 - is me? (yes)
+	my_stats.append(battledata["player_result"]["player"]["nickname"]) # 11
 	if mode == "fes":
-		my_stats.append(title_before)
+		my_stats.append(title_before) # 12
 	else:
-		my_stats.append(None)
-	my_stats.append(principal_id)
-	my_stats.append(star_rank)
+		my_stats.append(None) # 12
+	my_stats.append(principal_id) # 13
+	my_stats.append(star_rank) # 14
 	ally_scoreboard.append(my_stats)
 
-	# scoreboard sorted by sort_score, then k+a, then k, then s, then d (more = better), then name
+	# scoreboard sort order: sort_score (or turf inked), k+a, specials, deaths (more = better), kills, nickname
 	# discussion: https://github.com/frozenpandaman/splatnet2statink/issues/6
 	if rule != "turf_war":
-		sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 2, 3, 4, 11), reverse=True)
+		sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 3, 4, 2, 11), reverse=True)
 	else:
-		sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(8, 1, 2, 3, 4, 11), reverse=True)
+		sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(8, 1, 3, 4, 2, 11), reverse=True)
 
 	for n in xrange(len(sorted_ally_scoreboard)):
 		if sorted_ally_scoreboard[n][10] == 1: # if it's me, position in sorted list is my rank in team
@@ -504,47 +504,47 @@ def set_scoreboard(payload, battle_number, mystats, battle_payload=None):
 	enemy_scoreboard = []
 	for n in xrange(len(battledata["other_team_members"])):
 		enemy_stats = []
-		enemy_stats.append(battledata["other_team_members"][n]["sort_score"])
+		enemy_stats.append(battledata["other_team_members"][n]["sort_score"]) # 0
 		enemy_stats.append(battledata["other_team_members"][n]["kill_count"] +
-						   battledata["other_team_members"][n]["assist_count"])
-		enemy_stats.append(battledata["other_team_members"][n]["kill_count"])
-		enemy_stats.append(battledata["other_team_members"][n]["special_count"])
-		enemy_stats.append(battledata["other_team_members"][n]["death_count"])
-		enemy_stats.append(translate_weapons.get(int(battledata["other_team_members"][n]["player"]["weapon"]["id"]), ""))
-		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_rank"])
+						   battledata["other_team_members"][n]["assist_count"]) # 1
+		enemy_stats.append(battledata["other_team_members"][n]["kill_count"]) # 2
+		enemy_stats.append(battledata["other_team_members"][n]["special_count"]) # 3
+		enemy_stats.append(battledata["other_team_members"][n]["death_count"]) # 4
+		enemy_stats.append(translate_weapons.get(int(battledata["other_team_members"][n]["player"]["weapon"]["id"]), "")) # 5
+		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_rank"]) # 6
 		if mode == "gachi" or mode == "league":
 			try:
-				enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower())
+				enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower()) # 7
 			except:
-				enemy_stats.append("c-")
-			enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"])
+				enemy_stats.append("c-") # 7
+			enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"]) # 8
 		elif mode == "regular" or mode == "fes":
-			enemy_stats.append(None)  # udemae (rank) is null in turf war
+			enemy_stats.append(None) # 7 - udemae (rank) is null in turf war
 			if result == "defeat":
-				enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"] + 1000)
+				enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"] + 1000) # 8
 			else:
-				enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"])
-		enemy_stats.append(0) # my team? (no)
-		enemy_stats.append(0) # is me? (no)
-		enemy_stats.append(battledata["other_team_members"][n]["player"]["nickname"])
+				enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"]) # 8
+		enemy_stats.append(0) # 9 - my team? (no)
+		enemy_stats.append(0) # 10 - is me? (no)
+		enemy_stats.append(battledata["other_team_members"][n]["player"]["nickname"]) # 11
 		if mode == "fes":
-			enemy_stats.append(translate_fest_rank[battledata["other_team_members"][n]["player"]["fes_grade"]["rank"]])
+			enemy_stats.append(translate_fest_rank[battledata["other_team_members"][n]["player"]["fes_grade"]["rank"]]) # 12
 		else:
-			enemy_stats.append(None)
-		enemy_stats.append(battledata["other_team_members"][n]["player"]["principal_id"])
-		enemy_stats.append(battledata["other_team_members"][n]["player"]["star_rank"])
+			enemy_stats.append(None) # 12
+		enemy_stats.append(battledata["other_team_members"][n]["player"]["principal_id"]) # 13
+		enemy_stats.append(battledata["other_team_members"][n]["player"]["star_rank"]) # 14
 		enemy_scoreboard.append(enemy_stats)
 
 	if rule != "turf_war":
-		sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(0, 1, 2, 3, 4, 11), reverse=True)
+		sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(0, 1, 3, 4, 2, 11), reverse=True)
 	else:
-		sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(8, 1, 2, 3, 4, 11), reverse=True)
+		sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(8, 1, 3, 4, 2, 11), reverse=True)
 
 	full_scoreboard = sorted_ally_scoreboard + sorted_enemy_scoreboard
 
 	payload["players"] = []
 	for n in xrange(len(full_scoreboard)):
-		# sort score, k/a, kills, specials, deaths, weapon, level, rank, turf inked, is my team, is me, nickname, splatfest rank, splatnet principal_id, star_rank
+		# sort score, k+a, kills, specials, deaths, weapon, level, rank, turf inked, is my team, is me, nickname, splatfest rank, splatnet principal_id, star_rank
 		detail = {
 			"team":           "my" if full_scoreboard[n][9] == 1 else "his",
 			"is_me":          "yes" if full_scoreboard[n][10] == 1 else "no",
@@ -566,7 +566,8 @@ def set_scoreboard(payload, battle_number, mystats, battle_payload=None):
 			detail["fest_title"] = full_scoreboard[n][12]
 		payload["players"].append(detail)
 
-	payload["splatnet_json"] = battledata
+	if not debug: # we should already have our original json if we're using debug mode
+		payload["splatnet_json"] = battledata
 
 	return payload # return modified payload w/ players key
 
@@ -578,7 +579,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	## PAYLOAD ##
 	#############
 	payload = {'agent': 'splatnet2statink', 'agent_version': A_VERSION}
-	agent_variables = {'upload_mode': "Monitoring" if ismonitor == True else "Manual"}
+	agent_variables = {'upload_mode': "Monitoring" if ismonitor else "Manual"}
 	payload["agent_variables"] = agent_variables
 
 	##################
@@ -610,7 +611,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	##########
 	## RULE ##
 	##########
-	rule = results[i]["rule"]["key"] # turf_war, rainmaker, splat_zones, tower_control
+	rule = results[i]["rule"]["key"] # turf_war, rainmaker, splat_zones, tower_control, clam_blitz
 	if rule == "turf_war":
 		payload["rule"] = "nawabari"
 	elif rule == "splat_zones":
@@ -619,6 +620,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		payload["rule"] = "yagura"
 	elif rule == "rainmaker":
 		payload["rule"] = "hoko"
+	elif rule == "clam_blitz":
+		payload["rule"] = "asari"
 
 	###########
 	## STAGE ##
@@ -705,22 +708,20 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	##########
 	## RANK ##
 	##########
-	try: # only occur in either TW xor ranked
-		rank_before = results[i]["player_result"]["player"]["udemae"]["name"].lower()
-		rank_after  = results[i]["udemae"]["name"].lower()
-		rank_exp = results[i]["player_result"]["player"]["udemae"]["s_plus_number"]
-		rank_exp_after = results[i]["udemae"]["s_plus_number"]
-		if rank_before == None:
+	if rule != "turf_war": # only upload if ranked
+		try: # either KeyError, or can't lower() a None (null)
+			rank_before = results[i]["player_result"]["player"]["udemae"]["name"].lower()
+			rank_after  = results[i]["udemae"]["name"].lower()
+		except: # e.g. private battle where a player has never played ranked before
 			rank_before = "c-"
 			rank_after = "c-"
-	except: # in case of private battles where a player has never played ranked before
-		rank_before = "c-"
-		rank_after = "c-"
-	if rule != "turf_war": # only upload if ranked
-		payload["rank"] = rank_before
-		payload["rank_after"] = rank_after
-		payload["rank_exp"] = rank_exp
-		payload["rank_exp_after"] = rank_exp_after
+		finally:
+			rank_exp = results[i]["player_result"]["player"]["udemae"]["s_plus_number"]
+			rank_exp_after = results[i]["udemae"]["s_plus_number"]
+			payload["rank"] = rank_before
+			payload["rank_after"] = rank_after
+			payload["rank_exp"] = rank_exp
+			payload["rank_exp_after"] = rank_exp_after
 
 	#####################
 	## START/END TIMES ##
@@ -845,7 +846,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	#**************
 	if debug:
 		print ""
-		print json.dumps(payload).replace("\"", "'")
+		print json.dumps(payload).replace("'", "\'")
 	# adding support for a custom key? add to custom_key_exists_and_true() method, and
 	# to "main process" section of monitor_battles, too. and the docs/wiki page of course
 	elif lobby == "private" and custom_key_exists_and_true("ignore_private"):
