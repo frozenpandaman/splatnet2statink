@@ -12,7 +12,7 @@ from operator import itemgetter
 from distutils.version import StrictVersion
 from subprocess import call
 
-A_VERSION = "0.2.4"
+A_VERSION = "0.2.5"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -709,25 +709,24 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	##########
 	## RANK ##
 	##########
+	try:
+		rank_before = results[i]["player_result"]["player"]["udemae"]["name"]
+		rank_after = results[i]["udemae"]["name"]
+		rank_exp = results[i]["player_result"]["player"]["udemae"]["s_plus_number"]
+		rank_exp_after = results[i]["udemae"]["s_plus_number"]
+	except: # based on in-game, not app scoreboard, which displays --- (null rank) as separate than C-
+		rank_exp = None # e.g. private battle where a player has never played ranked before
+		rank_exp_after = None
+		rank_before = None
+		rank_after = None
+	else:
+		rank_before = rank_before.lower()
+		rank_after = rank_after.lower()
 	if rule != "turf_war": # only upload if ranked
-		try: # either KeyError, or can't lower() a None (null)
-			rank_before = results[i]["player_result"]["player"]["udemae"]["name"].lower()
-			rank_after = results[i]["udemae"]["name"].lower()
-		except:
-			rank_before = None # based on in-game, not app scoreboard, which displays --- as separate than C-
-			rank_after = None
-		finally:
-			payload["rank"] = rank_before
-			payload["rank_after"] = rank_after
-		try:
-			rank_exp = results[i]["player_result"]["player"]["udemae"]["s_plus_number"]
-			rank_exp_after = results[i]["udemae"]["s_plus_number"]
-		except: # e.g. private battle where a player has never played ranked before
-			rank_exp = None
-			rank_exp_after = None
-		finally:
-			payload["rank_exp"] = rank_exp
-			payload["rank_exp_after"] = rank_exp_after
+		payload["rank"] = rank_before
+		payload["rank_after"] = rank_after
+		payload["rank_exp"] = rank_exp
+		payload["rank_exp_after"] = rank_exp_after
 
 	#####################
 	## START/END TIMES ##
