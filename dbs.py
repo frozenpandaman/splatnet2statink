@@ -129,6 +129,7 @@ headgears = {
 	1007:  'five_panel_cap',
 	1009:  'backwards_cap',
 	1010:  'two_stripe_mesh',
+	1011:  'jet_cap',
 	1012:  'cycling_cap',
 	1014:  'cycle_king_cap',
 	1019:  'king_flip_mesh',
@@ -211,7 +212,6 @@ headgears = {
 	27000: 'hero_headset_replica',
 	27004: 'armor_helmet_replica',
 	27101: 'hero_headphones_replica',
-	# : 'jet_cap',
 	# : 'kaiser_cuff',
 }
 clothes = {
