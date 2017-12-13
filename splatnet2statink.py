@@ -12,7 +12,7 @@ from operator import itemgetter
 from distutils.version import StrictVersion
 from subprocess import call
 
-A_VERSION = "0.2.3"
+A_VERSION = "0.2.4"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -443,7 +443,7 @@ def set_scoreboard(payload, battle_number, mystats, battle_payload=None):
 			try:
 				ally_stats.append(battledata["my_team_members"][n]["player"]["udemae"]["name"].lower()) # 7
 			except:
-				ally_stats.append("c-") # 7
+				ally_stats.append(None) # 7
 			ally_stats.append(battledata["my_team_members"][n]["game_paint_point"]) # 8
 		elif mode == "regular" or mode == "fes":
 			ally_stats.append(None) # 7 - udemae (rank) is null in turf war
@@ -517,7 +517,7 @@ def set_scoreboard(payload, battle_number, mystats, battle_payload=None):
 			try:
 				enemy_stats.append(battledata["other_team_members"][n]["player"]["udemae"]["name"].lower()) # 7
 			except:
-				enemy_stats.append("c-") # 7
+				enemy_stats.append(None) # 7
 			enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"]) # 8
 		elif mode == "regular" or mode == "fes":
 			enemy_stats.append(None) # 7 - udemae (rank) is null in turf war
@@ -712,15 +712,20 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	if rule != "turf_war": # only upload if ranked
 		try: # either KeyError, or can't lower() a None (null)
 			rank_before = results[i]["player_result"]["player"]["udemae"]["name"].lower()
-			rank_after  = results[i]["udemae"]["name"].lower()
-		except: # e.g. private battle where a player has never played ranked before
-			rank_before = "c-"
-			rank_after = "c-"
+			rank_after = results[i]["udemae"]["name"].lower()
+		except:
+			rank_before = None # based on in-game, not app scoreboard, which displays --- as separate than C-
+			rank_after = None
 		finally:
-			rank_exp = results[i]["player_result"]["player"]["udemae"]["s_plus_number"]
-			rank_exp_after = results[i]["udemae"]["s_plus_number"]
 			payload["rank"] = rank_before
 			payload["rank_after"] = rank_after
+		try:
+			rank_exp = results[i]["player_result"]["player"]["udemae"]["s_plus_number"]
+			rank_exp_after = results[i]["udemae"]["s_plus_number"]
+		except: # e.g. private battle where a player has never played ranked before
+			rank_exp = None
+			rank_exp_after = None
+		finally:
 			payload["rank_exp"] = rank_exp
 			payload["rank_exp_after"] = rank_exp_after
 
