@@ -348,6 +348,7 @@ clothes = {
 	8002:  'green_check_shirt',
 	8003:  'white_shirt',
 	8004:  'urchins_jersey',
+	8005:  'aloha_shirt',
 	8007:  'baby_jelly_shirt',
 	8008:  'baseball_jersey',
 	8009:  'gray_mixed_shirt',
@@ -391,7 +392,6 @@ clothes = {
 	27000: 'hero_jacket_replica',
 	27004: 'armor_jacket_replica',
 	27101: 'hero_hoodie_replica',
-	# : 'aloha_shirt',
 	# : 'king_bench_kaiser',
 	# : 'sage_polo',
 }
