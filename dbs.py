@@ -203,6 +203,7 @@ headgears = {
 	9003:  'tennis_headband',
 	9005:  'soccer_headband',
 	9007:  'fishfry_biscuit_bandana',
+	10000: 'kaiser_cuff',
 	21000: 'headlamp_helmet',
 	21001: 'dust_blocker_2000',
 	25000: 'squid_hairclip',
@@ -214,7 +215,6 @@ headgears = {
 	27000: 'hero_headset_replica',
 	27004: 'armor_helmet_replica',
 	27101: 'hero_headphones_replica',
-	# : 'kaiser_cuff',
 }
 clothes = {
 	2:     'basic_tee',
@@ -290,6 +290,7 @@ clothes = {
 	3011:  'blue_tentatek_tee',
 	4000:  'shrimp_pink_polo',
 	4002:  'tricolor_rugby',
+	4003:  'sage_polo',
 	4004:  'black_polo',
 	4005:  'cycling_shirt',
 	4006:  'cycle_king_jersey',
@@ -323,6 +324,7 @@ clothes = {
 	5029:  'light_bomber_jacket',
 	5030:  'brown_fa_11_bomber',
 	5031:  'gray_fa_11_bomber',
+	5032:  'king_bench_kaiser',
 	5033:  'navy_eminence_jacket',
 	5034:  'tumeric_zekko_coat',
 	5035:  'custom_painted_f_3',
@@ -394,8 +396,6 @@ clothes = {
 	27000: 'hero_jacket_replica',
 	27004: 'armor_jacket_replica',
 	27101: 'hero_hoodie_replica',
-	# : 'king_bench_kaiser',
-	# : 'sage_polo',
 }
 shoes = {
 	1:     'cream_basics',
@@ -430,6 +430,7 @@ shoes = {
 	2018:  'blue_and_black_squidkid_iv',
 	2019:  'gray_sea_slug_hi_tops',
 	2020:  'orca_hi_tops',
+	2021:  'imperial_kaiser',
 	2022:  'navy_enperrials',
 	2023:  'amber_sea_slug_hi_tops',
 	2024:  'yellow_iromaki_750s',
@@ -502,7 +503,6 @@ shoes = {
 	27000: 'hero_runner_replicas',
 	27004: 'armor_boot_replicas',
 	27101: 'hero_snowboots_replicas',
-	# : 'imperial_kaiser',
 }
 
 # Ability database
