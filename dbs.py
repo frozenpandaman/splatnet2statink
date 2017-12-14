@@ -92,6 +92,7 @@ stages = {
 	10:   'mozuku',    # Kelp Dome
 	11:   'bbass',     # Blackbelly Skatepark
 	13:   'zatou',     # MakoMart
+	14:   'hakofugu',  # Walleye Warehouse
 	9999: 'mystery',   # Shifty Station (Splatfest only)
 
 	# clearly the funniest way to go about doing this
@@ -108,7 +109,7 @@ stages = {
 	'mozuku':    'Dome',
 	'bbass':     'Skatepark',
 	'zatou':     'Mart',
-	# 'hakofugu':  'Warehouse',
+	'hakofugu':  'Warehouse',
 	# 'arowana':   'Mall',
 	# 'devon' :    'Institute',
 	'mystery':   'Shifty',
