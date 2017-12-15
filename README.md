@@ -48,7 +48,7 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
     ```
     pip install requests
     pip install msgpack-python
-    pip install Pillow
+    pip install pillow
     ```
     If you're on Windows with multiple versions of Python installed, you'll have to use `py -2 -m pip` instead. If the `py` command is not recognized, use `\Python27\python.exe \Python27\Scripts\pip.exe` (given you've installed Python 2.7 in the default directory).
 
