@@ -12,7 +12,7 @@ from operator import itemgetter
 from distutils.version import StrictVersion
 from subprocess import call
 
-A_VERSION = "0.2.7"
+A_VERSION = "0.2.8"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -394,7 +394,7 @@ def get_num_battles():
 		else:
 			return n, results
 
-def set_scoreboard(payload, battle_number, mystats, battle_payload=None):
+def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None):
 	'''Returns a new payload with the players key (scoreboard) present.'''
 
 	if battle_payload != None:
@@ -453,12 +453,18 @@ def set_scoreboard(payload, battle_number, mystats, battle_payload=None):
 				ally_stats.append(battledata["my_team_members"][n]["game_paint_point"]) # 8
 		ally_stats.append(1) # 9 - my team? (yes)
 		ally_stats.append(0) # 10 - is me? (no)
-		ally_stats.append(battledata["my_team_members"][n]["player"]["nickname"]) # 11
+		if s_flag:
+			ally_stats.append(None) # 11
+		else:
+			ally_stats.append(battledata["my_team_members"][n]["player"]["nickname"]) # 11
 		if mode == "fes":
 			ally_stats.append(translate_fest_rank[battledata["my_team_members"][n]["player"]["fes_grade"]["rank"]]) # 12
 		else:
 			ally_stats.append(None) # 12
-		ally_stats.append(battledata["my_team_members"][n]["player"]["principal_id"]) # 13
+		if s_flag:
+			ally_stats.append(None) # 13
+		else:
+			ally_stats.append(battledata["my_team_members"][n]["player"]["principal_id"]) # 13
 		ally_stats.append(battledata["my_team_members"][n]["player"]["star_rank"]) # 14
 		ally_scoreboard.append(ally_stats)
 
@@ -527,12 +533,18 @@ def set_scoreboard(payload, battle_number, mystats, battle_payload=None):
 				enemy_stats.append(battledata["other_team_members"][n]["game_paint_point"]) # 8
 		enemy_stats.append(0) # 9 - my team? (no)
 		enemy_stats.append(0) # 10 - is me? (no)
-		enemy_stats.append(battledata["other_team_members"][n]["player"]["nickname"]) # 11
+		if s_flag:
+			enemy_stats.append(None) # 11
+		else:
+			enemy_stats.append(battledata["other_team_members"][n]["player"]["nickname"]) # 11
 		if mode == "fes":
 			enemy_stats.append(translate_fest_rank[battledata["other_team_members"][n]["player"]["fes_grade"]["rank"]]) # 12
 		else:
 			enemy_stats.append(None) # 12
-		enemy_stats.append(battledata["other_team_members"][n]["player"]["principal_id"]) # 13
+		if s_flag:
+			enemy_stats.append(None) # 13
+		else:
+			enemy_stats.append(battledata["other_team_members"][n]["player"]["principal_id"]) # 13
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["star_rank"]) # 14
 		enemy_scoreboard.append(enemy_stats)
 
@@ -566,6 +578,14 @@ def set_scoreboard(payload, battle_number, mystats, battle_payload=None):
 		if mode == "fes":
 			detail["fest_title"] = full_scoreboard[n][12]
 		payload["players"].append(detail)
+
+	if s_flag:
+		for i in xrange(len(battledata["my_team_members"])):
+			battledata["my_team_members"][i]["player"]["nickname"] = None
+			battledata["my_team_members"][i]["player"]["principal_id"] = None
+		for i in xrange(len(battledata["other_team_members"])):
+			battledata["other_team_members"][i]["player"]["nickname"] = None
+			battledata["other_team_members"][i]["player"]["principal_id"] = None
 
 	if not debug: # we should already have our original json if we're using debug mode
 		payload["splatnet_json"] = battledata
@@ -760,10 +780,11 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		title_before = results[i]["player_result"]["player"]["fes_grade"]["rank"]
 		title_after = results[i]["fes_grade"]["rank"]
 		payload["fest_power"] = results[i]["fes_power"]
-		payload["my_team_power"] = results[i]["my_estimate_fes_power"]
-		payload["his_team_power"] = results[i]["other_estimate_fes_power"]
+		payload["my_team_estimate_fest_power"] = results[i]["my_estimate_fes_power"]
+		payload["his_team_estimate_fest_power"] = results[i]["other_estimate_fes_power"]
 		payload["fest_title"] = translate_fest_rank[title_before]
 		payload["fest_title_after"] = translate_fest_rank[title_after]
+		payload["fest_exp"] = results[i]["fes_point"]
 	else:
 		title_before = None
 
@@ -773,9 +794,9 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	if YOUR_COOKIE != "" or debug: # if no cookie set, don't do this, as it requires online (or battle json) & will fail
 		mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked, title_before, principal_id, star_rank]
 		if filename == None:
-			payload = set_scoreboard(payload, bn, mystats)
+			payload = set_scoreboard(payload, bn, mystats, s_flag)
 		else:
-			payload = set_scoreboard(payload, bn, mystats, results[0])
+			payload = set_scoreboard(payload, bn, mystats, s_flag, results[0])
 
 	##################
 	## IMAGE RESULT ##
