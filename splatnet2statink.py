@@ -8,11 +8,12 @@ import requests, json, time, datetime, random, re
 import msgpack
 import iksm, dbs
 from io import BytesIO
+from PIL import Image, ImageDraw
 from operator import itemgetter
 from distutils.version import StrictVersion
 from subprocess import call
 
-A_VERSION = "0.2.7"
+A_VERSION = "0.2.8"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -781,15 +782,40 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	## IMAGE RESULT ##
 	##################
 	if not debug:
-		if not s_flag:
-			url = "https://app.splatoon2.nintendo.net/api/share/results/{}".format(bn)
-			share_result = requests.post(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
-			if share_result.status_code == requests.codes.ok:
-				image_result_url = share_result.json().get("url")
-				if image_result_url:
-					image_result = requests.get(image_result_url, stream=True)
-					if image_result.status_code == requests.codes.ok:
+		url = "https://app.splatoon2.nintendo.net/api/share/results/{}".format(bn)
+		share_result = requests.post(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
+		if share_result.status_code == requests.codes.ok:
+			image_result_url = share_result.json().get("url")
+			if image_result_url:
+				image_result = requests.get(image_result_url, stream=True)
+				if image_result.status_code == requests.codes.ok:
+					if not s_flag: # normal scoreboard
 						payload["image_result"] = BytesIO(image_result.content).getvalue()
+					else:
+						players = [0] * 8 # in case battles are < 8 people. mark missing player-positions
+						my_missing = 4 - (len(payload["splatnet_json"]["my_team_members"]) + 1)
+						their_missing = 4 - len(payload["splatnet_json"]["other_team_members"])
+						for u, v in zip(range(4), range(3, -1, -1)):
+							if my_missing >= u+1: # 1, 2, 3, 4
+								players[v] = None # from back of my team's half
+						for u, v in zip(range(4), range(7, -3, -1)):
+							if their_missing >= u+1:
+								players[v] = None
+						for p in range(len(payload["players"])):
+							# by default, covers all non-me names.
+							# could be modified, e.g. in quad squads only cover enemy names
+							try:
+								is_player_me = payload["players"][p]["is_me"]
+							except:
+								is_player_me = None
+							lowest_zero = players.index(0) # fill in 0s (uninits) with values
+							players[lowest_zero] = is_player_me
+						if result == "defeat": # enemy team is on top
+							players = players[4:] + players[:4]
+						scoreboard = blackout(image_result.content, players)
+						bytes_result = BytesIO()
+						scoreboard.save(bytes_result, "PNG")
+						payload["image_result"] = bytes_result.getvalue()
 		if sendgears: # if most recent
 			url_profile = "https://app.splatoon2.nintendo.net/api/share/profile"
 			settings = {'stage': stage, 'color': translate_profile_color[random.randrange(0, 6)]}
@@ -887,6 +913,30 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 				if cont[0].lower() == "n":
 					print "Exiting."
 					exit(1)
+
+def blackout(image_result_content, players):
+	'''Given a scoreboard image as bytes and players array, return the a blacked-out scoreboard.'''
+	scoreboard = Image.open(BytesIO(image_result_content)).convert("RGB")
+	draw = ImageDraw.Draw(scoreboard)
+
+	if players[0] == "no": # is_me is no, so censor
+		draw.polygon([(719, 101), (719, 122), (849, 118), (849,  97)], fill="black")
+	if players[1] == "no":
+		draw.polygon([(721, 151), (721, 172), (851, 168), (851, 147)], fill="black")
+	if players[2] == "no":
+		draw.polygon([(723, 201), (723, 222), (853, 218), (853, 197)], fill="black")
+	if players[3] == "no":
+		draw.polygon([(725, 251), (725, 272), (855, 268), (855, 247)], fill="black")
+	if players[4] == "no":
+		draw.polygon([(725, 379), (725, 400), (855, 405), (855, 384)], fill="black")
+	if players[5] == "no":
+		draw.polygon([(723, 429), (723, 450), (853, 455), (853, 434)], fill="black")
+	if players[6] == "no":
+		draw.polygon([(721, 479), (721, 500), (851, 505), (851, 484)], fill="black")
+	if players[7] == "no":
+		draw.polygon([(719, 529), (719, 550), (849, 555), (849, 534)], fill="black")
+
+	return scoreboard
 
 if __name__ == "__main__":
 	m_value, is_s, is_t, is_r, filename = main()
