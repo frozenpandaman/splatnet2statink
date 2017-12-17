@@ -12,7 +12,7 @@ The `-M` flag runs the script in monitoring mode, uploading new battle results a
 
 The `-r` flag, for use with monitoring mode, checks to see if there are recent battle records present on SplatNet 2 that haven't been uploaded to stat.ink and, if so, posts them.
 
-The `-s` flag suppresses uploading the scoreboard result image.
+The `-s` flag blacks out other players' names on the scoreboard result image and doesn't send them to stat.ink.
 
 The `-t` flag sends the data to stat.ink as a dry run, without uploading, for testing/validation purposes.
 
@@ -49,11 +49,13 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
     pip install requests
     pip install msgpack-python
     ```
+    If you'll be running splatnet2statink with the `-s` flag (black out scoreboard names), run `pip install pillow` as well.
+
     If you're on Windows with multiple versions of Python installed, you'll have to use `py -2 -m pip` instead. If the `py` command is not recognized, use `\Python27\python.exe \Python27\Scripts\pip.exe` (given you've installed Python 2.7 in the default directory).
 
 3. Running the script for the first time will prompt you to enter your stat.ink API key, which can be found in your [profile settings](https://stat.ink/profile). If you're using the app in a language other than English, you may choose choose to enter your [language code](https://github.com/frozenpandaman/splatnet2statink/wiki/languages) (locale) as well.
 
-4. You will then be asked to enter your `iksm_session` token. This can be obtained by following the mitmproxy instructions [here](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions). This token (used to access your SplatNet battle results) along with your stat.ink API key and language will automatically be saved into `config.txt` for you. You're now ready to upload battles!
+4. You will then be asked to enter your `iksm_session` token. To obtain it, follow the mitmproxy instructions [here](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions). This token (used to access your SplatNet battle results) along with your stat.ink API key and language will automatically be saved into `config.txt` for you. You're now ready to upload battles!
 
 5. Optionally, add [custom keys](https://github.com/frozenpandaman/splatnet2statink/wiki/custom-keys) to your `config.txt` for specialized functionality (e.g. if running the script as a daemon).
 
