@@ -85,7 +85,7 @@ stages = {
 	2:    'gangaze',   # Starfish Mainstage
 	3:    'chozame',   # Sturgeon Shipyard
 	4:    'ama',       # Inkblot Art Academy
-	5:    'combu',     # Humpback Pump Track
+	5:    'kombu',     # Humpback Pump Track
 	6:    'manta',     # Manta Maria
 	7:    'hokke',     # Port Mackerel
 	8:    'tachiuo',   # Moray Towers
@@ -102,7 +102,7 @@ stages = {
 	'gangaze':   'Mainstage',
 	'chozame':   'Shipyard',
 	'ama':       'Academy',
-	'combu':     'Track',
+	'kombu':     'Track',
 	'manta':     'Manta',
 	'hokke':     'Port',
 	'tachiuo':   'Towers',
