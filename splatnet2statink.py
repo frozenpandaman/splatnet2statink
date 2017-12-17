@@ -8,10 +8,10 @@ import requests, json, time, datetime, random, re
 import msgpack
 import iksm, dbs
 from io import BytesIO
-from PIL import Image, ImageDraw
 from operator import itemgetter
 from distutils.version import StrictVersion
 from subprocess import call
+# PIL/Pillow imported at bottom
 
 A_VERSION = "0.2.10"
 
@@ -960,6 +960,8 @@ def blackout(image_result_content, players):
 
 if __name__ == "__main__":
 	m_value, is_s, is_t, is_r, filename = main()
+	if is_s:
+		from PIL import Image, ImageDraw
 	if m_value != -1: # m flag exists
 		monitor_battles(is_s, is_t, is_r, m_value, debug)
 	else:
