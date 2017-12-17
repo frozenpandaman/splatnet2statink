@@ -12,7 +12,7 @@ from operator import itemgetter
 from distutils.version import StrictVersion
 from subprocess import call
 
-A_VERSION = "0.2.9"
+A_VERSION = "0.2.10-dev"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -781,9 +781,65 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		payload["his_team_estimate_fest_power"] = results[i]["other_estimate_fes_power"]
 		payload["fest_title"] = translate_fest_rank[title_before]
 		payload["fest_title_after"] = translate_fest_rank[title_after]
-		payload["fest_exp"] = results[i]["fes_point"]
-	else:
-		title_before = None
+		payload["fest_exp_after"] = results[i]["fes_point"]
+		# ... = results[i]["my_team_fes_theme"]["name"]
+		# ... = results[i]["other_team_fes_theme"]["name"]
+
+		title_word = results[i]["fes_grade"]["name"].split()[-1]
+		if title_word == "Fangirl" or title_word == "Queen":
+			payload["gender"] = "girl"
+		elif title_word == "Fanboy" or title_word == "King":
+			payload["gender"] = "boy"
+
+		# TURF INKED EXP
+		points_gained = 0
+		if results[i]["player_result"]["game_paint_point"] >= 200:
+			points_gained += 1
+		if results[i]["player_result"]["game_paint_point"] >= 400:
+			points_gained += 1 # +2 total
+
+		# WIN BONUS EXP
+		if result == "victory":
+			if results[i]["other_estimate_fes_power"] < 1400:
+				points_gained += 3 # 1290 - 1380
+			elif 1400 <= results[i]["other_estimate_fes_power"] < 1700: # ???
+				points_gained += 4 # 1400 - 1680
+			elif 1700 <= results[i]["other_estimate_fes_power"] < 1800: # ???
+				points_gained += 5 # 1720 - 1780
+			elif 1800 <= results[i]["other_estimate_fes_power"] < 1900:
+				points_gained += 6 # 1810 - 1890
+			elif results[i]["other_estimate_fes_power"] >= 1900:
+				points_gained += 7 # 1900 - 2240
+
+		# KING/QUEEN MAX
+		if title_before == 4 and title_after == 4 and results[i]["fes_point"] == 0:
+			payload["fest_exp"] = 0 # already at max, no exp gained
+
+		# WITHIN SAME TITLE
+		elif title_before == title_after:
+			payload["fest_exp"] = results[i]["fes_point"] - points_gained
+
+		# CHAMPION (99) TO KING/QUEEN
+		elif title_before == 3 and title_after == 4:
+			# fes_point == 0 should always be true (reached max). if reaching max
+			# *exactly*, then fest_exp = 99 - points_gained, but no way to verify this
+			# e.g. even if user got +7, max (99->0) could have been reached after, say, +2
+			payload["fest_exp"] = None
+
+		# DEFENDER (50) TO CHAMPION (99)
+		elif title_before == 2 and title_after == 3:
+			payload["fest_exp"] = 50 + results[i]["fes_point"] - points_gained
+
+		# FIEND (25) TO DEFENDER (50)
+		elif title_before == 1 and title_after == 2:
+			payload["fest_exp"] = 25 + results[i]["fes_point"] - points_gained
+
+		# FANBOY/GIRL (10) TO FIEND (25)
+		elif title_before == 0 and title_after == 1:
+			payload["fest_exp"] = 10 + results[i]["fes_point"] - points_gained
+
+	else: # not splatfest
+		title_before = None # for scoreboard param
 
 	################
 	## SCOREBOARD ##
