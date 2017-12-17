@@ -937,23 +937,25 @@ def blackout(image_result_content, players):
 	scoreboard = Image.open(BytesIO(image_result_content)).convert("RGB")
 	draw = ImageDraw.Draw(scoreboard)
 
-	if players[0] == "no": # is_me is no, so censor
-		draw.polygon([(719, 101), (719, 122), (849, 118), (849,  97)], fill="black")
-	if players[1] == "no":
-		draw.polygon([(721, 151), (721, 172), (851, 168), (851, 147)], fill="black")
-	if players[2] == "no":
-		draw.polygon([(723, 201), (723, 222), (853, 218), (853, 197)], fill="black")
-	if players[3] == "no":
-		draw.polygon([(725, 251), (725, 272), (855, 268), (855, 247)], fill="black")
-	if players[4] == "no":
-		draw.polygon([(725, 379), (725, 400), (855, 405), (855, 384)], fill="black")
-	if players[5] == "no":
-		draw.polygon([(723, 429), (723, 450), (853, 455), (853, 434)], fill="black")
-	if players[6] == "no":
-		draw.polygon([(721, 479), (721, 500), (851, 505), (851, 484)], fill="black")
-	if players[7] == "no":
-		draw.polygon([(719, 529), (719, 550), (849, 555), (849, 534)], fill="black")
-
+	if "yes" in players: # this shouldn't happen. if it does, let's just not censor anything
+		if players[0] == "no": # is_me is no, so censor
+			draw.polygon([(719, 101), (719, 123), (849, 119), (849,  97)], fill="black")
+		if players[1] == "no":
+			draw.polygon([(721, 151), (721, 173), (851, 169), (851, 147)], fill="black")
+		if players[2] == "no":
+			draw.polygon([(723, 201), (723, 223), (853, 219), (853, 197)], fill="black")
+		if players[3] == "no":
+			draw.polygon([(725, 251), (725, 273), (855, 269), (855, 247)], fill="black")
+		if players[4] == "no":
+			draw.polygon([(725, 379), (725, 401), (855, 406), (855, 384)], fill="black")
+		if players[5] == "no":
+			draw.polygon([(723, 429), (723, 451), (853, 456), (853, 434)], fill="black")
+		if players[6] == "no":
+			draw.polygon([(721, 479), (721, 501), (851, 506), (851, 484)], fill="black")
+		if players[7] == "no":
+			draw.polygon([(719, 529), (719, 551), (849, 556), (849, 534)], fill="black")
+	else: # no "me" - this shouldn't happen. if it does, let's just not censor anything in case
+		pass
 	return scoreboard
 
 if __name__ == "__main__":
