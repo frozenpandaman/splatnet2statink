@@ -31,7 +31,7 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
   - [x] Rank & rank after, level & level after, star levels (&#9733;)
   - [x] Battle start & end times
   - [x] Ranked power level & league power
-  - [x] Splatfest title & power
+  - [x] Splatfest title, EXP & power
 - [x] Gear + ability recognition
   - [x] New Ver. 2.0.0 gear
   - [x] Gear & user profile image upload
