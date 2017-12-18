@@ -784,11 +784,19 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		# payload["my_team_fes_theme"] = results[i]["my_team_fes_theme"]["name"]
 		# payload["other_team_fes_theme"] = results[i]["other_team_fes_theme"]["name"]
 
-		title_word = results[i]["fes_grade"]["name"].split()[-1]
-		if title_word == "Fangirl" or title_word == "Queen":
-			payload["gender"] = "girl"
-		elif title_word == "Fanboy" or title_word == "King":
+		en_title_word = unicode(results[i]["fes_grade"]["name"].split()[-1]) # last word
+		ja_title_word = unicode(results[i]["fes_grade"]["name"][-3:]) # last 3 chars
+		other_title_word = unicode(results[i]["fes_grade"]["name"].split()[0]) # first word
+		# english, japanese
+		if en_title_word in [u"Fanboy", u"King"] or ja_title_word == u"ボーイ":
 			payload["gender"] = "boy"
+		elif en_title_word in [u"Fangirl", u"Queen"] or ja_title_word == u"ガール":
+			payload["gender"] = "girl"
+		# spanish noe, spanish noa, italian, french noe, french noa, dutch
+		elif other_title_word in [u"Novato", u"Fanático", u"Guerrero", u"Experto", u"Maestro", u"Devoto", u"Defensor", u"Protector", u"Rey", u"Ragazzo", u"Expert", u"Maître", u"Roi", u"Held", u"Koning"]:
+			payload["gender"] = "boy"
+		elif other_title_word in [u"Novata", u"Fanática", u"Guerrera", u"Experta", u"Maestra", u"Devota", u"Defensora", u"Protectora", u"Reina", u"Ragazza", u"Experte", u"Maîtresse", u"Reine", u"Heldin", u"Koningin"]:
+			payload["gender"] = "girl"
 
 		payload["fest_title"] = translate_fest_rank[title_before]
 		payload["fest_title_after"] = translate_fest_rank[title_after]
