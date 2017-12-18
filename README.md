@@ -10,7 +10,7 @@ $ python splatnet2statink.py [-M [N]] [-r] [-s] [-t]
 
 The `-M` flag runs the script in monitoring mode, uploading new battle results as you play games. The script checks for new battles every `N` seconds; if no `N` is provided, the script defaults to 300 (5 minutes).
 
-The `-r` flag, for use with monitoring mode, checks to see if there are recent battle records present on SplatNet 2 that haven't been uploaded to stat.ink and, if so, posts them.
+The `-r` flag, for use with monitoring mode, checks to see if there are recent battle records present on SplatNet 2 that haven't been uploaded to stat.ink and, if so, uploads them.
 
 The `-s` flag blacks out other players' names on the scoreboard result image and doesn't send them to stat.ink.
 
