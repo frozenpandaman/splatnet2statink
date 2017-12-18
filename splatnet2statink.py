@@ -13,7 +13,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "0.2.11"
+A_VERSION = "0.2.12"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -781,8 +781,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		payload["fest_power"] = results[i]["fes_power"]
 		payload["my_team_estimate_fest_power"] = results[i]["my_estimate_fes_power"]
 		payload["his_team_estimate_fest_power"] = results[i]["other_estimate_fes_power"]
-		# payload["my_team_fes_theme"] = results[i]["my_team_fes_theme"]["name"]
-		# payload["other_team_fes_theme"] = results[i]["other_team_fes_theme"]["name"]
+		payload["my_team_fes_theme"] = results[i]["my_team_fes_theme"]["name"]
+		payload["his_team_fes_theme"] = results[i]["other_team_fes_theme"]["name"]
 
 		en_title_word = unicode(results[i]["fes_grade"]["name"].split()[-1]) # last word
 		ja_title_word = unicode(results[i]["fes_grade"]["name"][-3:]) # last 3 chars
