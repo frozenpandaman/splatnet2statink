@@ -2,6 +2,10 @@
 
 A script that uploads battle data from the SplatNet 2 app ("Nintendo Switch Online," for use with *Splatoon 2*) to [http://stat.ink/](http://stat.ink/), a site for recording, visualizing, and aggregating statistics from *Splatoon* and *Splatoon 2*.
 
+(ja) 日本語版セットアップ手順は[こちら](https://archive.fo/td52p)。
+
+(zh) [这里](https://cowlevel.net/article/1927016)是中文版的安装说明。
+
 ## Usage
 
 ```
@@ -61,7 +65,7 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
 
 Have any questions, issues, or suggestions? Feel free to message me on [Twitter](https://twitter.com/frozenpandaman) or [Reddit](https://www.reddit.com/user/frozenpandaman).
 
-日本語のセットアップ手順は[こちら](https://archive.fo/td52p)。質問があれば、ツイッター([@frozenpandaman](https://twitter.com/frozenpandaman))で連絡してください。日本語OK。
+質問があれば、ツイッター([@frozenpandaman](https://twitter.com/frozenpandaman))で連絡してください。日本語OK。
 
 ### Accessing SplatNet 2 from your browser
 
