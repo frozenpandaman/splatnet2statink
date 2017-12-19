@@ -4,7 +4,7 @@ A script that uploads battle data from the SplatNet 2 app ("Nintendo Switch Onli
 
 (ja) 日本語版セットアップ手順は[こちら](https://archive.fo/td52p)。
 
-(zh) [这里](https://cowlevel.net/article/1927016)是中文版的安装说明。
+(zh) 中文版的安装说明在[这里](https://cowlevel.net/article/1927016)。
 
 ## Usage
 
