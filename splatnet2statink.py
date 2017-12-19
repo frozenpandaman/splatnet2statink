@@ -63,6 +63,8 @@ translate_clothing      = dbs.clothes
 translate_shoes         = dbs.shoes
 translate_ability       = dbs.abilities
 
+gender = None
+
 def custom_key_exists_and_true(key): # https://github.com/frozenpandaman/splatnet2statink/wiki/custom-keys
 	'''Checks if a given custom key exists in config.txt.'''
 	if key not in ["ignore_private"]:
@@ -234,6 +236,11 @@ def main():
 	is_t = parser_result.t
 	is_r = parser_result.r
 	filename = parser_result.filename
+
+	url = "https://app.splatoon2.nintendo.net/api/records"
+	records = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
+	global gender
+	gender = json.loads(records.text)["records"]["player"]["player_type"]["key"]
 
 	return m_value, is_s, is_t, is_r, filename
 
@@ -467,6 +474,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 		else:
 			ally_stats.append(battledata["my_team_members"][n]["player"]["principal_id"]) # 13
 		ally_stats.append(battledata["my_team_members"][n]["player"]["star_rank"]) # 14
+		ally_stats.append(None) # 15
 		ally_scoreboard.append(ally_stats)
 
 	my_stats = []
@@ -495,6 +503,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 		my_stats.append(None) # 12
 	my_stats.append(principal_id) # 13
 	my_stats.append(star_rank) # 14
+	my_stats.append(gender) # 15
 	ally_scoreboard.append(my_stats)
 
 	# scoreboard sort order: sort_score (or turf inked), k+a, specials, deaths (more = better), kills, nickname
@@ -547,6 +556,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 		else:
 			enemy_stats.append(battledata["other_team_members"][n]["player"]["principal_id"]) # 13
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["star_rank"]) # 14
+		enemy_stats.append(None) # 15
 		enemy_scoreboard.append(enemy_stats)
 
 	if rule != "turf_war":
@@ -573,6 +583,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			"name":           full_scoreboard[n][11],
 			"splatnet_id":    full_scoreboard[n][13],
 			"star_rank":      full_scoreboard[n][14],
+			"gender":         full_scoreboard[n][15],
 		}
 		if mode == "gachi" or mode == "league":
 			detail["rank"] = full_scoreboard[n][7]
@@ -783,20 +794,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		payload["his_team_estimate_fest_power"] = results[i]["other_estimate_fes_power"]
 		payload["my_team_fes_theme"] = results[i]["my_team_fes_theme"]["name"]
 		payload["his_team_fes_theme"] = results[i]["other_team_fes_theme"]["name"]
-
-		en_title_word = unicode(results[i]["fes_grade"]["name"].split()[-1]) # last word
-		ja_title_word = unicode(results[i]["fes_grade"]["name"][-3:]) # last 3 chars
-		other_title_word = unicode(results[i]["fes_grade"]["name"].split()[0]) # first word
-		# english, japanese
-		if en_title_word in [u"Fanboy", u"King"] or ja_title_word == u"ボーイ":
-			payload["gender"] = "boy"
-		elif en_title_word in [u"Fangirl", u"Queen"] or ja_title_word == u"ガール":
-			payload["gender"] = "girl"
-		# spanish noe, spanish noa, italian, french noe, french noa, dutch
-		elif other_title_word in [u"Novato", u"Fanático", u"Guerrero", u"Experto", u"Maestro", u"Devoto", u"Defensor", u"Protector", u"Rey", u"Ragazzo", u"Expert", u"Maître", u"Roi", u"Held", u"Koning"]:
-			payload["gender"] = "boy"
-		elif other_title_word in [u"Novata", u"Fanática", u"Guerrera", u"Experta", u"Maestra", u"Devota", u"Defensora", u"Protectora", u"Reina", u"Ragazza", u"Experte", u"Maîtresse", u"Reine", u"Heldin", u"Koningin"]:
-			payload["gender"] = "girl"
+		payload["gender"] = gender
 
 		payload["fest_title"] = translate_fest_rank[title_before]
 		payload["fest_title_after"] = translate_fest_rank[title_after]
