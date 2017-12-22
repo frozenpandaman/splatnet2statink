@@ -1,6 +1,6 @@
 # splatnet2statink.py
 
-A script that uploads battle data from the SplatNet 2 app ("Nintendo Switch Online," for use with *Splatoon 2*) to [http://stat.ink/](http://stat.ink/), a site for recording, visualizing, and aggregating statistics from *Splatoon* and *Splatoon 2*.
+A script that uploads battle data from the SplatNet 2 app ("Nintendo Switch Online," for use with *Splatoon 2*) to [https://stat.ink/](https://stat.ink/), a site for recording, visualizing, and aggregating statistics from *Splatoon* and *Splatoon 2*.
 
 (ja) 日本語版セットアップ手順は[こちら](https://archive.fo/td52p)。
 
@@ -12,7 +12,7 @@ A script that uploads battle data from the SplatNet 2 app ("Nintendo Switch Onli
 $ python splatnet2statink.py [-M [N]] [-r] [-s] [-t]
 ```
 
-The `-M` flag runs the script in monitoring mode, uploading new battle results as you play games. The script checks for new battles every `N` seconds; if no `N` is provided, the script defaults to 300 (5 minutes).
+The `-M` flag runs the script in monitoring mode, uploading new battle results as you play matches. The script checks for new battles every `N` seconds; if no `N` is provided, the script defaults to 300 (5 minutes).
 
 The `-r` flag, for use with monitoring mode, checks to see if there are recent battle records present on SplatNet 2 that haven't been uploaded to stat.ink and, if so, uploads them.
 
@@ -57,11 +57,13 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
 
     If you're on Windows with multiple versions of Python installed, you'll have to use `py -2 -m pip` instead. If the `py` command is not recognized, use `\Python27\python.exe \Python27\Scripts\pip.exe` (given you've installed Python 2.7 in the default directory).
 
-3. Running the script for the first time will prompt you to enter your stat.ink API key, which can be found in your [profile settings](https://stat.ink/profile). If you're using the app in a language other than English, you may choose choose to enter your [language code](https://github.com/frozenpandaman/splatnet2statink/wiki/languages) (locale) as well.
+3. Download the script by running `git clone https://github.com/frozenpandaman/splatnet2statink.git` (requires [Git](https://git-scm.com/download), pre-installed on macOS), or use the green "Clone or download" button above.
 
-4. You will then be asked to enter your `iksm_session` token. To obtain it, follow the mitmproxy instructions [here](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions). This token (used to access your SplatNet battle results) along with your stat.ink API key and language will automatically be saved into `config.txt` for you. You're now ready to upload battles!
+4. Running the script for the first time will prompt you to enter your stat.ink API key, which can be found in your [profile settings](https://stat.ink/profile). If you're using the app in a language other than English, you may enter your [language code](https://github.com/frozenpandaman/splatnet2statink/wiki/languages) (locale) as well.
 
-5. Optionally, add [custom keys](https://github.com/frozenpandaman/splatnet2statink/wiki/custom-keys) to your `config.txt` for specialized functionality (e.g. if running the script as a daemon).
+5. You will then be asked to enter your `iksm_session` token. To obtain it, follow the mitmproxy instructions [here](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions). This token (used to access your SplatNet battle results) along with your stat.ink API key and language will automatically be saved into `config.txt` for you. You're now ready to upload battles!
+
+6. Optionally, add [custom keys](https://github.com/frozenpandaman/splatnet2statink/wiki/custom-keys) to your `config.txt` for specialized functionality (e.g. if running the script as a daemon).
 
 Have any questions, issues, or suggestions? Feel free to message me on [Twitter](https://twitter.com/frozenpandaman) or [Reddit](https://www.reddit.com/user/frozenpandaman).
 
