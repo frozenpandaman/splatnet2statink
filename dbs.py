@@ -32,7 +32,7 @@ weapons = {
 	250:  'rapid_elite',          # Rapid Blaster Pro
 	300:  'l3reelgun',            # L-3 Nozzlenose
 	310:  'h3reelgun',            # H-3 Nozzlenose
-	400:  'bottlegeyser'          # Squeezer
+	400:  'bottlegeyser',         # Squeezer
 	1000: 'carbon',               # Carbon Roller
 	1010: 'splatroller',          # Splat Roller
 	1011: 'splatroller_collabo',  # Krak-On Splat Roller
