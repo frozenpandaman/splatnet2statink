@@ -13,7 +13,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "0.2.13"
+A_VERSION = "0.2.14"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -237,11 +237,6 @@ def main():
 	is_r = parser_result.r
 	filename = parser_result.filename
 
-	url = "https://app.splatoon2.nintendo.net/api/records"
-	records = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
-	global gender
-	gender = json.loads(records.text)["records"]["player"]["player_type"]["key"]
-
 	return m_value, is_s, is_t, is_r, filename
 
 def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
@@ -269,6 +264,14 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 		except: # ...as long as there are actually battles to fetch (i.e. has played online)
 			print "Cannot access SplatNet 2 without having played at least one battle online."
 			exit(1)
+
+	try:
+		url = "https://app.splatoon2.nintendo.net/api/records"
+		records = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
+		global gender
+		gender = json.loads(records.text)["records"]["player"]["player_type"]["key"]
+	except:
+		pass
 
 	battles = [] # 50 recent battles on splatnet
 	wins = 0
@@ -389,16 +392,24 @@ def get_num_battles():
 				continue
 
 		try:
+			url = "https://app.splatoon2.nintendo.net/api/records"
+			records = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
+			global gender
+			gender = json.loads(records.text)["records"]["player"]["player_type"]["key"]
+		except:
+			pass
+
+		try:
 			n = int(raw_input("Number of recent battles to upload (0-50)? "))
 		except ValueError:
 			print "Please enter an integer between 0 and 50. Exiting."
-			exit(0)
+			exit(1)
 		if n < 1:
 			print "Exiting without uploading anything."
 			exit(0)
 		elif n > 50:
 			print "SplatNet 2 only stores the 50 most recent battles. Exiting."
-			exit(0)
+			exit(1)
 		else:
 			return n, results
 
