@@ -625,6 +625,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	payload = {'agent': 'splatnet2statink', 'agent_version': A_VERSION, 'automated': 'yes'}
 	agent_variables = {'upload_mode': "Monitoring" if ismonitor else "Manual"}
 	payload["agent_variables"] = agent_variables
+	payload["gender"] = gender
 
 	##################
 	## LOBBY & MODE ##
@@ -805,7 +806,6 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		payload["his_team_estimate_fest_power"] = results[i]["other_estimate_fes_power"]
 		payload["my_team_fest_theme"] = results[i]["my_team_fes_theme"]["name"]
 		payload["his_team_fest_theme"] = results[i]["other_team_fes_theme"]["name"]
-		payload["gender"] = gender
 
 		payload["fest_title"] = translate_fest_rank[title_before]
 		payload["fest_title_after"] = translate_fest_rank[title_after]
