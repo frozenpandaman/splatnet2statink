@@ -76,6 +76,7 @@ weapons = {
 	6000: 'parashelter',          # Splat Brella
 	6005: 'heroshelter_replica',  # Hero Brella Replica
 	6010: 'campingshelter',       # Tenta Brella
+	6020: 'spygadget',            # Undercover Brella
 }
 
 # Stage database
