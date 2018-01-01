@@ -388,6 +388,7 @@ clothes = {
 	21000: 'squiddor_polo',
 	21001: 'anchor_life_vest',
 	21002: 'juice_parka',
+	21003: 'garden_gear',
 	25000: 'school_uniform',
 	25001: 'samurai_jacket',
 	25002: 'power_armor',
