@@ -44,6 +44,7 @@ weapons = {
 	1100: 'pablo',                # Inkbrush
 	1101: 'pablo_hue',            # Inkbrush Nouveau
 	1110: 'hokusai',              # Octobrush
+	1111: 'hokusai_hue',          # Octobrush Nouveau
 	1115: 'herobrush_replica',    # Herobrush Replica
 	2000: 'squiclean_a',          # Classic Squiffer
 	2010: 'splatcharger',         # Splat Charger
