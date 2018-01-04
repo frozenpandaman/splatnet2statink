@@ -1,4 +1,4 @@
-# splatnet2statink.py
+# splatnet2statink
 
 A script that uploads battle data from the SplatNet 2 app ("Nintendo Switch Online," for use with *Splatoon 2*) to [https://stat.ink/](https://stat.ink/), a site for recording, visualizing, and aggregating statistics from *Splatoon* and *Splatoon 2*.
 
