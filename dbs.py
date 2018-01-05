@@ -31,6 +31,7 @@ weapons = {
 	240:  'rapid',                # Rapid Blaster
 	250:  'rapid_elite',          # Rapid Blaster Pro
 	300:  'l3reelgun',            # L-3 Nozzlenose
+	301:  'l3reelgun_d',          # L-3 Nozzlenose D
 	310:  'h3reelgun',            # H-3 Nozzlenose
 	400:  'bottlegeyser',         # Squeezer
 	1000: 'carbon',               # Carbon Roller
