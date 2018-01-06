@@ -1069,7 +1069,7 @@ if __name__ == "__main__":
 		from PIL import Image, ImageDraw
 	if m_value != -1: # m flag exists
 		monitor_battles(is_s, is_t, is_r, m_value, debug)
-	if is_r: # r flag exists without m, so run only the recent battle upload
+	elif is_r: # r flag exists without m, so run only the recent battle upload
 		upload_recent(is_s, is_t, debug)
 	else:
 		n, results = get_num_battles()
