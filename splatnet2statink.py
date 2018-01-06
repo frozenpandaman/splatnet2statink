@@ -13,7 +13,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "0.2.17"
+A_VERSION = "0.2.18"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -125,7 +125,7 @@ def load_json(bool):
 	return json.loads(results_list.text)
 
 def check_statink_key():
-	'''Check if a valid length API key has been provided and, if not, prompts the user to enter one.'''
+	'''Checks if a valid length API key has been provided and, if not, prompts the user to enter one.'''
 
 	if API_KEY == "skip":
 		return
@@ -239,9 +239,8 @@ def main():
 
 	return m_value, is_s, is_t, is_r, filename
 
-def upload_recent(s_flag, t_flag, debug):
-	'''Check JSON once for new battles and upload them.'''
-
+def load_results():
+	'''Returns the data we need from the results JSON, if possible.'''
 	# initial checks
 	data = load_json(False)
 	try:
@@ -261,6 +260,10 @@ def upload_recent(s_flag, t_flag, debug):
 			print "Cannot access SplatNet 2 without having played at least one battle online."
 			exit(1)
 
+	return results
+
+def set_gender():
+	'''Sets the global gender variable.'''
 	try:
 		url = "https://app.splatoon2.nintendo.net/api/records"
 		records = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
@@ -269,68 +272,51 @@ def upload_recent(s_flag, t_flag, debug):
 	except:
 		pass
 
+def populate_battles(s_flag, t_flag, r_flag, debug):
+	'''Populates the battles list with SplatNet battles. Optionally uploads unuploaded battles.'''
+
+	results = load_results()
+	set_gender()
+
 	battles = [] # 50 recent battles on splatnet
 
 	# if r_flag, check if there are any battles in splatnet that aren't on stat.ink
-	print "Checking if there are previously-unuploaded battles..."
-	printed = False
-	url  = 'https://stat.ink/api/v2/user-battle?only=splatnet_number&count=50'
-	auth = {'Authorization': 'Bearer ' + API_KEY}
-	resp = requests.get(url, headers=auth)
-	statink_battles = json.loads(resp.text) # 50 recent battles on stat.ink
+	if r_flag:
+		print "Checking if there are previously-unuploaded battles..."
+		printed = False
+		url  = 'https://stat.ink/api/v2/user-battle?only=splatnet_number&count=50'
+		auth = {'Authorization': 'Bearer ' + API_KEY}
+		resp = requests.get(url, headers=auth)
+		statink_battles = json.loads(resp.text) # 50 recent battles on stat.ink
 
-	for i, result in reversed(list(enumerate(results))): # reversed chrono order
+	# always does this to populate battles array, regardless of r_flag
+	for result in reversed(results):
 		bn = int(result["battle_number"]) # get all recent battle_numbers
 		battles.append(bn) # for main process, don't upload any of the ones already in the file
-		if bn not in statink_battles: # one of the splatnet battles isn't on stat.ink (unuploaded)
-			if not printed:
-				printed = True
-				print("Previously-unuploaded battles detected. Uploading now...")
-			post_battle(0, [result], s_flag, t_flag, -1, True if i == 0 else False, debug, True)
+		if r_flag:
+			if bn not in statink_battles: # one of the splatnet battles isn't on stat.ink (unuploaded)
+				if not printed:
+					printed = True
+					print("Previously-unuploaded battles detected. Uploading now...")
+				post_battle(0, [result], s_flag, t_flag, -1, False, debug, True)
 
-	if not printed:
+	if r_flag and not printed:
 		print "No previously-unuploaded battles found."
 
 	return battles
 
 def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
-	'''Monitor JSON for changes/new battles and upload them.'''
+	'''Monitors JSON for changes/new battles and uploads them.'''
 
 	# initial checks
 	if filename != None: # local file provided (users should not really be using this)
 		print "Cannot run in monitoring mode provided a local file. Exiting."
 		exit(1)
 
-	data = load_json(False)
-	try:
-		results = data["results"] # all we care about
-	except KeyError:
-		if YOUR_COOKIE == "":
-			reason = "blank"
-		elif data["code"] == "AUTHENTICATION_ERROR":
-			reason = "auth"
-		else:
-			reason = "other" # server error or player hasn't battled before
-		gen_new_cookie(reason)
-		data = load_json(False)
-		try:
-			results = data["results"] # try again with correct tokens; shouldn't get an error now...
-		except: # ...as long as there are actually battles to fetch (i.e. has played online)
-			print "Cannot access SplatNet 2 without having played at least one battle online."
-			exit(1)
+	results = load_results() # make sure we can do it first. if error, throw it before main process
+	set_gender()
 
-	try:
-		url = "https://app.splatoon2.nintendo.net/api/records"
-		records = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
-		global gender
-		gender = json.loads(records.text)["records"]["player"]["player_type"]["key"]
-	except:
-		pass
-
-	if r_flag:
-		battles = upload_recent(s_flag, t_flag, debug)
-	else:
-		battles = [] # 50 recent battles on splatnet
+	battles = populate_battles(s_flag, t_flag, r_flag, debug)
 	wins = 0
 	losses = 0
 
@@ -426,13 +412,7 @@ def get_num_battles():
 				gen_new_cookie(reason)
 				continue
 
-		try:
-			url = "https://app.splatoon2.nintendo.net/api/records"
-			records = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
-			global gender
-			gender = json.loads(records.text)["records"]["player"]["player_type"]["key"]
-		except:
-			pass
+		set_gender()
 
 		try:
 			n = int(raw_input("Number of recent battles to upload (0-50)? "))
@@ -1038,7 +1018,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 					exit(1)
 
 def blackout(image_result_content, players):
-	'''Given a scoreboard image as bytes and players array, return the a blacked-out scoreboard.'''
+	'''Given a scoreboard image as bytes and players array, returns the blacked-out scoreboard.'''
 	scoreboard = Image.open(BytesIO(image_result_content)).convert("RGB")
 	draw = ImageDraw.Draw(scoreboard)
 
@@ -1070,7 +1050,7 @@ if __name__ == "__main__":
 	if m_value != -1: # m flag exists
 		monitor_battles(is_s, is_t, is_r, m_value, debug)
 	elif is_r: # r flag exists without m, so run only the recent battle upload
-		upload_recent(is_s, is_t, debug)
+		populate_battles(is_s, is_t, is_r, debug)
 	else:
 		n, results = get_num_battles()
 		for i in reversed(xrange(n)):
