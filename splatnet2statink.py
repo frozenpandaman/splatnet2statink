@@ -208,7 +208,7 @@ def main():
 	parser.add_argument("-M", dest="N", required=False, nargs="?", action="store",
 						help="monitoring mode; pull data every N secs (default: 300)", const=300)
 	parser.add_argument("-r", required=False, action="store_true",
-						help="retroactively post unuploaded battles; for use with -M")
+						help="retroactively post unuploaded battles")
 	parser.add_argument("-s", required=False, action="store_true",
 						help="don't post scoreboard result image")
 	parser.add_argument("-t", required=False, action="store_true",
@@ -238,6 +238,60 @@ def main():
 	filename = parser_result.filename
 
 	return m_value, is_s, is_t, is_r, filename
+
+def upload_recent(s_flag, t_flag, debug):
+	'''Check JSON once for new battles and upload them.'''
+
+	# initial checks
+	data = load_json(False)
+	try:
+		results = data["results"] # all we care about
+	except KeyError:
+		if YOUR_COOKIE == "":
+			reason = "blank"
+		elif data["code"] == "AUTHENTICATION_ERROR":
+			reason = "auth"
+		else:
+			reason = "other" # server error or player hasn't battled before
+		gen_new_cookie(reason)
+		data = load_json(False)
+		try:
+			results = data["results"] # try again with correct tokens; shouldn't get an error now...
+		except: # ...as long as there are actually battles to fetch (i.e. has played online)
+			print "Cannot access SplatNet 2 without having played at least one battle online."
+			exit(1)
+
+	try:
+		url = "https://app.splatoon2.nintendo.net/api/records"
+		records = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
+		global gender
+		gender = json.loads(records.text)["records"]["player"]["player_type"]["key"]
+	except:
+		pass
+
+	battles = [] # 50 recent battles on splatnet
+
+	# if r_flag, check if there are any battles in splatnet that aren't on stat.ink
+	print "Checking if there are previously-unuploaded battles..."
+	printed = False
+	url  = 'https://stat.ink/api/v2/user-battle?only=splatnet_number&count=50'
+	auth = {'Authorization': 'Bearer ' + API_KEY}
+	resp = requests.get(url, headers=auth)
+	statink_battles = json.loads(resp.text) # 50 recent battles on stat.ink
+
+	for i, result in reversed(list(enumerate(results))): # reversed chrono order
+		bn = int(result["battle_number"]) # get all recent battle_numbers
+		battles.append(bn) # for main process, don't upload any of the ones already in the file
+		if bn not in statink_battles: # one of the splatnet battles isn't on stat.ink (unuploaded)
+			if not printed:
+				printed = True
+				print("Previously-unuploaded battles detected. Uploading now...")
+			post_battle(0, [result], s_flag, t_flag, -1, True if i == 0 else False, debug, True)
+
+	if not printed:
+		print "No previously-unuploaded battles found."
+
+	return battles
 
 def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 	'''Monitor JSON for changes/new battles and upload them.'''
@@ -273,31 +327,12 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 	except:
 		pass
 
-	battles = [] # 50 recent battles on splatnet
+	if r_flag:
+		battles = upload_recent(s_flag, t_flag, debug)
+	else:
+		battles = [] # 50 recent battles on splatnet
 	wins = 0
 	losses = 0
-
-	# if r_flag, check if there are any battles in splatnet that aren't on stat.ink
-	if r_flag:
-		print "Checking if there are previously-unuploaded battles..."
-		printed = False
-		url  = 'https://stat.ink/api/v2/user-battle?only=splatnet_number&count=50'
-		auth = {'Authorization': 'Bearer ' + API_KEY}
-		resp = requests.get(url, headers=auth)
-		statink_battles = json.loads(resp.text) # 50 recent battles on stat.ink
-
-	for result in results[::-1]:
-		bn = int(result["battle_number"]) # get all recent battle_numbers
-		battles.append(bn) # for main process, don't upload any of the ones already in the file
-		if r_flag:
-			if bn not in statink_battles: # one of the splatnet battles isn't on stat.ink (unuploaded)
-				if not printed:
-					printed = True
-					print "Previously-unuploaded battles detected. Uploading now..."
-				post_battle(0, [result], s_flag, t_flag, secs, False, debug, True)
-
-	if r_flag and not printed:
-		print "No previously-unuploaded battles found."
 
 	# main process
 	mins = str(round(float(secs)/60.0,2))
@@ -1034,6 +1069,8 @@ if __name__ == "__main__":
 		from PIL import Image, ImageDraw
 	if m_value != -1: # m flag exists
 		monitor_battles(is_s, is_t, is_r, m_value, debug)
+	elif is_r: # r flag exists without m, so run only the recent battle upload
+		upload_recent(is_s, is_t, debug)
 	else:
 		n, results = get_num_battles()
 		for i in reversed(xrange(n)):
