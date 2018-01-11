@@ -95,6 +95,7 @@ stages = {
 	8:    'tachiuo',   # Moray Towers
 	9:    'engawa',    # Snapper Canal
 	10:   'mozuku',    # Kelp Dome
+	12:   'devon',     # Shellendorf Institute
 	11:   'bbass',     # Blackbelly Skatepark
 	13:   'zatou',     # MakoMart
 	14:   'hakofugu',  # Walleye Warehouse
