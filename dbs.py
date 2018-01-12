@@ -70,6 +70,7 @@ weapons = {
 	4015: 'herospinner_replica',  # Hero Splatling Replica
 	4020: 'hydra',                # Hydra Splatling
 	5000: 'sputtery',             # Dapple Dualies
+	5001: 'sputtery_hue',         # Dapple Dualies Nouveau
 	5010: 'maneuver',             # Splat Dualies
 	5011: 'maneuver_collabo',     # Enperry Splat Dualies
 	5015: 'heromaneuver_replica', # Hero Dualie Replicas
