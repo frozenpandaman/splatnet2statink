@@ -133,10 +133,10 @@ def check_statink_key():
 		new_api_key = ""
 		while len(new_api_key.strip()) != 43 and new_api_key.strip() != "skip":
 			if new_api_key.strip() == "" and API_KEY.strip() == "":
-				new_api_key = raw_input("stat.ink API key: ")
+				new_api_key = input("stat.ink API key: ")
 			else:
 				print("Invalid stat.ink API key. Please re-enter it below.")
-				new_api_key = raw_input("stat.ink API key: ")
+				new_api_key = input("stat.ink API key: ")
 			config_data["api_key"] = new_api_key
 		write_config(config_data)
 	return
@@ -146,7 +146,7 @@ def set_language():
 
 	if USER_LANG == "":
 		print("Default locale is en-US. Press Enter to accept, or enter your own (see readme for list).")
-		language_code = raw_input("")
+		language_code = input("")
 
 		if language_code == "":
 			config_data["user_lang"] = "en-US"
@@ -156,7 +156,7 @@ def set_language():
 			language_list = ["en-US", "es-MX", "fr-CA", "ja-JP", "en-GB", "es-ES", "fr-FR", "de-DE", "it-IT", "nl-NL", "ru-RU"]
 			while language_code not in language_list:
 				print("Invalid language code. Please try entering it again.")
-				language_code = raw_input("")
+				language_code = input("")
 			config_data["user_lang"] = language_code
 			write_config(config_data)
 	return
@@ -171,7 +171,7 @@ def check_for_updates():
 		if update_available:
 			print("There is a new version available.")
 			if os.path.isdir(".git"): # git user
-				update_now = raw_input("Would you like to update now? [Y/n] ")
+				update_now = input("Would you like to update now? [Y/n] ")
 				if update_now == "" or update_now[0].lower() == "y":
 					FNULL = open(os.devnull, "w")
 					call(["git", "checkout", "."], stdout=FNULL, stderr=FNULL)
@@ -415,7 +415,7 @@ def get_num_battles():
 		set_gender()
 
 		try:
-			n = int(raw_input("Number of recent battles to upload (0-50)? "))
+			n = int(input("Number of recent battles to upload (0-50)? "))
 		except ValueError:
 			print("Please enter an integer between 0 and 50. Exiting.")
 			exit(1)
@@ -463,7 +463,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	star_rank    = mystats[12]
 
 	ally_scoreboard = []
-	for n in xrange(len(battledata["my_team_members"])):
+	for n in range(len(battledata["my_team_members"])):
 		ally_stats = []
 		ally_stats.append(battledata["my_team_members"][n]["sort_score"]) # 0
 		ally_stats.append(battledata["my_team_members"][n]["kill_count"] +
@@ -539,13 +539,13 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	else:
 		sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(8, 1, 3, 4, 2, 11), reverse=True)
 
-	for n in xrange(len(sorted_ally_scoreboard)):
+	for n in range(len(sorted_ally_scoreboard)):
 		if sorted_ally_scoreboard[n][10] == 1: # if it's me, position in sorted list is my rank in team
 			payload["rank_in_team"] = n + 1 # account for 0 indexing
 			break
 
 	enemy_scoreboard = []
-	for n in xrange(len(battledata["other_team_members"])):
+	for n in range(len(battledata["other_team_members"])):
 		enemy_stats = []
 		enemy_stats.append(battledata["other_team_members"][n]["sort_score"]) # 0
 		enemy_stats.append(battledata["other_team_members"][n]["kill_count"] +
@@ -593,7 +593,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	full_scoreboard = sorted_ally_scoreboard + sorted_enemy_scoreboard
 
 	payload["players"] = []
-	for n in xrange(len(full_scoreboard)):
+	for n in range(len(full_scoreboard)):
 		# sort score, k+a, kills, specials, deaths, weapon, level, rank, turf inked, is my team, is me, nickname, splatfest rank, splatnet principal_id, star_rank
 		detail = {
 			"team":           "my" if full_scoreboard[n][9] == 1 else "his",
@@ -618,10 +618,10 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 		payload["players"].append(detail)
 
 	if s_flag:
-		for i in xrange(len(battledata["my_team_members"])):
+		for i in range(len(battledata["my_team_members"])):
 			battledata["my_team_members"][i]["player"]["nickname"] = None
 			battledata["my_team_members"][i]["player"]["principal_id"] = None
-		for i in xrange(len(battledata["other_team_members"])):
+		for i in range(len(battledata["other_team_members"])):
 			battledata["other_team_members"][i]["player"]["nickname"] = None
 			battledata["other_team_members"][i]["player"]["principal_id"] = None
 
@@ -944,8 +944,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	###############
 	## ABILITIES ##
 	############### https://github.com/fetus-hina/stat.ink/blob/master/doc/api-1/constant/ability.md
-	headgear_subs, clothing_subs, shoes_subs = ([-1,-1,-1] for i in xrange(3))
-	for j in xrange(3):
+	headgear_subs, clothing_subs, shoes_subs = ([-1,-1,-1] for i in range(3))
+	for j in range(3):
 		try:
 			headgear_subs[j] = results[i]["player_result"]["player"]["head_skills"]["subs"][j]["id"]
 		except:
@@ -964,7 +964,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	payload["gears"]["headgear"]["primary_ability"]	= translate_ability.get(int(headgear_main), "")
 	payload["gears"]["clothing"]["primary_ability"]	= translate_ability.get(int(clothing_main), "")
 	payload["gears"]["shoes"]["primary_ability"]	= translate_ability.get(int(shoes_main), "")
-	for j in xrange(3):
+	for j in range(3):
 		payload["gears"]["headgear"]["secondary_abilities"].append(translate_ability.get(int(headgear_subs[j]), ""))
 		payload["gears"]["clothing"]["secondary_abilities"].append(translate_ability.get(int(clothing_subs[j]), ""))
 		payload["gears"]["shoes"]["secondary_abilities"].append(translate_ability.get(int(shoes_subs[j]), ""))
@@ -1012,7 +1012,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 				print("Error uploading battle #" + str(i+1) + ". Message from server:")
 			print(postbattle.content)
 			if not t_flag:
-				cont = raw_input('Continue (y/n)? ')
+				cont = input('Continue (y/n)? ')
 				if cont[0].lower() == "n":
 					print("Exiting.")
 					exit(1)
@@ -1053,7 +1053,7 @@ if __name__ == "__main__":
 		populate_battles(is_s, is_t, is_r, debug)
 	else:
 		n, results = get_num_battles()
-		for i in reversed(xrange(n)):
+		for i in reversed(range(n)):
 			post_battle(i, results, is_s, is_t, m_value, True if i == 0 else False, debug)
 		if debug:
 			print("")
