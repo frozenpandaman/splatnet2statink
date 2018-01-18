@@ -15,6 +15,7 @@ weapons = {
 	41:   'sshooter_collabo',     # Tentatek Splattershot
 	45:   'heroshooter_replica',  # Hero Shot Replica
 	50:   '52gal',                # .52 Gal
+	51:   '52gal_deco',           # .52 Gal Deco
 	60:   'nzap85',               # N-ZAP '85
 	61:   'nzap89',               # N-ZAP '89
 	70:   'prime',                # Splattershot Pro
