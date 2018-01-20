@@ -5,7 +5,7 @@
 # clovervidia
 import os.path, argparse, sys
 import requests, json, time, datetime, random, re
-import msgpack
+import msgpack, uuid
 import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
@@ -13,7 +13,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "0.2.21"
+A_VERSION = "0.2.22"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -284,10 +284,10 @@ def populate_battles(s_flag, t_flag, r_flag, debug):
 	if r_flag:
 		print "Checking if there are previously-unuploaded battles..."
 		printed = False
-		url  = 'https://stat.ink/api/v2/user-battle?only=splatnet_number&count=50'
+		url  = 'https://stat.ink/api/v2/user-battle?only=splatnet_number&count=100'
 		auth = {'Authorization': 'Bearer ' + API_KEY}
 		resp = requests.get(url, headers=auth)
-		statink_battles = json.loads(resp.text) # 50 recent battles on stat.ink
+		statink_battles = json.loads(resp.text) # 100 recent battles on stat.ink. should avoid dupes
 
 	# always does this to populate battles array, regardless of r_flag
 	for result in reversed(results):
@@ -434,7 +434,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	if battle_payload != None:
 		battledata = battle_payload
 	else:
-		url = "https://app.splatoon2.nintendo.net/api/results/" + battle_number
+		url = "https://app.splatoon2.nintendo.net/api/results/{}".format(battle_number)
 		battle = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
 		battledata = json.loads(battle.text)
 
@@ -641,6 +641,11 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	agent_variables = {'upload_mode': "Monitoring" if ismonitor else "Manual"}
 	payload["agent_variables"] = agent_variables
 	payload["gender"] = gender
+	bn = results[i]["battle_number"]
+	principal_id = results[i]["player_result"]["player"]["principal_id"]
+	namespace = uuid.UUID('{73cf052a-fd0b-11e7-a5ee-001b21a098c2}')
+	name = str(bn) + "@" + str(principal_id)
+	payload["uuid"] = str(uuid.uuid5(namespace, name))
 
 	##################
 	## LOBBY & MODE ##
@@ -797,10 +802,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	###################
 	## SPLATNET DATA ##
 	###################
-	bn = results[i]["battle_number"]
 	payload["private_note"] = "Battle #" + bn
 	payload["splatnet_number"] = bn
-	principal_id = results[i]["player_result"]["player"]["principal_id"]
 	if mode == "league":
 		payload["my_team_id"] = results[i]["tag_id"]
 		payload["league_point"] = results[i]["league_point"]
@@ -874,7 +877,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	################
 	## SCOREBOARD ##
 	################
-	if YOUR_COOKIE != "" or debug: # if no cookie set, don't do this, as it requires online (or battle json) & will fail
+	if YOUR_COOKIE != "" or debug: # requires online (or battle json). if no cookie, don't do - will fail
 		mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked, title_before, principal_id, star_rank]
 		if filename == None:
 			payload = set_scoreboard(payload, bn, mystats, s_flag)
@@ -961,9 +964,9 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	headgear_main = results[i]["player_result"]["player"]["head_skills"]["main"]["id"]
 	clothing_main = results[i]["player_result"]["player"]["clothes_skills"]["main"]["id"]
 	shoes_main = results[i]["player_result"]["player"]["shoes_skills"]["main"]["id"]
-	payload["gears"]["headgear"]["primary_ability"]	= translate_ability.get(int(headgear_main), "")
-	payload["gears"]["clothing"]["primary_ability"]	= translate_ability.get(int(clothing_main), "")
-	payload["gears"]["shoes"]["primary_ability"]	= translate_ability.get(int(shoes_main), "")
+	payload["gears"]["headgear"]["primary_ability"] = translate_ability.get(int(headgear_main), "")
+	payload["gears"]["clothing"]["primary_ability"] = translate_ability.get(int(clothing_main), "")
+	payload["gears"]["shoes"]["primary_ability"] = translate_ability.get(int(shoes_main), "")
 	for j in xrange(3):
 		payload["gears"]["headgear"]["secondary_abilities"].append(translate_ability.get(int(headgear_subs[j]), ""))
 		payload["gears"]["clothing"]["secondary_abilities"].append(translate_ability.get(int(clothing_subs[j]), ""))
@@ -1010,8 +1013,11 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 				print "Battle #" + str(i+1) + " - message from server:"
 			else:
 				print "Error uploading battle #" + str(i+1) + ". Message from server:"
-			print postbattle.content
-			if not t_flag:
+			if postbattle.status_code == 200: # gives OK response even though duplicate & not uploaded again
+				print "Battle has already been uploaded to " + postbattle.url
+			else: # 4xx client error, or anything else
+				print postbattle.content
+			if not t_flag and i != 0: # don't prompt for final battle
 				cont = raw_input('Continue (y/n)? ')
 				if cont[0].lower() == "n":
 					print "Exiting."
