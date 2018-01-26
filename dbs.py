@@ -30,6 +30,7 @@ weapons = {
 	220:  'longblaster',          # Range Blaster
 	230:  'clashblaster',         # Clash Blaster
 	240:  'rapid',                # Rapid Blaster
+	241:  'rapid_deco',           # Rapid Blaster Deco
 	250:  'rapid_elite',          # Rapid Blaster Pro
 	300:  'l3reelgun',            # L-3 Nozzlenose
 	301:  'l3reelgun_d',          # L-3 Nozzlenose D
