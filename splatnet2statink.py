@@ -13,7 +13,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "0.2.23"
+A_VERSION = "0.2.24"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -1000,28 +1000,29 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		if payload["agent"] != os.path.basename(__file__)[:-3]:
 			print "Could not upload. Please contact @frozenpandaman on Twitter/GitHub for assistance."
 			exit(1)
-		postbattle = requests.post(url, headers=auth, data=msgpack.packb(payload))
+		postbattle = requests.post(url, headers=auth, data=msgpack.packb(payload), allow_redirects=False)
 
 		# Response
-		try:
-			if not ismonitor:
-				print "Battle #" + str(i+1) + " uploaded to " + postbattle.headers.get('location') # display url
-			else: # monitoring mode
-				print "Battle uploaded to " + postbattle.headers.get('location')
-		except TypeError: # postbattle.headers.get is likely NoneType, i.e. we received an error
-			if t_flag:
-				print "Battle #" + str(i+1) + " - message from server:"
-			else:
-				print "Error uploading battle #" + str(i+1) + ". Message from server:"
-			if postbattle.status_code == 200: # gives OK response even though duplicate & not uploaded again
-				print "Battle has already been uploaded to " + postbattle.url
-			else: # 4xx client error, or anything else
+		if postbattle.status_code == 302: # receive redirect
+			print "Battle #" + str(i+1) + " already uploaded to " + postbattle.headers.get('location')
+			# continue trying to upload remaining
+		else: # OK (200), or some other error (4xx)
+			try:
+				if not ismonitor:
+					print "Battle #" + str(i+1) + " uploaded to " + postbattle.headers.get('location')
+				else: # monitoring mode
+					print "Battle uploaded to " + postbattle.headers.get('location')
+			except TypeError: # postbattle.headers.get is likely NoneType, i.e. we received an error
+				if t_flag:
+					print "Battle #" + str(i+1) + " - message from server:"
+				else:
+					print "Error uploading battle #" + str(i+1) + ". Message from server:"
 				print postbattle.content
-			if not t_flag and i != 0: # don't prompt for final battle
-				cont = raw_input('Continue (y/n)? ')
-				if cont[0].lower() == "n":
-					print "Exiting."
-					exit(1)
+				if not t_flag and i != 0: # don't prompt for final battle
+					cont = raw_input('Continue (y/n)? ')
+					if cont[0].lower() == "n":
+						print "Exiting."
+						exit(1)
 
 def blackout(image_result_content, players):
 	'''Given a scoreboard image as bytes and players array, returns the blacked-out scoreboard.'''
