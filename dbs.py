@@ -102,6 +102,7 @@ stages = {
 	12:   'devon',     # Shellendorf Institute
 	13:   'zatou',     # MakoMart
 	14:   'hakofugu',  # Walleye Warehouse
+	15:   'arowana',   # Arowana Mall
 	9999: 'mystery',   # Shifty Station (Splatfest only)
 
 	# clearly the funniest way to go about doing this
@@ -119,7 +120,7 @@ stages = {
 	'bbass':     'Skatepark',
 	'zatou':     'Mart',
 	'hakofugu':  'Warehouse',
-	# 'arowana':   'Mall',
+	'arowana':   'Mall',
 	'devon' :    'Institute',
 	'mystery':   'Shifty',
 }
