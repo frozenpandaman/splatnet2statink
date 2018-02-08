@@ -62,6 +62,7 @@ weapons = {
 	2041: 'liter4k_scope_custom', # Custom E-liter 4K Scope
 	2050: 'bamboo14mk1',          # Bamboozler 14 Mk I
 	2060: 'soytuber',             # Goo Tuber
+	2061: 'soytuber_custom',      # Custom Goo Tuber
 	3000: 'bucketslosher',        # Slosher
 	3001: 'bucketslosher_deco',   # Slosher Deco
 	3005: 'heroslosher_replica',  # Hero Slosher Replica
