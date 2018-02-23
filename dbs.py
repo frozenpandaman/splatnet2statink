@@ -25,6 +25,7 @@ weapons = {
 	90:   'jetsweeper',           # Jet Squelcher
 	91:   'jetsweeper_custom',    # Custom Jet Squelcher
 	200:  'nova',                 # Luna Blaster
+	201:  'nova_neo',             # Luna Blaster Neo
 	210:  'hotblaster',           # Blaster
 	211:  'hotblaster_custom',    # Custom Blaster
 	215:  'heroblaster_replica',  # Hero Blaster Replica
