@@ -13,7 +13,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "0.2.29"
+A_VERSION = "0.2.30"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -319,6 +319,9 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 	battles = populate_battles(s_flag, t_flag, r_flag, debug)
 	wins = 0
 	losses = 0
+	splatfest_wins = 0
+	splatfest_losses = 0
+	mirror_matches = 0
 
 	# main process
 	mins = str(round(float(secs)/60.0,2))
@@ -341,8 +344,18 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 						pass
 					else:
 						worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
-						wins = wins + 1 if worl == "Won" else wins
-						losses = losses + 1 if worl == "Lost" else losses
+						if worl == "Won":
+							wins = wins + 1
+							if result["game_mode"]["key"] == "fes_solo" or result["game_mode"]["key"] == "fes_team" and result["my_team_fes_theme"]["key"] != result["other_team_fes_theme"]["key"]:
+								splatfest_wins = splatfest_wins + 1
+						else:
+							losses = losses + 1
+							if result["game_mode"]["key"] == "fes_solo" or result["game_mode"]["key"] == "fes_team" and result["my_team_fes_theme"]["key"] != result["other_team_fes_theme"]["key"]:
+								splatfest_losses = splatfest_losses + 1
+						try:
+							mirror_matches = mirror_matches + 1 if result["my_team_fes_theme"]["key"] == result["other_team_fes_theme"]["key"] else mirror_matches
+						except:
+							pass
 						mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
 						print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
@@ -361,8 +374,18 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 					else:
 						foundany = True
 						worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
-						wins = wins + 1 if worl == "Won" else wins
-						losses = losses + 1 if worl == "Lost" else losses
+						if worl == "won":
+							wins = wins + 1
+							if (result["game_mode"]["key"] == "fes_solo" or result["game_mode"]["key"] == "fes_team") and (result["my_team_fes_theme"]["key"] != result["other_team_fes_theme"]["key"]):
+								splatfest_wins = splatfest_wins + 1
+						else:
+							losses = losses + 1
+							if (result["game_mode"]["key"] == "fes_solo" or result["game_mode"]["key"] == "fes_team") and (result["my_team_fes_theme"]["key"] != result["other_team_fes_theme"]["key"]):
+								splatfest_losses = splatfest_losses + 1
+						try:
+							mirror_matches = mirror_matches + 1 if result["my_team_fes_theme"]["key"] == result["other_team_fes_theme"]["key"] else mirror_matches
+						except:
+							pass
 						mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
 						print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
@@ -374,6 +397,12 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 		w_plural = "" if wins == 1 else "s"
 		l_plural = "" if losses == 1 else "es"
 		print "%d win%s and %d loss%s this session." % (wins, w_plural, losses, l_plural)
+		if splatfest_wins != 0 or splatfest_losses != 0:
+			w_plural = "" if splatfest_wins == 1 else "s"
+			l_plural = "" if splatfest_losses == 1 else "es"
+			m_plural = "" if mirror_matches == 1 else "es"
+			print "%d win%s and %d loss%s against the other Splatfest team." % (splatfest_wins, w_plural, splatfest_losses, l_plural)
+			print "You had %d mirror match%s against your Splatfest Team." % (mirror_matches, m_plural)
 		print "Bye!"
 
 def get_num_battles():
@@ -966,7 +995,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	shoes_main = results[i]["player_result"]["player"]["shoes_skills"]["main"]["id"]
 	payload["gears"]["headgear"]["primary_ability"] = translate_ability.get(int(headgear_main), "")
 	payload["gears"]["clothing"]["primary_ability"] = translate_ability.get(int(clothing_main), "")
-	payload["gears"]["shoes"]["primary_ability"] = translate_ability.get(int(shoes_main), "")
+	payload["gears"]["shoes"]["primary_ability"]    = translate_ability.get(int(shoes_main), "")
 	for j in xrange(3):
 		payload["gears"]["headgear"]["secondary_abilities"].append(translate_ability.get(int(headgear_subs[j]), ""))
 		payload["gears"]["clothing"]["secondary_abilities"].append(translate_ability.get(int(clothing_subs[j]), ""))
