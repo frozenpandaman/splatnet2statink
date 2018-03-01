@@ -401,8 +401,8 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 			w_plural = "" if splatfest_wins == 1 else "s"
 			l_plural = "" if splatfest_losses == 1 else "es"
 			m_plural = "" if mirror_matches == 1 else "es"
-			print "%d win%s and %d loss%s against the other Splatfest team." % (splatfest_wins, w_plural, splatfest_losses, l_plural)
-			print "You had %d mirror match%s against your Splatfest Team." % (mirror_matches, m_plural)
+			print "{} win{} and {} loss{} against the other Splatfest team.".format(splatfest_wins, w_plural, splatfest_losses, l_plural)
+			print "{} mirror match{} against your Splatfest team.".format(mirror_matches, m_plural)
 		print "Bye!"
 
 def get_num_battles():
