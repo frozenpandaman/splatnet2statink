@@ -82,6 +82,7 @@ weapons = {
 	5015: 'heromaneuver_replica', # Hero Dualie Replicas
 	5020: 'kelvin525',            # Glooga Dualies
 	5030: 'dualsweeper',          # Dualie Squelchers
+	5040: 'quadhopper_black',     # Dark Tetra Dualies
 	6000: 'parashelter',          # Splat Brella
 	6005: 'heroshelter_replica',  # Hero Brella Replica
 	6010: 'campingshelter',       # Tenta Brella
@@ -107,6 +108,7 @@ stages = {
 	13:   'zatou',     # MakoMart
 	14:   'hakofugu',  # Walleye Warehouse
 	15:   'arowana',   # Arowana Mall
+	18:   'ajifry',    # Goby Arena
 	9999: 'mystery',   # Shifty Station (Splatfest only)
 
 	# clearly the funniest way to go about doing this
@@ -122,10 +124,11 @@ stages = {
 	'engawa':    'Canal',
 	'mozuku':    'Dome',
 	'bbass':     'Skatepark',
+	'devon' :    'Institute',
 	'zatou':     'Mart',
 	'hakofugu':  'Warehouse',
 	'arowana':   'Mall',
-	'devon' :    'Institute',
+	'ajifry':    'Arena',
 	'mystery':   'Shifty',
 }
 
