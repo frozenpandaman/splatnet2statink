@@ -6,6 +6,7 @@
 # https://stat.ink/api/v2/weapon
 weapons = {
 	0:    'bold',                 # Sploosh-o-matic
+	1:    'bold_neo',             # Neo Sploosh-o-matic
 	10:   'wakaba',               # Splattershot Jr.
 	11:   'momiji',               # Custom Splattershot Jr.
 	20:   'sharp',                # Splash-o-matic
