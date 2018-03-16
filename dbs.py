@@ -484,7 +484,7 @@ shoes = {
 	3014:  'red_mesh_sneakers',
 	3016:  'n_pacer_ag',
 	3017:  'n_pacer_au',
-	3018:  'sea_slug_volt_950s',
+	3018:  'sea_slug_volt_95s',
 	4000:  'oyster_clogs',
 	4001:  'choco_clogs',
 	4002:  'blueberry_casuals',
