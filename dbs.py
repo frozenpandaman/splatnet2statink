@@ -110,6 +110,9 @@ stages = {
 	14:   'hakofugu',  # Walleye Warehouse
 	15:   'arowana',   # Arowana Mall
 	18:   'ajifry',    # Goby Arena
+	#     'shottsuru', # Piranha Pit
+	#     'mongara',   # Camp Triggerfish
+	#     'sumeshi',   # Wahoo World
 	9999: 'mystery',   # Shifty Station (Splatfest only)
 
 	# clearly the funniest way to go about doing this
@@ -130,6 +133,9 @@ stages = {
 	'hakofugu':  'Warehouse',
 	'arowana':   'Mall',
 	'ajifry':    'Arena',
+	# 'shottsuru': 'Pit',
+	# 'mongara':   'Camp',
+	# 'sumeshi':   'World',
 	'mystery':   'Shifty',
 }
 
@@ -461,6 +467,7 @@ shoes = {
 	2029:  'green_iromaki_750s',
 	2030:  'purple_iromaki_750s',
 	2031:  'red_iromaki_750s',
+	2037:  'sesame_salt_270s',
 	3000:  'pink_trainers',
 	3001:  'orange_arrows',
 	3002:  'neon_sea_slugs',
@@ -477,6 +484,7 @@ shoes = {
 	3014:  'red_mesh_sneakers',
 	3016:  'n_pacer_ag',
 	3017:  'n_pacer_au',
+	3018:  'sea_slug_volt_950s',
 	4000:  'oyster_clogs',
 	4001:  'choco_clogs',
 	4002:  'blueberry_casuals',

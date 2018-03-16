@@ -13,7 +13,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "0.2.32"
+A_VERSION = "0.2.33"
 
 print "splatnet2statink v" + A_VERSION
 
@@ -317,11 +317,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 	set_gender()
 
 	battles = populate_battles(s_flag, t_flag, r_flag, debug)
-	wins = 0
-	losses = 0
-	splatfest_wins = 0
-	splatfest_losses = 0
-	mirror_matches = 0
+	wins, losses, splatfest_wins, splatfest_losses, mirror_matches = [0]*5 # init all to 0
 
 	# main process
 	mins = str(round(float(secs)/60.0,2))
@@ -344,18 +340,21 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 						pass
 					else:
 						worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
-						if worl == "Won":
-							wins = wins + 1
-							if result["game_mode"]["key"] == "fes_solo" or result["game_mode"]["key"] == "fes_team" and result["my_team_fes_theme"]["key"] != result["other_team_fes_theme"]["key"]:
-								splatfest_wins = splatfest_wins + 1
-						else:
-							losses = losses + 1
-							if result["game_mode"]["key"] == "fes_solo" or result["game_mode"]["key"] == "fes_team" and result["my_team_fes_theme"]["key"] != result["other_team_fes_theme"]["key"]:
-								splatfest_losses = splatfest_losses + 1
-						try:
-							mirror_matches = mirror_matches + 1 if result["my_team_fes_theme"]["key"] == result["other_team_fes_theme"]["key"] else mirror_matches
-						except:
-							pass
+						splatfest_match = True if result["game_mode"]["key"] in ["fes_solo", "fes_team"] else False
+						if splatfest_match: # keys will exist
+							my_key = result["my_team_fes_theme"]["key"]
+							their_key = result["other_team_fes_theme"]["key"]
+							mirror_match = True if my_key == their_key else False
+						if worl == "Won": # Win
+							wins += 1
+							if splatfest_match and not mirror_match:
+								splatfest_wins += 1
+						else: # Lose
+							losses += 1
+							if splatfest_match and not mirror_match:
+								splatfest_losses += 1
+						if splatfest_match and mirror_match:
+							mirror_matches += 1
 						mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
 						print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
@@ -374,18 +373,21 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 					else:
 						foundany = True
 						worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
-						if worl == "won":
-							wins = wins + 1
-							if (result["game_mode"]["key"] == "fes_solo" or result["game_mode"]["key"] == "fes_team") and (result["my_team_fes_theme"]["key"] != result["other_team_fes_theme"]["key"]):
-								splatfest_wins = splatfest_wins + 1
-						else:
-							losses = losses + 1
-							if (result["game_mode"]["key"] == "fes_solo" or result["game_mode"]["key"] == "fes_team") and (result["my_team_fes_theme"]["key"] != result["other_team_fes_theme"]["key"]):
-								splatfest_losses = splatfest_losses + 1
-						try:
-							mirror_matches = mirror_matches + 1 if result["my_team_fes_theme"]["key"] == result["other_team_fes_theme"]["key"] else mirror_matches
-						except:
-							pass
+						splatfest_match = True if result["game_mode"]["key"] in ["fes_solo", "fes_team"] else False
+						if splatfest_match: # keys will exist
+							my_key = result["my_team_fes_theme"]["key"]
+							their_key = result["other_team_fes_theme"]["key"]
+							mirror_match = True if my_key == their_key else False
+						if worl == "Won": # Win
+							wins += 1
+							if splatfest_match and not mirror_match:
+								splatfest_wins += 1
+						else: # Lose
+							losses += 1
+							if splatfest_match and not mirror_match:
+								splatfest_losses += 1
+						if splatfest_match and mirror_match:
+							mirror_matches += 1
 						mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
 						print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
 					battles.append(int(result["battle_number"]))
