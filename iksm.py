@@ -1,5 +1,7 @@
 # eli fessler
 # clovervidia
+from __future__ import print_function
+from builtins import input
 import requests, json, re
 import os, base64, hashlib, hmac
 import getpass
@@ -49,20 +51,20 @@ def log_in():
 
 	post_login = r.history[0].url
 
-	print "\nNavigate to this URL in your browser:"
-	print post_login
-	print "Log in, right click the \"Use this account\" button, copy the link address, and paste it below:"
+	print("\nNavigate to this URL in your browser:")
+	print(post_login)
+	print("Log in, right click the \"Use this account\" button, copy the link address, and paste it below:")
 	while True:
 		try:
-			use_account_url = raw_input("")
+			use_account_url = input("")
 			session_token_code = re.search('de=(.*)\&', use_account_url)
 			return get_session_token(session_token_code.group(1), auth_code_verifier)
 		except KeyboardInterrupt:
-			print "\nBye!"
+			print("\nBye!")
 			exit(1)
 		except:
-			print "Malformed URL. Please try again, or press Ctrl+C to exit."
-			print "URL:",
+			print("Malformed URL. Please try again, or press Ctrl+C to exit.")
+			print("URL:", end=' ')
 
 def get_session_token(session_token_code, auth_code_verifier):
 	app_head = {
@@ -123,8 +125,8 @@ def get_cookie(session_token, userLang):
 			'Accept-Encoding': 'gzip'
 		}
 	except:
-		print "Not a valid authorization request. Please delete config.txt and try again."
-		print "Error from Nintendo:\n" + json.dumps(id_response, indent=2)
+		print("Not a valid authorization request. Please delete config.txt and try again.")
+		print("Error from Nintendo:\n" + json.dumps(id_response, indent=2))
 		exit(1)
 	url = "https://api.accounts.nintendo.com/2.0.0/users/me"
 
@@ -158,8 +160,8 @@ def get_cookie(session_token, userLang):
 			'language': user_info["language"]
 		}
 	except:
-		print "Error(s) from Nintendo:\n" + json.dumps(id_response, indent=2)
-		print json.dumps(user_info, indent=2)
+		print("Error(s) from Nintendo:\n" + json.dumps(id_response, indent=2))
+		print(json.dumps(user_info, indent=2))
 		exit(1)
 	body["parameter"] = parameter
 
@@ -184,7 +186,7 @@ def get_cookie(session_token, userLang):
 			'Accept-Encoding': 'gzip, deflate'
 		}
 	except:
-		print "Error from Nintendo:\n" + json.dumps(splatoon_token, indent=2)
+		print("Error from Nintendo:\n" + json.dumps(splatoon_token, indent=2))
 		exit(1)
 
 	body = {}
@@ -213,7 +215,7 @@ def get_cookie(session_token, userLang):
 			'User-Agent': 'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36'
 		}
 	except:
-		print "Error from Nintendo:\n" + json.dumps(splatoon_access_token, indent=2)
+		print("Error from Nintendo:\n" + json.dumps(splatoon_access_token, indent=2))
 		exit(1)
 
 	url = "https://app.splatoon2.nintendo.net/?lang=" + userLang
@@ -225,7 +227,7 @@ def get_cookie(session_token, userLang):
 def enter_cookie():
 	'''Prompts the user to enter their iksm_session cookie'''
 
-	new_cookie = raw_input("Go to the page below to find instructions to obtain your iksm_session cookie:\nhttps://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions\nEnter it here: ")
+	new_cookie = input("Go to the page below to find instructions to obtain your iksm_session cookie:\nhttps://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions\nEnter it here: ")
 	while len(new_cookie) != 40:
-		new_cookie = raw_input("Cookie is invalid. Please enter it again.\nCookie: ")
+		new_cookie = input("Cookie is invalid. Please enter it again.\nCookie: ")
 	return new_cookie
