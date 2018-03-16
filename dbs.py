@@ -38,6 +38,7 @@ weapons = {
 	300:  'l3reelgun',            # L-3 Nozzlenose
 	301:  'l3reelgun_d',          # L-3 Nozzlenose D
 	310:  'h3reelgun',            # H-3 Nozzlenose
+	311:  'h3reelgun_d',          # H-3 Nozzlenose D
 	400:  'bottlegeyser',         # Squeezer
 	1000: 'carbon',               # Carbon Roller
 	1010: 'splatroller',          # Splat Roller
