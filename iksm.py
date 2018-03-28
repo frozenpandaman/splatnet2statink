@@ -86,7 +86,7 @@ def get_session_token(session_token_code, auth_code_verifier):
 	r = session.post(url, headers=app_head, data=body)
 	return json.loads(r.text)["session_token"]
 
-def get_cookie(session_token, userLang):
+def get_cookie(session_token, userLang, hmac_key):
 	'''Returns a new cookie provided the session_token.'''
 
 	app_head = {
@@ -143,7 +143,7 @@ def get_cookie(session_token, userLang):
 		'Content-Type': 'application/json; charset=utf-8',
 		'Connection': 'keep-alive',
 		'Authorization': 'Bearer',
-		'Content-Length': '977',
+		'Content-Length': '987',
 		'X-Platform': 'Android',
 		'Accept-Encoding': 'gzip'
 	}
@@ -151,7 +151,7 @@ def get_cookie(session_token, userLang):
 	body = {}
 	try:
 		parameter = {
-			# 'f': ...
+			'f': hmac.new(bytearray.fromhex(hmac_key), id_response["id_token"].encode('utf-8'), hashlib.sha256).hexdigest(),
 			'naIdToken': id_response["id_token"],
 			'naCountry': user_info["country"],
 			'naBirthday': user_info["birthday"],
@@ -220,7 +220,7 @@ def get_cookie(session_token, userLang):
 
 	r = requests.get(url, headers=app_head)
 
-	return r.cookies["iksm_session"], nickname
+	return r.cookies["iksm_session"]
 
 def enter_cookie():
 	'''Prompts the user to enter their iksm_session cookie'''
