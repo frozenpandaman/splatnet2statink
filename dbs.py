@@ -87,6 +87,7 @@ weapons = {
 	5030: 'dualsweeper',          # Dualie Squelchers
 	5040: 'quadhopper_black',     # Dark Tetra Dualies
 	6000: 'parashelter',          # Splat Brella
+	6001: 'parashelter_sorella',  # Sorella Brella
 	6005: 'heroshelter_replica',  # Hero Brella Replica
 	6010: 'campingshelter',       # Tenta Brella
 	6020: 'spygadget',            # Undercover Brella
@@ -111,8 +112,8 @@ stages = {
 	13:   'zatou',     # MakoMart
 	14:   'hakofugu',  # Walleye Warehouse
 	15:   'arowana',   # Arowana Mall
+	17:   'shottsuru', # Piranha Pit
 	18:   'ajifry',    # Goby Arena
-	#     'shottsuru', # Piranha Pit
 	#     'mongara',   # Camp Triggerfish
 	#     'sumeshi',   # Wahoo World
 	9999: 'mystery',   # Shifty Station (Splatfest only)
@@ -134,8 +135,8 @@ stages = {
 	'zatou':     'Mart',
 	'hakofugu':  'Warehouse',
 	'arowana':   'Mall',
+	'shottsuru': 'Pit',
 	'ajifry':    'Arena',
-	# 'shottsuru': 'Pit',
 	# 'mongara':   'Camp',
 	# 'sumeshi':   'World',
 	'mystery':   'Shifty',
