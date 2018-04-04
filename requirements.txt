@@ -1,0 +1,4 @@
+requests
+msgpack-python
+future
+pillow
