@@ -1,6 +1,6 @@
 # splatnet2statink
 
-A script that uploads battle data from the SplatNet 2 app ("Nintendo Switch Online," for use with *Splatoon 2*) to [https://stat.ink/](https://stat.ink/), a site for recording, visualizing, and aggregating statistics from *Splatoon* and *Splatoon 2*.
+splatnet2statink is a script that uploads battle data from the SplatNet 2 app ("Nintendo Switch Online") to [https://stat.ink/](https://stat.ink/), a site for recording, visualizing, and aggregating statistics from *Splatoon* and *Splatoon 2*.
 
 (ja) 日本語版セットアップ手順は[こちら](https://archive.fo/td52p)。
 
@@ -50,17 +50,11 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
 
     If you're on macOS, Python 2.7 comes pre-installed. However, we recommend installing an updated version via [Homebrew](https://brew.sh/). Install Homebrew by running the command listed on the website, and then run `brew install python`.
 
-2. From the command line (macOS: Terminal; Windows: Command Prompt/PowerShell), install the required Python libraries:
-    ```
-    pip install requests
-    pip install msgpack-python
-    pip install future
-    ```
-    Python 3.4+ and 2.7.9+ automatically include pip. If you installed Python via Homebrew, you also already have pip. If you're on a lower version (check via `python --version`) or the above commands don't work, install it from the [website](https://pip.pypa.io/en/stable/installing/), or by running `sudo easy_install pip` on macOS.
+2. Download the script from the command line (macOS: Terminal; Windows: Command Prompt/PowerShell) by running `git clone https://github.com/frozenpandaman/splatnet2statink.git` (requires [Git](https://git-scm.com/download), pre-installed on macOS), or use the green "Clone or download" button above.
 
-    If you'll be running splatnet2statink with the `-s` flag (to black out scoreboard names), run `pip install pillow` as well.
+3. Navigate to the newly-created directory (`cd splatnet2statink/`) and install the required Python libraries by running `pip install -r requirements.txt`.
 
-3. Download the script by running `git clone https://github.com/frozenpandaman/splatnet2statink.git` (requires [Git](https://git-scm.com/download), pre-installed on macOS), or use the green "Clone or download" button above.
+    Note: Python 3.4+ and 2.7.9+, along with all Homebrew versions, automatically include pip. If you're on a lower version (check via `python --version`) or the above command doesn't work, install it from the [website](https://pip.pypa.io/en/stable/installing/), or by running `sudo easy_install pip` on macOS.
 
 4. Running the script for the first time will prompt you to enter your stat.ink API key, which can be found in your [profile settings](https://stat.ink/profile). If you're using the app in a language other than English, you may enter your [language code](https://github.com/frozenpandaman/splatnet2statink/wiki/languages) (locale) as well.
 
