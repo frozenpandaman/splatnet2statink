@@ -46,7 +46,7 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
 
 ## Setup instructions
 
-1. Download and install [Python](https://www.python.org/downloads/). The script supports both 2.7.x and 3.x.
+1. Download and install [Python](https://www.python.org/downloads/). The script supports both Python 3.x and 2.7.x.
 
     If you're on macOS, Python 2.7 comes pre-installed. However, we recommend installing an updated version via [Homebrew](https://brew.sh/). Install Homebrew by running the command listed on the website, and then run `brew install python`.
 
@@ -56,7 +56,7 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
     pip install msgpack-python
     pip install future
     ```
-    Python 2.7.9+ and 3.4+ automatically include pip. If you installed Python via Homebrew, you also already have pip. If you're on a lower version (check via `python --version`), install it from the [website](https://pip.pypa.io/en/stable/installing/), or by simply running `sudo easy_install pip` on macOS.
+    Python 3.4+ and 2.7.9+ automatically include pip. If you installed Python via Homebrew, you also already have pip. If you're on a lower version (check via `python --version`) or the above commands don't work, install it from the [website](https://pip.pypa.io/en/stable/installing/), or by running `sudo easy_install pip` on macOS.
 
     If you'll be running splatnet2statink with the `-s` flag (to black out scoreboard names), run `pip install pillow` as well.
 
@@ -64,7 +64,7 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
 
 4. Running the script for the first time will prompt you to enter your stat.ink API key, which can be found in your [profile settings](https://stat.ink/profile). If you're using the app in a language other than English, you may enter your [language code](https://github.com/frozenpandaman/splatnet2statink/wiki/languages) (locale) as well.
 
-5. You will then be asked to enter your `iksm_session` token. To obtain it, follow the mitmproxy instructions [here](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions). This token (used to access your SplatNet battle results) along with your stat.ink API key and language will automatically be saved into `config.txt` for you. You're now ready to upload battles!
+5. You will then be asked to enter your `iksm_session` token. To obtain it, follow the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions). This token (used to access your SplatNet battle results) along with your stat.ink API key and language will automatically be saved into `config.txt` for you. You're now ready to upload battles!
 
 Have any questions, issues, or suggestions? Feel free to message me on [Twitter](https://twitter.com/frozenpandaman) or [Reddit](https://www.reddit.com/user/frozenpandaman).
 
