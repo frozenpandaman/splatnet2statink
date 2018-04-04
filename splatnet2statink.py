@@ -20,7 +20,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "0.3.0"
+A_VERSION = "0.3.1"
 
 print("splatnet2statink v" + A_VERSION)
 
