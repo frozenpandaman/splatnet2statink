@@ -3,6 +3,13 @@
 
 # eli fessler
 # clovervidia
+from __future__ import print_function
+from __future__ import division
+from builtins import input
+from builtins import zip
+from builtins import str
+from builtins import range
+from past.utils import old_div
 import os.path, argparse, sys
 import requests, json, time, datetime, random, re
 import msgpack, uuid
@@ -13,16 +20,16 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "0.2.35"
+A_VERSION = "0.3.0"
 
-print "splatnet2statink v" + A_VERSION
+print("splatnet2statink v" + A_VERSION)
 
 try:
 	config_file = open("config.txt", "r")
 	config_data = json.load(config_file)
 	config_file.close()
 except (IOError, ValueError):
-	print "Generating new config file."
+	print("Generating new config file.")
 	config_data = {"api_key": "", "cookie": "", "user_lang": ""}
 	config_file = open("config.txt", "w")
 	config_file.seek(0)
@@ -68,7 +75,7 @@ gender = None
 def custom_key_exists_and_true(key): # https://github.com/frozenpandaman/splatnet2statink/wiki/custom-keys
 	'''Checks if a given custom key exists in config.txt.'''
 	if key not in ["ignore_private"]:
-		print "(!) checking unexpected custom key"
+		print("(!) checking unexpected custom key")
 	try:
 		if config_data[key].lower() == "true":
 			return True
@@ -81,17 +88,17 @@ def gen_new_cookie(reason):
 	'''Attempts to generate new cookie in case provided one is invalid.'''
 
 	if reason == "blank":
-		print "Blank cookie."
+		print("Blank cookie.")
 	elif reason == "auth": # authentication error
-		print "The stored cookie has expired."
+		print("The stored cookie has expired.")
 	else: # server error or player hasn't battled before
-		print "Cannot access SplatNet 2 without having played at least one battle online."
+		print("Cannot access SplatNet 2 without having played at least one battle online.")
 		exit(1)
 
 	new_cookie = iksm.enter_cookie() # error handling in enter_cookie()
 	config_data["cookie"] = new_cookie
 	write_config(config_data)
-	print "Wrote iksm_session cookie to config.txt."
+	print("Wrote iksm_session cookie to config.txt.")
 
 def write_config(tokens):
 	'''Writes config file and updates the global variables.'''
@@ -119,7 +126,7 @@ def load_json(bool):
 	'''Returns results JSON from online.'''
 
 	if bool:
-		print "Pulling data from online..." # grab data from SplatNet 2
+		print("Pulling data from online...") # grab data from SplatNet 2
 	url = "https://app.splatoon2.nintendo.net/api/results"
 	results_list = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
 	return json.loads(results_list.text)
@@ -133,10 +140,10 @@ def check_statink_key():
 		new_api_key = ""
 		while len(new_api_key.strip()) != 43 and new_api_key.strip() != "skip":
 			if new_api_key.strip() == "" and API_KEY.strip() == "":
-				new_api_key = raw_input("stat.ink API key: ")
+				new_api_key = input("stat.ink API key: ")
 			else:
-				print "Invalid stat.ink API key. Please re-enter it below."
-				new_api_key = raw_input("stat.ink API key: ")
+				print("Invalid stat.ink API key. Please re-enter it below.")
+				new_api_key = input("stat.ink API key: ")
 			config_data["api_key"] = new_api_key
 		write_config(config_data)
 	return
@@ -145,8 +152,8 @@ def set_language():
 	'''Prompts the user to set their game language.'''
 
 	if USER_LANG == "":
-		print "Default locale is en-US. Press Enter to accept, or enter your own (see readme for list)."
-		language_code = raw_input("")
+		print("Default locale is en-US. Press Enter to accept, or enter your own (see readme for list).")
+		language_code = input("")
 
 		if language_code == "":
 			config_data["user_lang"] = "en-US"
@@ -155,8 +162,8 @@ def set_language():
 		else:
 			language_list = ["en-US", "es-MX", "fr-CA", "ja-JP", "en-GB", "es-ES", "fr-FR", "de-DE", "it-IT", "nl-NL", "ru-RU"]
 			while language_code not in language_list:
-				print "Invalid language code. Please try entering it again."
-				language_code = raw_input("")
+				print("Invalid language code. Please try entering it again.")
+				language_code = input("")
 			config_data["user_lang"] = language_code
 			write_config(config_data)
 	return
@@ -169,20 +176,20 @@ def check_for_updates():
 	try:
 		update_available = StrictVersion(new_version) != StrictVersion(A_VERSION)
 		if update_available:
-			print "There is a new version available."
+			print("There is a new version available.")
 			if os.path.isdir(".git"): # git user
-				update_now = raw_input("Would you like to update now? [Y/n] ")
+				update_now = input("Would you like to update now? [Y/n] ")
 				if update_now == "" or update_now[0].lower() == "y":
 					FNULL = open(os.devnull, "w")
 					call(["git", "checkout", "."], stdout=FNULL, stderr=FNULL)
 					call(["git", "checkout", "master"], stdout=FNULL, stderr=FNULL)
 					call(["git", "pull"], stdout=FNULL, stderr=FNULL)
-					print "Successfully updated to v" + new_version +  ". Please restart splatnet2statink."
+					print("Successfully updated to v" + new_version +  ". Please restart splatnet2statink.")
 					return True
 				else:
-					print "Remember to update later with \"git pull\" to get the latest database."
+					print("Remember to update later with \"git pull\" to get the latest database.")
 			else: # non-git user
-				print "Visit the site below to update:\nhttps://github.com/frozenpandaman/splatnet2statink\n"
+				print("Visit the site below to update:\nhttps://github.com/frozenpandaman/splatnet2statink\n")
 				dbs_freshness = time.time() - os.path.getmtime("dbs.py")
 				latest_db = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/dbs.py")
 				try:
@@ -221,13 +228,13 @@ def main():
 		try:
 			m_value = int(parser_result.N)
 		except ValueError:
-			print "Number provided must be an integer. Exiting."
+			print("Number provided must be an integer. Exiting.")
 			exit(1)
 		if m_value < 0:
-				print "No."
+				print("No.")
 				exit(1)
 		elif m_value < 60:
-				print "Minimum number of seconds in monitoring mode is 60. Exiting."
+				print("Minimum number of seconds in monitoring mode is 60. Exiting.")
 				exit(1)
 	else:
 		m_value = -1
@@ -257,7 +264,7 @@ def load_results():
 		try:
 			results = data["results"] # try again with correct tokens; shouldn't get an error now...
 		except: # ...as long as there are actually battles to fetch (i.e. has played online)
-			print "Cannot access SplatNet 2 without having played at least one battle online."
+			print("Cannot access SplatNet 2 without having played at least one battle online.")
 			exit(1)
 
 	return results
@@ -282,7 +289,7 @@ def populate_battles(s_flag, t_flag, r_flag, debug):
 
 	# if r_flag, check if there are any battles in splatnet that aren't on stat.ink
 	if r_flag:
-		print "Checking if there are previously-unuploaded battles..."
+		print("Checking if there are previously-unuploaded battles...")
 		printed = False
 		url  = 'https://stat.ink/api/v2/user-battle?only=splatnet_number&count=100'
 		auth = {'Authorization': 'Bearer ' + API_KEY}
@@ -301,7 +308,7 @@ def populate_battles(s_flag, t_flag, r_flag, debug):
 				post_battle(0, [result], s_flag, t_flag, -1, False, debug, True)
 
 	if r_flag and not printed:
-		print "No previously-unuploaded battles found."
+		print("No previously-unuploaded battles found.")
 
 	return battles
 
@@ -310,7 +317,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 
 	# initial checks
 	if filename != None: # local file provided (users should not really be using this)
-		print "Cannot run in monitoring mode provided a local file. Exiting."
+		print("Cannot run in monitoring mode provided a local file. Exiting.")
 		exit(1)
 
 	results = load_results() # make sure we can do it first. if error, throw it before main process
@@ -320,10 +327,10 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 	wins, losses, splatfest_wins, splatfest_losses, mirror_matches = [0]*5 # init all to 0
 
 	# main process
-	mins = str(round(float(secs)/60.0,2))
+	mins = str(round(old_div(float(secs),60.0),2))
 	if mins[-2:] == ".0":
 		mins = mins[:-2]
-	print "Waiting for new battles... (checking every {} minutes)".format(mins)
+	print("Waiting for new battles... (checking every {} minutes)".format(mins))
 
 	try:
 		while True:
@@ -356,13 +363,13 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 						if splatfest_match and mirror_match:
 							mirror_matches += 1
 						mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
-						print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
+						print("New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl))
 					battles.append(int(result["battle_number"]))
 					# if custom key prevents uploading, we deal with that in post_battle
 					# i will be 0 if most recent battle out of those since last posting
 					post_battle(0, [result], s_flag, t_flag, secs, True if i == 0 else False, debug, True)
 	except KeyboardInterrupt:
-		print "\nChecking to see if there are unuploaded battles before exiting..."
+		print("\nChecking to see if there are unuploaded battles before exiting...")
 		data = load_json(False) # so much repeated code
 		results = data["results"]
 		foundany = False
@@ -389,23 +396,23 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 						if splatfest_match and mirror_match:
 							mirror_matches += 1
 						mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
-						print "New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl)
+						print("New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl))
 					battles.append(int(result["battle_number"]))
 					post_battle(0, [result], s_flag, t_flag, secs, True if i == 0 else False, debug, True)
 		if foundany:
-			print "Successfully uploaded remaining battles."
+			print("Successfully uploaded remaining battles.")
 		else:
-			print "No remaining battles found."
+			print("No remaining battles found.")
 		w_plural = "" if wins == 1 else "s"
 		l_plural = "" if losses == 1 else "es"
-		print "%d win%s and %d loss%s this session." % (wins, w_plural, losses, l_plural)
+		print("%d win%s and %d loss%s this session." % (wins, w_plural, losses, l_plural))
 		if splatfest_wins != 0 or splatfest_losses != 0:
 			w_plural = "" if splatfest_wins == 1 else "s"
 			l_plural = "" if splatfest_losses == 1 else "es"
 			m_plural = "" if mirror_matches == 1 else "es"
-			print "{} win{} and {} loss{} against the other Splatfest team.".format(splatfest_wins, w_plural, splatfest_losses, l_plural)
-			print "{} mirror match{} against your Splatfest team.".format(mirror_matches, m_plural)
-		print "Bye!"
+			print("{} win{} and {} loss{} against the other Splatfest team.".format(splatfest_wins, w_plural, splatfest_losses, l_plural))
+			print("{} mirror match{} against your Splatfest team.".format(mirror_matches, m_plural))
+		print("Bye!")
 
 def get_num_battles():
 	'''Returns number of battles to upload along with results json.'''
@@ -418,7 +425,7 @@ def get_num_battles():
 				try:
 					data = json.load(data_file)
 				except ValueError:
-					print "Could not decode JSON object in this file."
+					print("Could not decode JSON object in this file.")
 					exit(1)
 		else: # no argument
 			data = load_json(True)
@@ -431,7 +438,7 @@ def get_num_battles():
 				try:
 					results = data["results"]
 				except KeyError:
-					print "Ill-formatted JSON file."
+					print("Ill-formatted JSON file.")
 					exit(1)
 			else:
 				if YOUR_COOKIE == "":
@@ -446,15 +453,15 @@ def get_num_battles():
 		set_gender()
 
 		try:
-			n = int(raw_input("Number of recent battles to upload (0-50)? "))
+			n = int(input("Number of recent battles to upload (0-50)? "))
 		except ValueError:
-			print "Please enter an integer between 0 and 50. Exiting."
+			print("Please enter an integer between 0 and 50. Exiting.")
 			exit(1)
 		if n < 1:
-			print "Exiting without uploading anything."
+			print("Exiting without uploading anything.")
 			exit(0)
 		elif n > 50:
-			print "SplatNet 2 only stores the 50 most recent battles. Exiting."
+			print("SplatNet 2 only stores the 50 most recent battles. Exiting.")
 			exit(1)
 		else:
 			return n, results
@@ -472,7 +479,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	try:
 		battledata["my_team_members"] # only present in battle jsons
 	except KeyError:
-		print "Problem retrieving battle. Continuing without scoreboard statistics."
+		print("Problem retrieving battle. Continuing without scoreboard statistics.")
 		return payload # same payload as passed in, no modifications
 
 	# common definitions from the mystats payload
@@ -494,7 +501,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	star_rank    = mystats[12]
 
 	ally_scoreboard = []
-	for n in xrange(len(battledata["my_team_members"])):
+	for n in range(len(battledata["my_team_members"])):
 		ally_stats = []
 		ally_stats.append(battledata["my_team_members"][n]["sort_score"]) # 0
 		ally_stats.append(battledata["my_team_members"][n]["kill_count"] +
@@ -570,13 +577,13 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	else:
 		sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(8, 1, 3, 4, 2, 11), reverse=True)
 
-	for n in xrange(len(sorted_ally_scoreboard)):
+	for n in range(len(sorted_ally_scoreboard)):
 		if sorted_ally_scoreboard[n][10] == 1: # if it's me, position in sorted list is my rank in team
 			payload["rank_in_team"] = n + 1 # account for 0 indexing
 			break
 
 	enemy_scoreboard = []
-	for n in xrange(len(battledata["other_team_members"])):
+	for n in range(len(battledata["other_team_members"])):
 		enemy_stats = []
 		enemy_stats.append(battledata["other_team_members"][n]["sort_score"]) # 0
 		enemy_stats.append(battledata["other_team_members"][n]["kill_count"] +
@@ -624,7 +631,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	full_scoreboard = sorted_ally_scoreboard + sorted_enemy_scoreboard
 
 	payload["players"] = []
-	for n in xrange(len(full_scoreboard)):
+	for n in range(len(full_scoreboard)):
 		# sort score, k+a, kills, specials, deaths, weapon, level, rank, turf inked, is my team, is me, nickname, splatfest rank, splatnet principal_id, star_rank
 		detail = {
 			"team":           "my" if full_scoreboard[n][9] == 1 else "his",
@@ -649,10 +656,10 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 		payload["players"].append(detail)
 
 	if s_flag:
-		for i in xrange(len(battledata["my_team_members"])):
+		for i in range(len(battledata["my_team_members"])):
 			battledata["my_team_members"][i]["player"]["nickname"] = None
 			battledata["my_team_members"][i]["player"]["principal_id"] = None
-		for i in xrange(len(battledata["other_team_members"])):
+		for i in range(len(battledata["other_team_members"])):
 			battledata["other_team_members"][i]["player"]["nickname"] = None
 			battledata["other_team_members"][i]["player"]["principal_id"] = None
 
@@ -932,10 +939,10 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 						players = [0] * 8 # in case battles are < 8 people. mark missing player-positions
 						my_missing = 4 - (len(payload["splatnet_json"]["my_team_members"]) + 1)
 						their_missing = 4 - len(payload["splatnet_json"]["other_team_members"])
-						for u, v in zip(range(4), range(3, -1, -1)):
+						for u, v in zip(list(range(4)), list(range(3, -1, -1))):
 							if my_missing >= u+1: # 1, 2, 3, 4
 								players[v] = None # from back of my team's half
-						for u, v in zip(range(4), range(7, -3, -1)):
+						for u, v in zip(list(range(4)), list(range(7, -3, -1))):
 							if their_missing >= u+1:
 								players[v] = None
 						for p in range(len(payload["players"])):
@@ -978,8 +985,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	###############
 	## ABILITIES ##
 	############### https://github.com/fetus-hina/stat.ink/blob/master/doc/api-1/constant/ability.md
-	headgear_subs, clothing_subs, shoes_subs = ([-1,-1,-1] for i in xrange(3))
-	for j in xrange(3):
+	headgear_subs, clothing_subs, shoes_subs = ([-1,-1,-1] for i in range(3))
+	for j in range(3):
 		try:
 			headgear_subs[j] = results[i]["player_result"]["player"]["head_skills"]["subs"][j]["id"]
 		except:
@@ -998,7 +1005,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	payload["gears"]["headgear"]["primary_ability"] = translate_ability.get(int(headgear_main), "")
 	payload["gears"]["clothing"]["primary_ability"] = translate_ability.get(int(clothing_main), "")
 	payload["gears"]["shoes"]["primary_ability"]    = translate_ability.get(int(shoes_main), "")
-	for j in xrange(3):
+	for j in range(3):
 		payload["gears"]["headgear"]["secondary_abilities"].append(translate_ability.get(int(headgear_subs[j]), ""))
 		payload["gears"]["clothing"]["secondary_abilities"].append(translate_ability.get(int(clothing_subs[j]), ""))
 		payload["gears"]["shoes"]["secondary_abilities"].append(translate_ability.get(int(shoes_subs[j]), ""))
@@ -1013,15 +1020,15 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	#*** OUTPUT ***
 	#**************
 	if debug:
-		print ""
-		print json.dumps(payload).replace("'", "\'")
+		print("")
+		print(json.dumps(payload).replace("'", "\'"))
 	# adding support for a custom key? add to custom_key_exists_and_true() method, and
 	# to "main process" section of monitor_battles, too. and the docs/wiki page of course
 	elif lobby == "private" and custom_key_exists_and_true("ignore_private"):
 		if m_flag != -1: # monitoring mode
 			pass
 		else:
-			print "Battle #" + str(i+1) + ": skipping upload based on ignore_private key."
+			print("Battle #" + str(i+1) + ": skipping upload based on ignore_private key.")
 	else:
 		# POST to stat.ink
 		# https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/request-body.md
@@ -1029,30 +1036,30 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		auth = {'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/x-msgpack'}
 
 		if payload["agent"] != os.path.basename(__file__)[:-3]:
-			print "Could not upload. Please contact @frozenpandaman on Twitter/GitHub for assistance."
+			print("Could not upload. Please contact @frozenpandaman on Twitter/GitHub for assistance.")
 			exit(1)
 		postbattle = requests.post(url, headers=auth, data=msgpack.packb(payload), allow_redirects=False)
 
 		# Response
 		if postbattle.status_code == 302: # receive redirect
-			print "Battle #" + str(i+1) + " already uploaded to " + postbattle.headers.get('location')
+			print("Battle #" + str(i+1) + " already uploaded to " + postbattle.headers.get('location'))
 			# continue trying to upload remaining
 		else: # OK (200), or some other error (4xx)
 			try:
 				if not ismonitor:
-					print "Battle #" + str(i+1) + " uploaded to " + postbattle.headers.get('location')
+					print("Battle #" + str(i+1) + " uploaded to " + postbattle.headers.get('location'))
 				else: # monitoring mode
-					print "Battle uploaded to " + postbattle.headers.get('location')
+					print("Battle uploaded to " + postbattle.headers.get('location'))
 			except TypeError: # postbattle.headers.get is likely NoneType, i.e. we received an error
 				if t_flag:
-					print "Battle #" + str(i+1) + " - message from server:"
+					print("Battle #" + str(i+1) + " - message from server:")
 				else:
-					print "Error uploading battle #" + str(i+1) + ". Message from server:"
-				print postbattle.content
+					print("Error uploading battle #" + str(i+1) + ". Message from server:")
+				print(postbattle.content.decode("utf-8"))
 				if not t_flag and i != 0: # don't prompt for final battle
-					cont = raw_input('Continue (y/n)? ')
+					cont = input('Continue (y/n)? ')
 					if cont[0].lower() == "n":
-						print "Exiting."
+						print("Exiting.")
 						exit(1)
 
 def blackout(image_result_content, players):
@@ -1091,7 +1098,7 @@ if __name__ == "__main__":
 		populate_battles(is_s, is_t, is_r, debug)
 	else:
 		n, results = get_num_battles()
-		for i in reversed(xrange(n)):
+		for i in reversed(range(n)):
 			post_battle(i, results, is_s, is_t, m_value, True if i == 0 else False, debug)
 		if debug:
-			print ""
+			print("")
