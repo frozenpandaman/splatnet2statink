@@ -234,6 +234,7 @@ headgears = {
 	21000: 'headlamp_helmet',
 	21001: 'dust_blocker_2000',
 	21002: 'welding_mask',
+	21006: 'oceanic_hard_hat',
 	25000: 'squid_hairclip',
 	25001: 'samurai_helmet',
 	25002: 'power_mask',
