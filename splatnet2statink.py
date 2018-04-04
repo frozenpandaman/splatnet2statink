@@ -683,7 +683,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	principal_id = results[i]["player_result"]["player"]["principal_id"]
 	namespace = uuid.UUID('{73cf052a-fd0b-11e7-a5ee-001b21a098c2}')
 	name = str(bn) + "@" + str(principal_id)
-	payload["uuid"] = str(uuid.uuid5(namespace, name))
+	payload["uuid"] = str(uuid.uuid5(namespace, name.encode("utf-8")))
 
 	##################
 	## LOBBY & MODE ##
