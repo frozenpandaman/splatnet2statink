@@ -119,14 +119,15 @@ def get_cookie(session_token, userLang, hmac_key):
 			'User-Agent': 'OnlineLounge/1.1.2 NASDKAPI Android',
 			'Accept-Language': userLang,
 			'Accept': 'application/json',
-			'Authorization': 'Bearer ' + id_response["access_token"],
+			'Authorization': 'Bearer {}'.format(id_response["access_token"]),
 			'Host': 'api.accounts.nintendo.com',
 			'Connection': 'Keep-Alive',
 			'Accept-Encoding': 'gzip'
 		}
 	except:
 		print("Not a valid authorization request. Please delete config.txt and try again.")
-		print("Error from Nintendo:\n" + json.dumps(id_response, indent=2))
+		print("Error from Nintendo:")
+		print(json.dumps(id_response, indent=2))
 		exit(1)
 	url = "https://api.accounts.nintendo.com/2.0.0/users/me"
 
@@ -160,7 +161,8 @@ def get_cookie(session_token, userLang, hmac_key):
 			'language': user_info["language"]
 		}
 	except:
-		print("Error(s) from Nintendo:\n" + json.dumps(id_response, indent=2))
+		print("Error(s) from Nintendo:")
+		print(json.dumps(id_response, indent=2))
 		print(json.dumps(user_info, indent=2))
 		exit(1)
 	body["parameter"] = parameter
@@ -180,13 +182,14 @@ def get_cookie(session_token, userLang, hmac_key):
 			'X-ProductVersion': '1.1.2',
 			'Content-Type': 'application/json; charset=utf-8',
 			'Connection': 'keep-alive',
-			'Authorization': 'Bearer ' + splatoon_token["result"]["webApiServerCredential"]["accessToken"],
+			'Authorization': 'Bearer {}'.format(splatoon_token["result"]["webApiServerCredential"]["accessToken"]),
 			'Content-Length': '37',
 			'X-Platform': 'Android',
 			'Accept-Encoding': 'gzip, deflate'
 		}
 	except:
-		print("Error from Nintendo:\n" + json.dumps(splatoon_token, indent=2))
+		print("Error from Nintendo:")
+		print(json.dumps(splatoon_token, indent=2))
 		exit(1)
 
 	body = {}
@@ -215,10 +218,11 @@ def get_cookie(session_token, userLang, hmac_key):
 			'User-Agent': 'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36'
 		}
 	except:
-		print("Error from Nintendo:\n" + json.dumps(splatoon_access_token, indent=2))
+		print("Error from Nintendo:")
+		print(json.dumps(splatoon_access_token, indent=2))
 		exit(1)
 
-	url = "https://app.splatoon2.nintendo.net/?lang=" + userLang
+	url = "https://app.splatoon2.nintendo.net/?lang={}".format(userLang)
 
 	r = requests.get(url, headers=app_head)
 
