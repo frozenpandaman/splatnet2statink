@@ -20,9 +20,9 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "0.3.1"
+A_VERSION = "0.3.2"
 
-print("splatnet2statink v" + A_VERSION)
+print("splatnet2statink v{}".format(A_VERSION))
 
 try:
 	config_file = open("config.txt", "r")
@@ -184,7 +184,7 @@ def check_for_updates():
 					call(["git", "checkout", "."], stdout=FNULL, stderr=FNULL)
 					call(["git", "checkout", "master"], stdout=FNULL, stderr=FNULL)
 					call(["git", "pull"], stdout=FNULL, stderr=FNULL)
-					print("Successfully updated to v" + new_version +  ". Please restart splatnet2statink.")
+					print("Successfully updated to v{}. Please restart splatnet2statink.".format(new_version))
 					return True
 				else:
 					print("Remember to update later with \"git pull\" to get the latest database.")
@@ -292,7 +292,7 @@ def populate_battles(s_flag, t_flag, r_flag, debug):
 		print("Checking if there are previously-unuploaded battles...")
 		printed = False
 		url  = 'https://stat.ink/api/v2/user-battle?only=splatnet_number&count=100'
-		auth = {'Authorization': 'Bearer ' + API_KEY}
+		auth = {'Authorization': 'Bearer {}'.format(API_KEY)}
 		resp = requests.get(url, headers=auth)
 		statink_battles = json.loads(resp.text) # 100 recent battles on stat.ink. should avoid dupes
 
@@ -335,7 +335,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 	try:
 		while True:
 			for i in range(secs, -1, -1):
-				sys.stdout.write("Press Ctrl+C to exit. " + str(i) + " ")
+				sys.stdout.write("Press Ctrl+C to exit. {} ".format(i))
 				sys.stdout.flush()
 				time.sleep(1)
 				sys.stdout.write("\r")
@@ -434,7 +434,7 @@ def get_num_battles():
 			results = data["results"]
 		except KeyError: # either auth error json (online) or battle json (local file)
 			if filename != None: # local file given, so seems like battle instead of results json
-				data = json.loads("{\"results\": [" + json.dumps(data) + "]}")
+				data = json.loads("{{\"results\": [{}]}}".format(json.dumps(data)))
 				try:
 					results = data["results"]
 				except KeyError:
@@ -681,9 +681,9 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	payload["gender"] = gender
 	bn = results[i]["battle_number"]
 	principal_id = results[i]["player_result"]["player"]["principal_id"]
-	namespace = uuid.UUID('{73cf052a-fd0b-11e7-a5ee-001b21a098c2}')
-	name = str(bn) + "@" + str(principal_id)
-	payload["uuid"] = str(uuid.uuid5(namespace, name.encode("utf-8")))
+	namespace = uuid.UUID(u'{73cf052a-fd0b-11e7-a5ee-001b21a098c2}')
+	name = "{}@{}".format(bn, principal_id)
+	payload["uuid"] = str(uuid.uuid5(namespace, name))
 
 	##################
 	## LOBBY & MODE ##
@@ -840,7 +840,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	###################
 	## SPLATNET DATA ##
 	###################
-	payload["private_note"] = "Battle #" + bn
+	payload["private_note"] = "Battle #{}".format(bn)
 	payload["splatnet_number"] = bn
 	if mode == "league":
 		payload["my_team_id"] = results[i]["tag_id"]
@@ -1028,12 +1028,12 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		if m_flag != -1: # monitoring mode
 			pass
 		else:
-			print("Battle #" + str(i+1) + ": skipping upload based on ignore_private key.")
+			print("Battle #{}: skipping upload based on ignore_private key.".format(i+1))
 	else:
 		# POST to stat.ink
 		# https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/request-body.md
 		url  = 'https://stat.ink/api/v2/battle'
-		auth = {'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/x-msgpack'}
+		auth = {'Authorization': 'Bearer {}'.format(API_KEY), 'Content-Type': 'application/x-msgpack'}
 
 		if payload["agent"] != os.path.basename(__file__)[:-3]:
 			print("Could not upload. Please contact @frozenpandaman on Twitter/GitHub for assistance.")
@@ -1042,19 +1042,19 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 
 		# Response
 		if postbattle.status_code == 302: # receive redirect
-			print("Battle #" + str(i+1) + " already uploaded to " + postbattle.headers.get('location'))
+			print("Battle #{} already uploaded to {}".format(i+1, postbattle.headers.get('location')))
 			# continue trying to upload remaining
 		else: # OK (200), or some other error (4xx)
 			try:
 				if not ismonitor:
-					print("Battle #" + str(i+1) + " uploaded to " + postbattle.headers.get('location'))
+					print("Battle #{} uploaded to {}".format(i+1, postbattle.headers.get('location')))
 				else: # monitoring mode
-					print("Battle uploaded to " + postbattle.headers.get('location'))
+					print("Battle uploaded to {}".format(postbattle.headers.get('location')))
 			except TypeError: # postbattle.headers.get is likely NoneType, i.e. we received an error
 				if t_flag:
-					print("Battle #" + str(i+1) + " - message from server:")
+					print("Battle #{} - message from server:".format(i+1))
 				else:
-					print("Error uploading battle #" + str(i+1) + ". Message from server:")
+					print("Error uploading battle #{}. Message from server:".format(i+1))
 				print(postbattle.content.decode("utf-8"))
 				if not t_flag and i != 0: # don't prompt for final battle
 					cont = input('Continue (y/n)? ')
