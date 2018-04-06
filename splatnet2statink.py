@@ -20,7 +20,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "0.3.1"
+A_VERSION = "0.3.2-autologin"
 
 print("splatnet2statink v" + A_VERSION)
 
@@ -30,7 +30,7 @@ try:
 	config_file.close()
 except (IOError, ValueError):
 	print("Generating new config file.")
-	config_data = {"api_key": "", "cookie": "", "user_lang": ""}
+	config_data = {"api_key": "", "cookie": "", "user_lang": "", "session_token": "", "hmac_key": ""}
 	config_file = open("config.txt", "w")
 	config_file.seek(0)
 	config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
@@ -43,7 +43,8 @@ except (IOError, ValueError):
 ## API KEYS AND TOKENS ##
 API_KEY       = config_data["api_key"] # for stat.ink
 YOUR_COOKIE   = config_data["cookie"] # iksm_session
-# SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
+SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
+HMAC_KEY			= config_data["hmac_key"] # HMAC key for "f" parameter
 USER_LANG     = config_data["user_lang"] # only works with your game region's supported languages
 #########################
 
@@ -95,7 +96,14 @@ def gen_new_cookie(reason):
 		print("Cannot access SplatNet 2 without having played at least one battle online.")
 		exit(1)
 
-	new_cookie = iksm.enter_cookie() # error handling in enter_cookie()
+	if HMAC_KEY == "":
+		new_cookie = iksm.enter_cookie() # error handling in enter_cookie()
+	else:
+		if SESSION_TOKEN == "":
+			config_data["session_token"] = iksm.log_in()
+			write_config(config_data)
+			print "Wrote session_token to config.txt."
+		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG, HMAC_KEY)
 	config_data["cookie"] = new_cookie
 	write_config(config_data)
 	print("Wrote iksm_session cookie to config.txt.")
@@ -113,8 +121,8 @@ def write_config(tokens):
 
 	global API_KEY
 	API_KEY = config_data["api_key"]
-	# global SESSION_TOKEN
-	# SESSION_TOKEN = config_data["session_token"]
+	global SESSION_TOKEN
+	SESSION_TOKEN = config_data["session_token"]
 	global YOUR_COOKIE
 	YOUR_COOKIE = config_data["cookie"]
 	global USER_LANG
