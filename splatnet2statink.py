@@ -30,7 +30,7 @@ try:
 	config_file.close()
 except (IOError, ValueError):
 	print("Generating new config file.")
-	config_data = {"api_key": "", "cookie": "", "user_lang": "", "session_token": "", "hmac_key": ""}
+	config_data = {"api_key": "", "cookie": "", "user_lang": "", "session_token": ""}
 	config_file = open("config.txt", "w")
 	config_file.seek(0)
 	config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
@@ -44,7 +44,6 @@ except (IOError, ValueError):
 API_KEY       = config_data["api_key"] # for stat.ink
 YOUR_COOKIE   = config_data["cookie"] # iksm_session
 SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
-HMAC_KEY			= config_data["hmac_key"] # HMAC key for "f" parameter
 USER_LANG     = config_data["user_lang"] # only works with your game region's supported languages
 #########################
 
@@ -88,6 +87,8 @@ def custom_key_exists_and_true(key): # https://github.com/frozenpandaman/splatne
 def gen_new_cookie(reason):
 	'''Attempts to generate new cookie in case provided one is invalid.'''
 
+	manual = False
+
 	if reason == "blank":
 		print("Blank cookie.")
 	elif reason == "auth": # authentication error
@@ -95,15 +96,27 @@ def gen_new_cookie(reason):
 	else: # server error or player hasn't battled before
 		print("Cannot access SplatNet 2 without having played at least one battle online.")
 		exit(1)
-
-	if HMAC_KEY == "":
-		new_cookie = iksm.enter_cookie() # error handling in enter_cookie()
-	else:
-		if SESSION_TOKEN == "":
-			config_data["session_token"] = iksm.log_in()
+	if SESSION_TOKEN == "":
+		print("session_token is blank. Please log in to your Nintendo Account to obtain your session_token.")
+		new_token = iksm.log_in(A_VERSION)
+		if new_token == None:
+			print("There was a problem logging you in. Please try again later.")
+		else:
+			if new_token == "skip": # user has opted to manually enter cookie
+				manual = True
+				print("\nYou have opted against automatic cookie generation and must manually input your iksm_session cookie.\n")
+			else:
+				print("\nWrote session_token to config.txt.")
+			config_data["session_token"] = new_token
 			write_config(config_data)
-			print "Wrote session_token to config.txt."
-		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG, HMAC_KEY)
+	elif SESSION_TOKEN == "skip":
+		manual = True
+		print("\nYou have opted against automatic cookie generation and must manually input your iksm_session cookie. You may clear this setting by removing \"skip\" from the session_token field in config.txt.\n")
+
+	if manual:
+		new_cookie = iksm.enter_cookie()
+	else:
+		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG) # error handling in get_cookie()
 	config_data["cookie"] = new_cookie
 	write_config(config_data)
 	print("Wrote iksm_session cookie to config.txt.")
