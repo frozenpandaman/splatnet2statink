@@ -55,8 +55,7 @@ def log_in(ver):
 
 	post_login = r.history[0].url
 
-	print("\n*** MAKE SURE YOU HAVE FULLY READ THE \"COOKIE GENERATION\" SECTION OF THE README BEFORE PROCEEDING. ***")
-	print("\nTo opt to manually input a cookie instead, enter \"skip\" at the prompt below.")
+	print("\nMake sure you have fully read the \"Cookie generation\" section of the readme before proceeding. To manually input a cookie instead, enter \"skip\" at the prompt below.")
 	print("\nNavigate to this URL in your browser:")
 	print(post_login)
 	print("Log in, right click the \"Use this account\" button, copy the link address, and paste it below:")
