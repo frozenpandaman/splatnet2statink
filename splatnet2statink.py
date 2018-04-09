@@ -983,7 +983,12 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 						payload["image_result"] = bytes_result.getvalue()
 		if sendgears: # if most recent
 			url_profile = "https://app.splatoon2.nintendo.net/api/share/profile"
-			settings = {'stage': stage, 'color': translate_profile_color[random.randrange(0, 6)]}
+			if stage == 9999: # fav_stage can't be Shifty Station
+				stages_ints = [k for k in translate_stages.keys() if k != 9999 and isinstance(k, int)]
+				fav_stage = random.choice(stages_ints)
+			else:
+				fav_stage = stage
+			settings = {'stage': fav_stage, 'color': translate_profile_color[random.randrange(0, 6)]}
 			share_result = requests.post(url_profile, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE), data=settings)
 			if share_result.status_code == requests.codes.ok:
 				profile_result_url = share_result.json().get("url")
