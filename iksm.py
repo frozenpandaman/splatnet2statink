@@ -7,11 +7,15 @@ import os, base64, hashlib, hmac
 import getpass
 
 session = requests.Session()
+version = "unknown"
 
-def log_in():
+def log_in(ver):
 	'''Logs in to a Nintendo Account and returns a session_token.'''
 
 	authenticated = False
+
+	global version
+	version = ver
 
 	token = re.compile(r'(eyJhbGciOiJIUzI1NiJ9\.[a-zA-Z0-9_-]*\.[a-zA-Z0-9_-]*)')
 
@@ -19,7 +23,7 @@ def log_in():
 
 	auth_code_verifier = base64.urlsafe_b64encode(os.urandom(32))
 	auth_cv_hash = hashlib.sha256()
-	auth_cv_hash.update(auth_code_verifier.replace("=",""))
+	auth_cv_hash.update(auth_code_verifier.replace(b"=",b""))
 	auth_code_challenge = base64.urlsafe_b64encode(auth_cv_hash.digest())
 
 	app_head = {
@@ -39,7 +43,7 @@ def log_in():
 		'client_id':                            '71b963c1b7b6d119',
 		'scope':                                'openid user user.birthday user.mii user.screenName',
 		'response_type':                        'session_token_code',
-		'session_token_code_challenge':         auth_code_challenge.replace("=",""),
+		'session_token_code_challenge':         auth_code_challenge.replace(b"=",b""),
 		'session_token_code_challenge_method': 'S256',
 		'theme':                               'login_form'
 	}
@@ -51,12 +55,15 @@ def log_in():
 
 	post_login = r.history[0].url
 
+	print("\nMake sure you have fully read the \"Cookie generation\" section of the readme before proceeding. To manually input a cookie instead, enter \"skip\" at the prompt below.")
 	print("\nNavigate to this URL in your browser:")
 	print(post_login)
 	print("Log in, right click the \"Use this account\" button, copy the link address, and paste it below:")
 	while True:
 		try:
 			use_account_url = input("")
+			if use_account_url == "skip":
+				return "skip"
 			session_token_code = re.search('de=(.*)\&', use_account_url)
 			return get_session_token(session_token_code.group(1), auth_code_verifier)
 		except KeyboardInterrupt:
@@ -67,6 +74,8 @@ def log_in():
 			print("URL:", end=' ')
 
 def get_session_token(session_token_code, auth_code_verifier):
+	'''Helper function for log_in().'''
+
 	app_head = {
 		'User-Agent':      'OnlineLounge/1.1.2 NASDKAPI Android',
 		'Accept-Language': 'en-US',
@@ -80,7 +89,7 @@ def get_session_token(session_token_code, auth_code_verifier):
 	body = {
 		'client_id':                   '71b963c1b7b6d119',
 		'session_token_code':          session_token_code,
-		'session_token_code_verifier': auth_code_verifier.replace("=","")
+		'session_token_code_verifier': auth_code_verifier.replace(b"=",b"")
 	}
 
 	url = 'https://accounts.nintendo.com/connect/1.0.0/api/session_token'
@@ -146,7 +155,7 @@ def get_cookie(session_token, userLang):
 		'Content-Type': 'application/json; charset=utf-8',
 		'Connection': 'keep-alive',
 		'Authorization': 'Bearer',
-		'Content-Length': '977',
+		'Content-Length': '987',
 		'X-Platform': 'Android',
 		'Accept-Encoding': 'gzip'
 	}
@@ -154,7 +163,7 @@ def get_cookie(session_token, userLang):
 	body = {}
 	try:
 		parameter = {
-			# 'f': ...
+			'f': get_f_from_s2s_api(id_response["id_token"]),
 			'naIdToken': id_response["id_token"],
 			'naCountry': user_info["country"],
 			'naBirthday': user_info["birthday"],
@@ -226,7 +235,18 @@ def get_cookie(session_token, userLang):
 
 	r = requests.get(url, headers=app_head)
 
-	return r.cookies["iksm_session"], nickname
+	return r.cookies["iksm_session"]
+
+def get_f_from_s2s_api(id_token):
+	'''Passes an id_token to the splatnet2statink API and fetches the f token from the response.'''
+	try:
+		api_app_head = { 'User-Agent': "splatnet2statink/" + version }
+		api_body = { 'naIdToken': id_token }
+		api_response = requests.post("https://elifessler.com/s2s/api/gen", headers=api_app_head, data=api_body)
+		return json.loads(api_response.text)["f"]
+	except:
+		print("Error from the splatnet2statink API:\n" + json.dumps(json.loads(api_response.text), indent=2))
+		exit(1)
 
 def enter_cookie():
 	'''Prompts the user to enter their iksm_session cookie'''

@@ -20,7 +20,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "0.3.2"
+A_VERSION = "1.0.0"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -30,7 +30,7 @@ try:
 	config_file.close()
 except (IOError, ValueError):
 	print("Generating new config file.")
-	config_data = {"api_key": "", "cookie": "", "user_lang": ""}
+	config_data = {"api_key": "", "cookie": "", "user_lang": "", "session_token": ""}
 	config_file = open("config.txt", "w")
 	config_file.seek(0)
 	config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
@@ -43,7 +43,7 @@ except (IOError, ValueError):
 ## API KEYS AND TOKENS ##
 API_KEY       = config_data["api_key"] # for stat.ink
 YOUR_COOKIE   = config_data["cookie"] # iksm_session
-# SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
+SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
 USER_LANG     = config_data["user_lang"] # only works with your game region's supported languages
 #########################
 
@@ -87,6 +87,8 @@ def custom_key_exists_and_true(key): # https://github.com/frozenpandaman/splatne
 def gen_new_cookie(reason):
 	'''Attempts to generate new cookie in case provided one is invalid.'''
 
+	manual = False
+
 	if reason == "blank":
 		print("Blank cookie.")
 	elif reason == "auth": # authentication error
@@ -94,8 +96,27 @@ def gen_new_cookie(reason):
 	else: # server error or player hasn't battled before
 		print("Cannot access SplatNet 2 without having played at least one battle online.")
 		exit(1)
+	if SESSION_TOKEN == "":
+		print("session_token is blank. Please log in to your Nintendo Account to obtain your session_token.")
+		new_token = iksm.log_in(A_VERSION)
+		if new_token == None:
+			print("There was a problem logging you in. Please try again later.")
+		else:
+			if new_token == "skip": # user has opted to manually enter cookie
+				manual = True
+				print("\nYou have opted against automatic cookie generation and must manually input your iksm_session cookie.\n")
+			else:
+				print("\nWrote session_token to config.txt.")
+			config_data["session_token"] = new_token
+			write_config(config_data)
+	elif SESSION_TOKEN == "skip":
+		manual = True
+		print("\nYou have opted against automatic cookie generation and must manually input your iksm_session cookie. You may clear this setting by removing \"skip\" from the session_token field in config.txt.\n")
 
-	new_cookie = iksm.enter_cookie() # error handling in enter_cookie()
+	if manual:
+		new_cookie = iksm.enter_cookie()
+	else:
+		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG) # error handling in get_cookie()
 	config_data["cookie"] = new_cookie
 	write_config(config_data)
 	print("Wrote iksm_session cookie to config.txt.")
@@ -113,8 +134,8 @@ def write_config(tokens):
 
 	global API_KEY
 	API_KEY = config_data["api_key"]
-	# global SESSION_TOKEN
-	# SESSION_TOKEN = config_data["session_token"]
+	global SESSION_TOKEN
+	SESSION_TOKEN = config_data["session_token"]
 	global YOUR_COOKIE
 	YOUR_COOKIE = config_data["cookie"]
 	global USER_LANG
@@ -962,7 +983,12 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 						payload["image_result"] = bytes_result.getvalue()
 		if sendgears: # if most recent
 			url_profile = "https://app.splatoon2.nintendo.net/api/share/profile"
-			settings = {'stage': stage, 'color': translate_profile_color[random.randrange(0, 6)]}
+			if stage == 9999: # fav_stage can't be Shifty Station
+				stages_ints = [k for k in translate_stages.keys() if k != 9999 and isinstance(k, int)]
+				fav_stage = random.choice(stages_ints)
+			else:
+				fav_stage = stage
+			settings = {'stage': fav_stage, 'color': translate_profile_color[random.randrange(0, 6)]}
 			share_result = requests.post(url_profile, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE), data=settings)
 			if share_result.status_code == requests.codes.ok:
 				profile_result_url = share_result.json().get("url")
