@@ -20,7 +20,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.0.0"
+A_VERSION = "1.0.1"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -43,7 +43,10 @@ except (IOError, ValueError):
 ## API KEYS AND TOKENS ##
 API_KEY       = config_data["api_key"] # for stat.ink
 YOUR_COOKIE   = config_data["cookie"] # iksm_session
-SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
+try: # support for pre-1.0.0 config.txts
+	SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
+except:
+	SESSION_TOKEN = ""
 USER_LANG     = config_data["user_lang"] # only works with your game region's supported languages
 #########################
 
