@@ -71,6 +71,7 @@ weapons = {
 	3001: 'bucketslosher_deco',   # Slosher Deco
 	3005: 'heroslosher_replica',  # Hero Slosher Replica
 	3010: 'hissen',               # Tri-Slosher
+	3011: 'hissen_hue',           # Tri-Slosher Nouveau
 	3020: 'screwslosher',         # Sloshing Machine
 	3021: 'screwslosher_neo',     # Sloshing Machine Neo
 	4000: 'splatspinner',         # Mini Splatling
