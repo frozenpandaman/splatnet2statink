@@ -20,7 +20,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.0.2"
+A_VERSION = "1.0.3"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -119,7 +119,7 @@ def gen_new_cookie(reason):
 	if manual:
 		new_cookie = iksm.enter_cookie()
 	else:
-		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG) # error handling in get_cookie()
+		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG, A_VERSION) # error handling in get_cookie()
 	config_data["cookie"] = new_cookie
 	write_config(config_data)
 	print("Wrote iksm_session cookie to config.txt.")

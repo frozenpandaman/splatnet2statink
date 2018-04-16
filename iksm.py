@@ -97,8 +97,11 @@ def get_session_token(session_token_code, auth_code_verifier):
 	r = session.post(url, headers=app_head, data=body)
 	return json.loads(r.text)["session_token"]
 
-def get_cookie(session_token, userLang):
+def get_cookie(session_token, userLang, ver):
 	'''Returns a new cookie provided the session_token.'''
+
+	global version
+	version = ver
 
 	app_head = {
 		'Host': 'accounts.nintendo.com',
