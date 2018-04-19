@@ -1074,12 +1074,12 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 			print("Battle #{} already uploaded to {}".format(i+1, postbattle.headers.get('location')))
 			# continue trying to upload remaining
 		else: # OK (200), or some other error (4xx)
-			try:
+			if postbattle.headers.get('location') != None:
 				if not ismonitor:
 					print("Battle #{} uploaded to {}".format(i+1, postbattle.headers.get('location')))
 				else: # monitoring mode
 					print("Battle uploaded to {}".format(postbattle.headers.get('location')))
-			except TypeError: # postbattle.headers.get is likely NoneType, i.e. we received an error
+			else: # postbattle.headers.get('location') is definitively None, meaning we received an error of some sort
 				if t_flag:
 					print("Battle #{} - message from server:".format(i+1))
 				else:
