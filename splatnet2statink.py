@@ -1070,26 +1070,27 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		postbattle = requests.post(url, headers=auth, data=msgpack.packb(payload), allow_redirects=False)
 
 		# Response
-		if postbattle.status_code == 302: # receive redirect
-			print("Battle #{} already uploaded to {}".format(i+1, postbattle.headers.get('location')))
-			# continue trying to upload remaining
-		else: # OK (200), or some other error (4xx)
-			if postbattle.headers.get('location') != None:
+		headerloc = postbattle.headers.get('location')
+		if headerloc != None:
+			if postbattle.status_code == 302: # receive redirect
+				print("Battle #{} already uploaded to {}".format(i+1, headerloc))
+				# continue trying to upload remaining
+			else: # http status code should be OK (200)
 				if not ismonitor:
-					print("Battle #{} uploaded to {}".format(i+1, postbattle.headers.get('location')))
+					print("Battle #{} uploaded to {}".format(i+1, headerloc))
 				else: # monitoring mode
-					print("Battle uploaded to {}".format(postbattle.headers.get('location')))
-			else: # postbattle.headers.get('location') is definitively None, meaning we received an error of some sort
-				if t_flag:
-					print("Battle #{} - message from server:".format(i+1))
-				else:
-					print("Error uploading battle #{}. Message from server:".format(i+1))
-				print(postbattle.content.decode("utf-8"))
-				if not t_flag and i != 0: # don't prompt for final battle
-					cont = input('Continue (y/n)? ')
-					if cont[0].lower() == "n":
-						print("Exiting.")
-						exit(1)
+					print("Battle uploaded to {}".format(headerloc))
+		else: # error of some sort
+			if t_flag:
+				print("Battle #{} - message from server:".format(i+1))
+			else:
+				print("Error uploading battle #{}. Message from server:".format(i+1))
+			print(postbattle.content.decode("utf-8"))
+			if not t_flag and i != 0: # don't prompt for final battle
+				cont = input('Continue (y/n)? ')
+				if cont[0].lower() == "n":
+					print("Exiting.")
+					exit(1)
 
 def blackout(image_result_content, players):
 	'''Given a scoreboard image as bytes and players array, returns the blacked-out scoreboard.'''
