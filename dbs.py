@@ -10,6 +10,7 @@ weapons = {
 	10:   'wakaba',               # Splattershot Jr.
 	11:   'momiji',               # Custom Splattershot Jr.
 	20:   'sharp',                # Splash-o-matic
+	21:   'sharp_neo',            # Neo Splash-o-matic
 	30:   'promodeler_mg',        # Aerospray MG
 	31:   'promodeler_rg',        # Aerospray RG
 	40:   'sshooter',             # Splattershot
@@ -42,6 +43,7 @@ weapons = {
 	310:  'h3reelgun',            # H-3 Nozzlenose
 	311:  'h3reelgun_d',          # H-3 Nozzlenose D
 	400:  'bottlegeyser',         # Squeezer
+	401:  'bottlegeyser_foil',    # Foil Squeezer
 	1000: 'carbon',               # Carbon Roller
 	1010: 'splatroller',          # Splat Roller
 	1011: 'splatroller_collabo',  # Krak-On Splat Roller
@@ -56,6 +58,7 @@ weapons = {
 	1111: 'hokusai_hue',          # Octobrush Nouveau
 	1115: 'herobrush_replica',    # Herobrush Replica
 	2000: 'squiclean_a',          # Classic Squiffer
+	2001: 'squiclean_b',          # New Squiffer
 	2010: 'splatcharger',         # Splat Charger
 	2011: 'splatcharger_collabo', # Firefin Splat Charger
 	2015: 'herocharger_replica',  # Hero Charger Replica
@@ -87,6 +90,7 @@ weapons = {
 	5011: 'maneuver_collabo',     # Enperry Splat Dualies
 	5015: 'heromaneuver_replica', # Hero Dualie Replicas
 	5020: 'kelvin525',            # Glooga Dualies
+	5021: 'kelvin525_deco',       # Glooga Dualies Deco
 	5030: 'dualsweeper',          # Dualie Squelchers
 	5040: 'quadhopper_black',     # Dark Tetra Dualies
 	6000: 'parashelter',          # Splat Brella
@@ -115,9 +119,9 @@ stages = {
 	13:   'zatou',     # MakoMart
 	14:   'hakofugu',  # Walleye Warehouse
 	15:   'arowana',   # Arowana Mall
+	16:   'mongara',   # Camp Triggerfish
 	17:   'shottsuru', # Piranha Pit
 	18:   'ajifry',    # Goby Arena
-	#     'mongara',   # Camp Triggerfish
 	#     'sumeshi',   # Wahoo World
 	9999: 'mystery',   # Shifty Station (Splatfest only)
 
@@ -138,9 +142,9 @@ stages = {
 	'zatou':     'Mart',
 	'hakofugu':  'Warehouse',
 	'arowana':   'Mall',
+	'mongara':   'Camp',
 	'shottsuru': 'Pit',
 	'ajifry':    'Arena',
-	# 'mongara':   'Camp',
 	# 'sumeshi':   'World',
 	'mystery':   'Shifty',
 }
