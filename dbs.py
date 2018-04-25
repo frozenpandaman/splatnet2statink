@@ -265,6 +265,7 @@ headgears = {
 	# 9004: 'jogging_headband',
 	# : 'golf_visor',
 	# : 'long_billed_cap',
+	# : 'octoking_facemask',
 	# : 'swim_goggles',
 	# : 'toni_kensa_goggles',
 }
@@ -466,6 +467,7 @@ clothes = {
 	# : 'annaki_poplo_pic_tee',
 	# : 'black_cuttlegear_ls',
 	# : 'deep_octo_satin_jacket',
+	# : 'green_velour_octoking_tee',
 	# : 'herbivore_tee',
 	# : 'hothouse_hoodie',
 	# : 'ivory_peaks_tee',
@@ -599,6 +601,7 @@ shoes = {
 	# : 'annaki_tigers',
 	# : 'banana_basics',
 	# : 'icy_down_boots',
+	# : 'red_and_white_squidkid_v',
 	# : 'truffle_canvas_hi_tops',
 	# : 'yellow_seahorses',
 	# : 'musselforge_flip_flops',
