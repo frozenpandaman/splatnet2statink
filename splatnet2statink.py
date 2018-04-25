@@ -20,7 +20,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.0.5"
+A_VERSION = "1.1.0-beta"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -835,7 +835,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	##########
 	## RANK ##
 	##########
-	try:
+	try: # udemae not present in all modes
 		rank_after = results[i]["udemae"]["name"].lower() # non-null after playing first solo battle
 		rank_before = results[i]["player_result"]["player"]["udemae"]["name"].lower()
 		rank_exp_after = results[i]["udemae"]["s_plus_number"]
@@ -850,6 +850,18 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		payload["rank"] = rank_before
 		payload["rank_exp_after"] = rank_exp_after
 		payload["rank_exp"] = rank_exp
+
+	try:
+		if results[i]["udemae"]["is_x"]: # == true. results[i]["udemae"]["number"] should be 128
+			x_power = results[i]["x_power"] # can be null if not played placement games
+			if mode == "gachi":
+				team_x_power = results[i]["estimate_x_power"] # present in league too?
+			if principal_id in results[i]["crown_players"]:
+				top_500 = True
+	except:
+		pass
+
+	worldwide_rank = results[i]["rank"] # goes below 500, not sure how low
 
 	#####################
 	## START/END TIMES ##
