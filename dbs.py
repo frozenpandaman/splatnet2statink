@@ -599,6 +599,7 @@ shoes = {
 	# : 'annaki_tigers',
 	# : 'banana_basics',
 	# : 'icy_down_boots',
+	# : 'truffle_canvas_hi_tops',
 	# : 'yellow_seahorses',
 	# : 'musselforge_flip_flops',
 }
