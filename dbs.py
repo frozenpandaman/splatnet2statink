@@ -652,11 +652,12 @@ shoes = {
 	# : 'icy_down_boots',
 	# : 'inky_kid_clams',
 	# : 'le_lo_tops',
+	# : 'musselforge_flip_flops',
 	# : 'n_pacer_cao',
 	# : 'orange_lo_tops',
 	# : 'suede_gray_lace_ups',
 	# : 'yellow_seahorses',
-	# : 'musselforge_flip_flops',
+
 }
 
 # Ability database
