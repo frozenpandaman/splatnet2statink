@@ -565,9 +565,9 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 		ally_stats.append(battledata["my_team_members"][n]["player"]["star_rank"]) # 14
 		ally_stats.append(None) # 15
 		if battledata["crown_players"] != None and ally_pid in battledata["crown_players"]:
-			ally_stats.append(True) # 16
+			ally_stats.append("yes") # 16
 		else:
-			ally_stats.append(False) # 16
+			ally_stats.append("no") # 16
 		ally_scoreboard.append(ally_stats)
 
 	my_stats = []
@@ -598,9 +598,9 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	my_stats.append(star_rank) # 14
 	my_stats.append(gender) # 15
 	if battledata["crown_players"] != None and principal_id in battledata["crown_players"]:
-		my_stats.append(True) #16
+		my_stats.append("yes") #16
 	else:
-		my_stats.append(False) #16
+		my_stats.append("no") #16
 	ally_scoreboard.append(my_stats)
 
 	# scoreboard sort order: sort_score (or turf inked), k+a, specials, deaths (more = better), kills, nickname
@@ -656,9 +656,9 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["star_rank"]) # 14
 		enemy_stats.append(None) # 15
 		if battledata["crown_players"] != None and enemy_pid in battledata["crown_players"]:
-			enemy_stats.append(True) # 16
+			enemy_stats.append("yes") # 16
 		else:
-			enemy_stats.append(False) # 16
+			enemy_stats.append("no") # 16
 		enemy_scoreboard.append(enemy_stats)
 
 	if rule != "turf_war":
