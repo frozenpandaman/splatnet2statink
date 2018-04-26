@@ -557,12 +557,17 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			ally_stats.append(translate_fest_rank[battledata["my_team_members"][n]["player"]["fes_grade"]["rank"]]) # 12
 		else:
 			ally_stats.append(None) # 12
+		ally_pid = battledata["my_team_members"][n]["player"]["principal_id"]
 		if s_flag:
 			ally_stats.append(None) # 13
 		else:
-			ally_stats.append(battledata["my_team_members"][n]["player"]["principal_id"]) # 13
+			ally_stats.append(ally_pid) # 13
 		ally_stats.append(battledata["my_team_members"][n]["player"]["star_rank"]) # 14
 		ally_stats.append(None) # 15
+		if battledata["crown_players"] != None and ally_pid in battledata["crown_players"]:
+			ally_stats.append(True) # 16
+		else:
+			ally_stats.append(False) # 16
 		ally_scoreboard.append(ally_stats)
 
 	my_stats = []
@@ -592,6 +597,10 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	my_stats.append(principal_id) # 13
 	my_stats.append(star_rank) # 14
 	my_stats.append(gender) # 15
+	if battledata["crown_players"] != None and principal_id in battledata["crown_players"]:
+		my_stats.append(True) #16
+	else:
+		my_stats.append(False) #16
 	ally_scoreboard.append(my_stats)
 
 	# scoreboard sort order: sort_score (or turf inked), k+a, specials, deaths (more = better), kills, nickname
@@ -639,12 +648,17 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			enemy_stats.append(translate_fest_rank[battledata["other_team_members"][n]["player"]["fes_grade"]["rank"]]) # 12
 		else:
 			enemy_stats.append(None) # 12
+		enemy_pid = battledata["other_team_members"][n]["player"]["principal_id"]
 		if s_flag:
 			enemy_stats.append(None) # 13
 		else:
-			enemy_stats.append(battledata["other_team_members"][n]["player"]["principal_id"]) # 13
+			enemy_stats.append(enemy_pid) # 13
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["star_rank"]) # 14
 		enemy_stats.append(None) # 15
+		if battledata["crown_players"] != None and enemy_pid in battledata["crown_players"]:
+			enemy_stats.append(True) # 16
+		else:
+			enemy_stats.append(False) # 16
 		enemy_scoreboard.append(enemy_stats)
 
 	if rule != "turf_war":
@@ -656,13 +670,13 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 
 	payload["players"] = []
 	for n in range(len(full_scoreboard)):
-		# sort score, k+a, kills, specials, deaths, weapon, level, rank, turf inked, is my team, is me, nickname, splatfest rank, splatnet principal_id, star_rank
+		# sort score, k+a, kills, specials, deaths, weapon, level, rank, turf inked, is my team, is me, nickname, splatfest rank, splatnet principal_id, star_rank, gender, top_500
 		detail = {
 			"team":           "my" if full_scoreboard[n][9] == 1 else "his",
 			"is_me":          "yes" if full_scoreboard[n][10] == 1 else "no",
 			"weapon":         full_scoreboard[n][5],
 			"level":          full_scoreboard[n][6],
-			"rank_in_team":   n + 1 if n < 4 else n - 3,
+			"rank_in_team":   n + 1 if n < 4 else n - 3, # pos 0-7 on scoreboard
 			"kill_or_assist": full_scoreboard[n][1],
 			"kill":           full_scoreboard[n][2],
 			"death":          full_scoreboard[n][4],
@@ -672,6 +686,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			"splatnet_id":    full_scoreboard[n][13],
 			"star_rank":      full_scoreboard[n][14],
 			"gender":         full_scoreboard[n][15],
+			"top_500":        full_scoreboard[n][16],
 		}
 		if mode == "gachi" or mode == "league":
 			detail["rank"] = full_scoreboard[n][7]
@@ -853,14 +868,12 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 
 	try:
 		if results[i]["udemae"]["is_x"]: # == true. results[i]["udemae"]["number"] should be 128
-			x_power = results[i]["x_power"] # can be null if not played placement games
+			payload["x_power"] = results[i]["x_power"] # can be null if not played placement games
 			if mode == "gachi":
-				team_x_power = results[i]["estimate_x_power"] # present in league too?
-			if principal_id in results[i]["crown_players"]:
-				top_500 = True
+				payload["estimate_x_power"] = results[i]["estimate_x_power"] # team power, approx
+			# top_500 from crown_players set in scoreboard method
 	except:
 		pass
-
 	worldwide_rank = results[i]["rank"] # goes below 500, not sure how low
 
 	#####################
