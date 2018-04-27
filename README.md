@@ -34,11 +34,11 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
   - [x] Lobby/mode, stage, weapon
   - [x] Result, final count/percent, turf inked
   - [x] Kills, deaths, assists, specials
-  - [x] Rank & rank after, level & level after, star levels (&#9733;)
+  - [x] Rank & rank after, level & level after, star levels (&#9733;), X Rank & Power
   - [x] Battle start & end times
   - [x] Ranked power level & league power
   - [x] Splatfest title, EXP & power
-- [x] Gear/ability recognition, gear & user profile image upload
+- [x] Gear/ability recognition, gear & user profile image upload, new Ver. 3.0 gear
 - [x] Monitoring for new battle results in real-time
 - [x] Scoreboard stats, player ranking & battle result image upload
 - [x] Non-English language game support
