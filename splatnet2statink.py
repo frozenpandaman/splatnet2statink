@@ -565,10 +565,13 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			ally_stats.append(ally_pid) # 13
 		ally_stats.append(battledata["my_team_members"][n]["player"]["star_rank"]) # 14
 		ally_stats.append(None) # 15
-		if battledata["crown_players"] != None and ally_pid in battledata["crown_players"]:
-			ally_stats.append("yes") # 16
-		else:
-			ally_stats.append("no") # 16
+		try:
+			if battledata["crown_players"] != None and ally_pid in battledata["crown_players"]:
+				ally_stats.append("yes") # 16
+			else:
+				ally_stats.append("no") # 16
+		except:
+			pass
 		ally_scoreboard.append(ally_stats)
 
 	my_stats = []
@@ -598,10 +601,13 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	my_stats.append(principal_id) # 13
 	my_stats.append(star_rank) # 14
 	my_stats.append(gender) # 15
-	if battledata["crown_players"] != None and principal_id in battledata["crown_players"]:
-		my_stats.append("yes") #16
-	else:
-		my_stats.append("no") #16
+	try:
+		if battledata["crown_players"] != None and principal_id in battledata["crown_players"]:
+			my_stats.append("yes") #16
+		else:
+			my_stats.append("no") #16
+	except:
+		pass
 	ally_scoreboard.append(my_stats)
 
 	# scoreboard sort order: sort_score (or turf inked), k+a, specials, deaths (more = better), kills, nickname
@@ -656,10 +662,13 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			enemy_stats.append(enemy_pid) # 13
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["star_rank"]) # 14
 		enemy_stats.append(None) # 15
-		if battledata["crown_players"] != None and enemy_pid in battledata["crown_players"]:
-			enemy_stats.append("yes") # 16
-		else:
-			enemy_stats.append("no") # 16
+		try:
+			if battledata["crown_players"] != None and enemy_pid in battledata["crown_players"]:
+				enemy_stats.append("yes") # 16
+			else:
+				enemy_stats.append("no") # 16
+		except:
+			pass
 		enemy_scoreboard.append(enemy_stats)
 
 	if rule != "turf_war":
@@ -866,16 +875,13 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		payload["rank"] = rank_before
 		payload["rank_exp_after"] = rank_exp_after
 		payload["rank_exp"] = rank_exp
-		try:
-			payload["worldwide_rank"] = results[i]["rank"] # goes below 500, not sure how low (doesn't exist in league)
-		except:
-			pass
 
 	try:
 		if results[i]["udemae"]["is_x"]: # == true. results[i]["udemae"]["number"] should be 128
 			payload["x_power"] = results[i]["x_power"] # can be null if not played placement games
 			if mode == "gachi":
 				payload["estimate_x_power"] = results[i]["estimate_x_power"] # team power, approx
+			payload["worldwide_rank"] = results[i]["rank"] # goes below 500, not sure how low (doesn't exist in league)
 			# top_500 from crown_players set in scoreboard method
 	except:
 		pass
