@@ -571,7 +571,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			else:
 				ally_stats.append("no") # 16
 		except:
-			ally_stats.append("no") # 16
+			pass
 		ally_scoreboard.append(ally_stats)
 
 	my_stats = []
@@ -607,7 +607,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 		else:
 			my_stats.append("no") #16
 	except:
-		my_stats.append("no") # 16
+		pass
 	ally_scoreboard.append(my_stats)
 
 	# scoreboard sort order: sort_score (or turf inked), k+a, specials, deaths (more = better), kills, nickname
@@ -668,7 +668,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			else:
 				enemy_stats.append("no") # 16
 		except:
-			enemy_stats.append("no") # 16
+			pass
 		enemy_scoreboard.append(enemy_stats)
 
 	if rule != "turf_war":
@@ -696,8 +696,11 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			"splatnet_id":    full_scoreboard[n][13],
 			"star_rank":      full_scoreboard[n][14],
 			"gender":         full_scoreboard[n][15],
-			"top_500":        full_scoreboard[n][16],
 		}
+		try:
+			detail["top_500"] = full_scoreboard[n][16]
+		except:
+			pass
 		if mode == "gachi" or mode == "league":
 			detail["rank"] = full_scoreboard[n][7]
 		if mode == "fes":
