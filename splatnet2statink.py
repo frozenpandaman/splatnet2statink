@@ -20,7 +20,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.1.0"
+A_VERSION = "1.1.1"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -866,6 +866,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		payload["rank"] = rank_before
 		payload["rank_exp_after"] = rank_exp_after
 		payload["rank_exp"] = rank_exp
+		payload["worldwide_rank"] = results[i]["rank"] # goes below 500, not sure how low
 
 	try:
 		if results[i]["udemae"]["is_x"]: # == true. results[i]["udemae"]["number"] should be 128
@@ -875,7 +876,6 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 			# top_500 from crown_players set in scoreboard method
 	except:
 		pass
-	payload["worldwide_rank"] = results[i]["rank"] # goes below 500, not sure how low
 
 	#####################
 	## START/END TIMES ##
