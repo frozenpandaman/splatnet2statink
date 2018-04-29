@@ -866,7 +866,10 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		payload["rank"] = rank_before
 		payload["rank_exp_after"] = rank_exp_after
 		payload["rank_exp"] = rank_exp
-		payload["worldwide_rank"] = results[i]["rank"] # goes below 500, not sure how low
+		try:
+			payload["worldwide_rank"] = results[i]["rank"] # goes below 500, not sure how low (doesn't exist in league)
+		except:
+			pass
 
 	try:
 		if results[i]["udemae"]["is_x"]: # == true. results[i]["udemae"]["number"] should be 128
