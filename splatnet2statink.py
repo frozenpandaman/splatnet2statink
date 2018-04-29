@@ -571,7 +571,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			else:
 				ally_stats.append("no") # 16
 		except:
-			pass
+			ally_stats.append("no") # 16
 		ally_scoreboard.append(ally_stats)
 
 	my_stats = []
@@ -607,7 +607,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 		else:
 			my_stats.append("no") #16
 	except:
-		pass
+		my_stats.append("no") # 16
 	ally_scoreboard.append(my_stats)
 
 	# scoreboard sort order: sort_score (or turf inked), k+a, specials, deaths (more = better), kills, nickname
@@ -668,7 +668,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			else:
 				enemy_stats.append("no") # 16
 		except:
-			pass
+			enemy_stats.append("no") # 16
 		enemy_scoreboard.append(enemy_stats)
 
 	if rule != "turf_war":
