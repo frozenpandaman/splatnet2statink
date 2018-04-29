@@ -20,7 +20,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.1.0-beta"
+A_VERSION = "1.1.0"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -119,6 +119,7 @@ def gen_new_cookie(reason):
 	if manual:
 		new_cookie = iksm.enter_cookie()
 	else:
+		print("Attempting to generate new cookie...")
 		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG, A_VERSION) # error handling in get_cookie()
 	config_data["cookie"] = new_cookie
 	write_config(config_data)
@@ -874,7 +875,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 			# top_500 from crown_players set in scoreboard method
 	except:
 		pass
-	worldwide_rank = results[i]["rank"] # goes below 500, not sure how low
+	payload["worldwide_rank"] = results[i]["rank"] # goes below 500, not sure how low
 
 	#####################
 	## START/END TIMES ##
