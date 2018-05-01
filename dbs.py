@@ -648,6 +648,7 @@ shoes = {
 	8010:  'annaki_habaneros',
 	8011:  'annaki_tigers',
 	21001: 'angry_rain_boots',
+	21002: 'non_slip_senseis',
 	25000: 'school_shoes',
 	25001: 'samurai_shoes',
 	25002: 'power_boots',
