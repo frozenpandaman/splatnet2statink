@@ -1122,7 +1122,10 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 			if t_flag:
 				print("Battle #{} - message from server:".format(i+1))
 			else:
-				print("Error uploading battle #{}. Message from server:".format(i+1))
+				if not ismonitor:
+					print("Error uploading battle #{}. Message from server:".format(i+1))
+				else: # monitoring mode
+					print("Error uploading battle. Message from server:")
 			print(postbattle.content.decode("utf-8"))
 			if not t_flag and i != 0: # don't prompt for final battle
 				cont = input('Continue (y/n)? ')
