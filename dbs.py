@@ -428,7 +428,7 @@ clothes = {
 	5039:  'chili_pepper_ski_jacket',
 	5040:  'whale_knit_sweater',
 	5041:  'rockin_leather_jacket',
-	5042:  'kung-fu_zip_up',
+	5042:  'kung_fu_zip_up',
 	5043:  'panda_kung_fu_zip_up',
 	6000:  'b_ball_jersey_home',
 	6001:  'b_ball_jersey_away',
