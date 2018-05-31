@@ -38,6 +38,7 @@ weapons = {
 	240:  'rapid',                # Rapid Blaster
 	241:  'rapid_deco',           # Rapid Blaster Deco
 	250:  'rapid_elite',          # Rapid Blaster Pro
+	251:  'rapid_elite_deco',     # Rapid Blaster Pro Deco
 	300:  'l3reelgun',            # L-3 Nozzlenose
 	301:  'l3reelgun_d',          # L-3 Nozzlenose D
 	310:  'h3reelgun',            # H-3 Nozzlenose
@@ -45,6 +46,7 @@ weapons = {
 	400:  'bottlegeyser',         # Squeezer
 	401:  'bottlegeyser_foil',    # Foil Squeezer
 	1000: 'carbon',               # Carbon Roller
+	1001: 'carbon_deco',          # Carbon Roller Deco
 	1010: 'splatroller',          # Splat Roller
 	1011: 'splatroller_collabo',  # Krak-On Splat Roller
 	1015: 'heroroller_replica',   # Hero Roller Replica
@@ -92,12 +94,14 @@ weapons = {
 	5020: 'kelvin525',            # Glooga Dualies
 	5021: 'kelvin525_deco',       # Glooga Dualies Deco
 	5030: 'dualsweeper',          # Dualie Squelchers
+	5031: 'dualsweeper_custom',   # Custom Dualie Squelchers
 	5040: 'quadhopper_black',     # Dark Tetra Dualies
 	6000: 'parashelter',          # Splat Brella
 	6001: 'parashelter_sorella',  # Sorella Brella
 	6005: 'heroshelter_replica',  # Hero Brella Replica
 	6010: 'campingshelter',       # Tenta Brella
 	6020: 'spygadget',            # Undercover Brella
+	6021: 'spygadget_sorella',    # Undercover Sorella Brella
 }
 
 # Stage database
@@ -122,7 +126,7 @@ stages = {
 	16:   'mongara',   # Camp Triggerfish
 	17:   'shottsuru', # Piranha Pit
 	18:   'ajifry',    # Goby Arena
-	#     'sumeshi',   # Wahoo World
+	20:   'sumeshi',   # Wahoo World
 	9999: 'mystery',   # Shifty Station (Splatfest only)
 
 	# clearly the funniest way to go about doing this
@@ -145,7 +149,7 @@ stages = {
 	'mongara':   'Camp',
 	'shottsuru': 'Pit',
 	'ajifry':    'Arena',
-	# 'sumeshi':   'World',
+	'sumeshi':   'World',
 	'mystery':   'Shifty',
 }
 
