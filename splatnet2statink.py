@@ -20,7 +20,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.1.3"
+A_VERSION = "1.1.4"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -72,8 +72,6 @@ translate_headgear      = dbs.headgears
 translate_clothing      = dbs.clothes
 translate_shoes         = dbs.shoes
 translate_ability       = dbs.abilities
-
-gender = None
 
 def custom_key_exists_and_true(key): # https://github.com/frozenpandaman/splatnet2statink/wiki/custom-keys
 	'''Checks if a given custom key exists in config.txt.'''
@@ -294,21 +292,10 @@ def load_results():
 
 	return results
 
-def set_gender():
-	'''Sets the global gender variable.'''
-	try:
-		url = "https://app.splatoon2.nintendo.net/api/records"
-		records = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
-		global gender
-		gender = json.loads(records.text)["records"]["player"]["player_type"]["key"]
-	except:
-		pass
-
 def populate_battles(s_flag, t_flag, r_flag, debug):
 	'''Populates the battles list with SplatNet battles. Optionally uploads unuploaded battles.'''
 
 	results = load_results()
-	set_gender()
 
 	battles = [] # 50 recent battles on splatnet
 
@@ -346,7 +333,6 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 		exit(1)
 
 	results = load_results() # make sure we can do it first. if error, throw it before main process
-	set_gender()
 
 	battles = populate_battles(s_flag, t_flag, r_flag, debug)
 	wins, losses, splatfest_wins, splatfest_losses, mirror_matches = [0]*5 # init all to 0
@@ -387,7 +373,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 								splatfest_losses += 1
 						if splatfest_match and mirror_match:
 							mirror_matches += 1
-						mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
+						mapname = result["stage"]["name"]
 						print("New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl))
 					battles.append(int(result["battle_number"]))
 					# if custom key prevents uploading, we deal with that in post_battle
@@ -420,7 +406,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 								splatfest_losses += 1
 						if splatfest_match and mirror_match:
 							mirror_matches += 1
-						mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), "")
+						mapname = result["stage"]["name"]
 						print("New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl))
 					battles.append(int(result["battle_number"]))
 					post_battle(0, [result], s_flag, t_flag, secs, True if i == 0 else False, debug, True)
@@ -475,8 +461,6 @@ def get_num_battles():
 				gen_new_cookie(reason)
 				continue
 
-		set_gender()
-
 		try:
 			n = int(input("Number of recent battles to upload (0-50)? "))
 		except ValueError:
@@ -524,6 +508,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 		pass
 	principal_id = mystats[11]
 	star_rank    = mystats[12]
+	gender       = mystats[13]
 
 	ally_scoreboard = []
 	for n in range(len(battledata["my_team_members"])):
@@ -534,7 +519,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 		ally_stats.append(battledata["my_team_members"][n]["kill_count"]) # 2
 		ally_stats.append(battledata["my_team_members"][n]["special_count"]) # 3
 		ally_stats.append(battledata["my_team_members"][n]["death_count"]) # 4
-		ally_stats.append(translate_weapons.get(int(battledata["my_team_members"][n]["player"]["weapon"]["id"]), "")) # 5
+		ally_stats.append("#" + battledata["my_team_members"][n]["player"]["weapon"]["id"]) # 5
 		ally_stats.append(battledata["my_team_members"][n]["player"]["player_rank"]) # 6
 		if mode == "gachi" or mode == "league":
 			try:
@@ -564,7 +549,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 		else:
 			ally_stats.append(ally_pid) # 13
 		ally_stats.append(battledata["my_team_members"][n]["player"]["star_rank"]) # 14
-		ally_stats.append(None) # 15
+		ally_stats.append(battledata["my_team_members"][n]["player"]["player_type"]["style"]) # 15
 		try:
 			if battledata["crown_players"] != None and ally_pid in battledata["crown_players"]:
 				ally_stats.append("yes") # 16
@@ -580,7 +565,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	my_stats.append(battledata["player_result"]["kill_count"]) # 2
 	my_stats.append(special) # 3
 	my_stats.append(death) # 4
-	my_stats.append(translate_weapons.get(int(weapon), "")) # 5
+	my_stats.append("#" + str(weapon)) # 5
 	my_stats.append(level_before) # 6
 	if mode == "gachi" or mode == "league":
 		my_stats.append(rank_before) # 7
@@ -631,7 +616,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 		enemy_stats.append(battledata["other_team_members"][n]["kill_count"]) # 2
 		enemy_stats.append(battledata["other_team_members"][n]["special_count"]) # 3
 		enemy_stats.append(battledata["other_team_members"][n]["death_count"]) # 4
-		enemy_stats.append(translate_weapons.get(int(battledata["other_team_members"][n]["player"]["weapon"]["id"]), "")) # 5
+		enemy_stats.append("#" + battledata["other_team_members"][n]["player"]["weapon"]["id"]) # 5
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_rank"]) # 6
 		if mode == "gachi" or mode == "league":
 			try:
@@ -661,7 +646,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 		else:
 			enemy_stats.append(enemy_pid) # 13
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["star_rank"]) # 14
-		enemy_stats.append(None) # 15
+		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_type"]["style"]) # 15
 		try:
 			if battledata["crown_players"] != None and enemy_pid in battledata["crown_players"]:
 				enemy_stats.append("yes") # 16
@@ -730,7 +715,6 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	payload = {'agent': 'splatnet2statink', 'agent_version': A_VERSION, 'automated': 'yes'}
 	agent_variables = {'upload_mode': "Monitoring" if ismonitor else "Manual"}
 	payload["agent_variables"] = agent_variables
-	payload["gender"] = gender
 	bn = results[i]["battle_number"]
 	principal_id = results[i]["player_result"]["player"]["principal_id"]
 	namespace = uuid.UUID(u'{73cf052a-fd0b-11e7-a5ee-001b21a098c2}')
@@ -782,13 +766,13 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	## STAGE ##
 	###########
 	stage = int(results[i]["stage"]["id"])
-	payload["stage"] = translate_stages.get(stage, "")
+	payload["stage"] = "#" + str(stage)
 
 	############
 	## WEAPON ##
 	############
 	weapon = int(results[i]["player_result"]["player"]["weapon"]["id"])
-	payload["weapon"] = translate_weapons.get(weapon, "")
+	payload["weapon"] = "#" + str(weapon)
 
 	############
 	## RESULT ##
@@ -911,6 +895,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		payload["his_team_estimate_league_point"] = results[i]["other_estimate_league_point"]
 	if mode == "gachi":
 		payload["estimate_gachi_power"] = results[i]["estimate_gachi_power"]
+	gender = results[i]["player_result"]["player"]["player_type"]["style"]
+	payload["gender"] = gender
 
 	############################
 	## SPLATFEST TITLES/POWER ##
@@ -978,7 +964,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	## SCOREBOARD ##
 	################
 	if YOUR_COOKIE != "" or debug: # requires online (or battle json). if no cookie, don't do - will fail
-		mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked, title_before, principal_id, star_rank]
+		mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked, title_before, principal_id, star_rank, gender]
 		if filename == None:
 			payload = set_scoreboard(payload, bn, mystats, s_flag)
 		else:
@@ -1045,9 +1031,9 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	clothing_id = results[i]["player_result"]["player"]["clothes"]["id"]
 	shoes_id    = results[i]["player_result"]["player"]["shoes"]["id"]
 	payload["gears"] = {'headgear': {'secondary_abilities': []}, 'clothing': {'secondary_abilities': []}, 'shoes': {'secondary_abilities': []}}
-	payload["gears"]["headgear"]["gear"] = translate_headgear.get(int(headgear_id), "")
-	payload["gears"]["clothing"]["gear"] = translate_clothing.get(int(clothing_id), "")
-	payload["gears"]["shoes"]["gear"]    = translate_shoes.get(int(shoes_id), "")
+	payload["gears"]["headgear"]["gear"] = "#" + headgear_id
+	payload["gears"]["clothing"]["gear"] = "#" + clothing_id
+	payload["gears"]["shoes"]["gear"]    = "#" + shoes_id
 
 	###############
 	## ABILITIES ##
