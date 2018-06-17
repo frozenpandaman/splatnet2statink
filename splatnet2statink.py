@@ -43,7 +43,7 @@ except (IOError, ValueError):
 ## API KEYS AND TOKENS ##
 API_KEY       = config_data["api_key"] # for stat.ink
 YOUR_COOKIE   = config_data["cookie"] # iksm_session
-try: # support for pre-1.0.0 config.txts
+try: # support for pre-v1.0.0 config.txts
 	SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
 except:
 	SESSION_TOKEN = ""
@@ -86,7 +86,7 @@ def custom_key_exists_and_true(key): # https://github.com/frozenpandaman/splatne
 		return False # key doesn't exist
 
 def gen_new_cookie(reason):
-	'''Attempts to generate new cookie in case provided one is invalid.'''
+	'''Attempts to generate a new cookie in case the provided one is invalid.'''
 
 	manual = False
 
@@ -213,10 +213,10 @@ def check_for_updates():
 					print("Remember to update later with \"git pull\" to get the latest database.")
 			else: # non-git user
 				print("Visit the site below to update:\nhttps://github.com/frozenpandaman/splatnet2statink\n")
-				dbs_freshness = time.time() - os.path.getmtime("dbs.py")
+				# dbs_freshness = time.time() - os.path.getmtime("dbs.py")
 				latest_db = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/dbs.py")
 				try:
-					if latest_db.status_code == 200:  # only attempt to write to the file if we get a proper response from github
+					if latest_db.status_code == 200: # require proper response from github
 						local_db = open("dbs.py", "w")
 						local_db.write(latest_db.text)
 						local_db.close()
@@ -520,7 +520,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 		ally_stats.append(battledata["my_team_members"][n]["kill_count"]) # 2
 		ally_stats.append(battledata["my_team_members"][n]["special_count"]) # 3
 		ally_stats.append(battledata["my_team_members"][n]["death_count"]) # 4
-		ally_stats.append("#" + battledata["my_team_members"][n]["player"]["weapon"]["id"]) # 5
+		ally_stats.append("#{}".format(battledata["my_team_members"][n]["player"]["weapon"]["id"])) # 5
 		ally_stats.append(battledata["my_team_members"][n]["player"]["player_rank"]) # 6
 		if mode == "gachi" or mode == "league":
 			try:
@@ -567,7 +567,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	my_stats.append(battledata["player_result"]["kill_count"]) # 2
 	my_stats.append(special) # 3
 	my_stats.append(death) # 4
-	my_stats.append("#" + str(weapon)) # 5
+	my_stats.append("#{}".format(weapon)) # 5
 	my_stats.append(level_before) # 6
 	if mode == "gachi" or mode == "league":
 		my_stats.append(rank_before) # 7
@@ -619,7 +619,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 		enemy_stats.append(battledata["other_team_members"][n]["kill_count"]) # 2
 		enemy_stats.append(battledata["other_team_members"][n]["special_count"]) # 3
 		enemy_stats.append(battledata["other_team_members"][n]["death_count"]) # 4
-		enemy_stats.append("#" + battledata["other_team_members"][n]["player"]["weapon"]["id"]) # 5
+		enemy_stats.append("#{}".format(battledata["other_team_members"][n]["player"]["weapon"]["id"])) # 5
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_rank"]) # 6
 		if mode == "gachi" or mode == "league":
 			try:
@@ -675,7 +675,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			"is_me":          "yes" if full_scoreboard[n][10] == 1 else "no",
 			"weapon":         full_scoreboard[n][5],
 			"level":          full_scoreboard[n][6],
-			"rank_in_team":   n + 1 if n < 4 else n - 3, # pos 0-7 on scoreboard
+			"rank_in_team":   n + 1 if n < 4 else n - 3, # pos 0-7 on scoreboard -> 1-4 for each
 			"kill_or_assist": full_scoreboard[n][1],
 			"kill":           full_scoreboard[n][2],
 			"death":          full_scoreboard[n][4],
@@ -730,27 +730,27 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	## LOBBY & MODE ##
 	##################
 	lobby = results[i]["game_mode"]["key"] # regular, league_team, league_pair, private, fes_solo, fes_team
-	if lobby == "regular": # turf war solo
+	if lobby == "regular": # turf war
 		payload["lobby"] = "standard"
-		payload["mode"] = "regular"
+		payload["mode"]  = "regular"
 	elif lobby == "gachi": # ranked solo
 		payload["lobby"] = "standard"
-		payload["mode"] = "gachi"
+		payload["mode"]  = "gachi"
 	elif lobby == "league_pair": # league pair
 		payload["lobby"] = "squad_2"
-		payload["mode"] = "gachi"
+		payload["mode"]  = "gachi"
 	elif lobby == "league_team": # league team
 		payload["lobby"] = "squad_4"
-		payload["mode"] = "gachi"
+		payload["mode"]  = "gachi"
 	elif lobby == "private": # private battle
 		payload["lobby"] = "private"
-		payload["mode"] = "private"
+		payload["mode"]  = "private"
 	elif lobby == "fes_solo": # splatfest solo
 		payload["lobby"] = "standard"
-		payload["mode"] = "fest"
+		payload["mode"]  = "fest"
 	elif lobby == "fes_team":# splatfest team
 		payload["lobby"] = "squad_4"
-		payload["mode"] = "fest"
+		payload["mode"]  = "fest"
 
 	##########
 	## RULE ##
@@ -771,13 +771,13 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	## STAGE ##
 	###########
 	stage = int(results[i]["stage"]["id"])
-	payload["stage"] = "#" + str(stage)
+	payload["stage"] = "#{}".format(stage)
 
 	############
 	## WEAPON ##
 	############
 	weapon = int(results[i]["player_result"]["player"]["weapon"]["id"])
-	payload["weapon"] = "#" + str(weapon)
+	payload["weapon"] = "#{}".format(weapon)
 
 	############
 	## RESULT ##
@@ -805,10 +805,10 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 
 	mode = results[i]["type"] # regular, gachi, league, fes
 	if mode == "regular" or mode == "fes":
-		payload["my_team_percent"] = my_percent
+		payload["my_team_percent"]  = my_percent
 		payload["his_team_percent"] = their_percent
 	elif mode == "gachi" or mode == "league":
-		payload["my_team_count"] = my_count
+		payload["my_team_count"]  = my_count
 		payload["his_team_count"] = their_count
 		if my_count == 100 or their_count == 100:
 			payload["knock_out"] = "yes"
@@ -853,20 +853,18 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	## RANK ##
 	##########
 	try: # udemae not present in all modes
-		rank_after = results[i]["udemae"]["name"].lower() # non-null after playing first solo battle
-		rank_before = results[i]["player_result"]["player"]["udemae"]["name"].lower()
+		rank_after     = results[i]["udemae"]["name"].lower() # non-null after playing first solo battle
+		rank_before    = results[i]["player_result"]["player"]["udemae"]["name"].lower()
 		rank_exp_after = results[i]["udemae"]["s_plus_number"]
-		rank_exp = results[i]["player_result"]["player"]["udemae"]["s_plus_number"]
+		rank_exp       = results[i]["player_result"]["player"]["udemae"]["s_plus_number"]
 	except: # based on in-game, not app scoreboard, which displays --- (null rank) as separate than C-
-		rank_after = None # e.g. private battle where a player has never played ranked before
-		rank_before = None
-		rank_exp_after = None
-		rank_exp = None
+		rank_after, rank_before, rank_exp_after, rank_exp = None, None, None, None
+		# e.g. private battle where a player has never played ranked before
 	if rule != "turf_war": # only upload if ranked
-		payload["rank_after"] = rank_after
-		payload["rank"] = rank_before
+		payload["rank_after"]     = rank_after
+		payload["rank"]           = rank_before
 		payload["rank_exp_after"] = rank_exp_after
-		payload["rank_exp"] = rank_exp
+		payload["rank_exp"]       = rank_exp
 
 	try:
 		if results[i]["udemae"]["is_x"]: # == true. results[i]["udemae"]["number"] should be 128
@@ -874,7 +872,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 			if mode == "gachi":
 				payload["estimate_x_power"] = results[i]["estimate_x_power"] # team power, approx
 			payload["worldwide_rank"] = results[i]["rank"] # goes below 500, not sure how low (doesn't exist in league)
-			# top_500 from crown_players set in scoreboard method
+		# top_500 from crown_players set in scoreboard method
 	except:
 		pass
 
@@ -1041,9 +1039,9 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	clothing_id = results[i]["player_result"]["player"]["clothes"]["id"]
 	shoes_id    = results[i]["player_result"]["player"]["shoes"]["id"]
 	payload["gears"] = {'headgear': {'secondary_abilities': []}, 'clothing': {'secondary_abilities': []}, 'shoes': {'secondary_abilities': []}}
-	payload["gears"]["headgear"]["gear"] = "#" + headgear_id
-	payload["gears"]["clothing"]["gear"] = "#" + clothing_id
-	payload["gears"]["shoes"]["gear"]    = "#" + shoes_id
+	payload["gears"]["headgear"]["gear"] = "#{}".format(headgear_id)
+	payload["gears"]["clothing"]["gear"] = "#{}".format(clothing_id)
+	payload["gears"]["shoes"]["gear"]    = "#{}".format(shoes_id)
 
 	###############
 	## ABILITIES ##
@@ -1134,7 +1132,7 @@ def blackout(image_result_content, players):
 	scoreboard = Image.open(BytesIO(image_result_content)).convert("RGB")
 	draw = ImageDraw.Draw(scoreboard)
 
-	if "yes" in players: # this shouldn't happen. if it does, let's just not censor anything
+	if "yes" in players:
 		if players[0] == "no": # is_me is no, so censor
 			draw.polygon([(719, 101), (719, 123), (849, 119), (849,  97)], fill="black")
 		if players[1] == "no":
