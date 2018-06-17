@@ -16,6 +16,7 @@ weapons = {
 	40:   'sshooter',             # Splattershot
 	41:   'sshooter_collabo',     # Tentatek Splattershot
 	45:   'heroshooter_replica',  # Hero Shot Replica
+	46:   'octoshooter_replica',  # Octo Shot Replica
 	50:   '52gal',                # .52 Gal
 	51:   '52gal_deco',           # .52 Gal Deco
 	60:   'nzap85',               # N-ZAP '85
@@ -271,6 +272,7 @@ headgears = {
 	21000: 'headlamp_helmet',
 	21001: 'dust_blocker_2000',
 	21002: 'welding_mask',
+	21004: 'octoleet_goggles',
 	21005: 'cap_of_legend',
 	21006: 'oceanic_hard_hat',
 	25000: 'squid_hairclip',
@@ -281,10 +283,16 @@ headgears = {
 	25005: 'power_mask_mk_i',
 	27000: 'hero_headset_replica',
 	27004: 'armor_helmet_replica',
-	27101: 'hero_headphones_replica'
+	27101: 'hero_headphones_replica',
+	27104: 'octoling_shades',
+	27105: 'null_visor_replica',
+	27106: 'old_timey_hat',
+	27107: 'conductor_cap',
+	27108: 'golden_toothpick'
 }
 clothes = {
 	2:     'basic_tee',
+	3:     'fresh_octo_tee',
 	1000:  'white_tee',
 	1001:  'black_squideye',
 	1003:  'sky_blue_squideye',
@@ -510,6 +518,7 @@ clothes = {
 	21002: 'juice_parka',
 	21003: 'garden_gear',
 	21004: 'crustwear_xxl',
+	21006: 'octoleet_armor',
 	25000: 'school_uniform',
 	25001: 'samurai_jacket',
 	25002: 'power_armor',
@@ -519,7 +528,10 @@ clothes = {
 	26000: 'splatfest_tee',
 	27000: 'hero_jacket_replica',
 	27004: 'armor_jacket_replica',
-	27101: 'hero_hoodie_replica'
+	27101: 'hero_hoodie_replica',
+	27104: 'neo_octoling_armor',
+	27105: 'null_armor_replica',
+	27106: 'old_timey_clothes'
 }
 shoes = {
 	1:     'cream_basics',
@@ -655,6 +667,7 @@ shoes = {
 	8011:  'annaki_tigers',
 	21001: 'angry_rain_boots',
 	21002: 'non_slip_senseis',
+	21003: 'octoleet_boots',
 	25000: 'school_shoes',
 	25001: 'samurai_shoes',
 	25002: 'power_boots',
@@ -663,7 +676,10 @@ shoes = {
 	25005: 'power_boots_mk_i',
 	27000: 'hero_runner_replicas',
 	27004: 'armor_boot_replicas',
-	27101: 'hero_snowboots_replicas'
+	27101: 'hero_snowboots_replicas',
+	27104: 'neo_octoling_boots',
+	27105: 'null_boots_replica',
+	27106: 'old_timey_shoes'
 }
 
 # Ability database

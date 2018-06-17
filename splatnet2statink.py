@@ -509,6 +509,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	principal_id = mystats[11]
 	star_rank    = mystats[12]
 	gender       = mystats[13]
+	species      = mystats[14]
 
 	ally_scoreboard = []
 	for n in range(len(battledata["my_team_members"])):
@@ -550,13 +551,14 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			ally_stats.append(ally_pid) # 13
 		ally_stats.append(battledata["my_team_members"][n]["player"]["star_rank"]) # 14
 		ally_stats.append(battledata["my_team_members"][n]["player"]["player_type"]["style"]) # 15
+		ally_stats.append(battledata["my_team_members"][n]["player"]["player_type"]["species"]) # 16
 		try:
 			if battledata["crown_players"] != None and ally_pid in battledata["crown_players"]:
-				ally_stats.append("yes") # 16
+				ally_stats.append("yes") # 17
 			else:
-				ally_stats.append("no") # 16
+				ally_stats.append("no") # 17
 		except:
-			pass
+			ally_stats.append("no") # 17
 		ally_scoreboard.append(ally_stats)
 
 	my_stats = []
@@ -586,13 +588,14 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	my_stats.append(principal_id) # 13
 	my_stats.append(star_rank) # 14
 	my_stats.append(gender) # 15
+	my_stats.append(species) # 16
 	try:
 		if battledata["crown_players"] != None and principal_id in battledata["crown_players"]:
-			my_stats.append("yes") #16
+			my_stats.append("yes") #17
 		else:
-			my_stats.append("no") #16
+			my_stats.append("no") #17
 	except:
-		pass
+		my_stats.append("no") # 17
 	ally_scoreboard.append(my_stats)
 
 	# scoreboard sort order: sort_score (or turf inked), k+a, specials, deaths (more = better), kills, nickname
@@ -647,13 +650,14 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			enemy_stats.append(enemy_pid) # 13
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["star_rank"]) # 14
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_type"]["style"]) # 15
+		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_type"]["species"]) # 16
 		try:
 			if battledata["crown_players"] != None and enemy_pid in battledata["crown_players"]:
-				enemy_stats.append("yes") # 16
+				enemy_stats.append("yes") # 17
 			else:
-				enemy_stats.append("no") # 16
+				enemy_stats.append("no") # 17
 		except:
-			pass
+			enemy_stats.append("no") # 17
 		enemy_scoreboard.append(enemy_stats)
 
 	if rule != "turf_war":
@@ -665,7 +669,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 
 	payload["players"] = []
 	for n in range(len(full_scoreboard)):
-		# sort score, k+a, kills, specials, deaths, weapon, level, rank, turf inked, is my team, is me, nickname, splatfest rank, splatnet principal_id, star_rank, gender, top_500
+		# sort score, k+a, kills, specials, deaths, weapon, level, rank, turf inked, is my team, is me, nickname, splatfest rank, splatnet principal_id, star_rank, gender, species, top_500
 		detail = {
 			"team":           "my" if full_scoreboard[n][9] == 1 else "his",
 			"is_me":          "yes" if full_scoreboard[n][10] == 1 else "no",
@@ -681,9 +685,10 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			"splatnet_id":    full_scoreboard[n][13],
 			"star_rank":      full_scoreboard[n][14],
 			"gender":         full_scoreboard[n][15],
+			"species":        full_scoreboard[n][16],
 		}
 		try:
-			detail["top_500"] = full_scoreboard[n][16]
+			detail["top_500"] = full_scoreboard[n][17]
 		except:
 			pass
 		if mode == "gachi" or mode == "league":
@@ -897,6 +902,11 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		payload["estimate_gachi_power"] = results[i]["estimate_gachi_power"]
 	gender = results[i]["player_result"]["player"]["player_type"]["style"]
 	payload["gender"] = gender
+	species = results[i]["player_result"]["player"]["player_type"]["species"]
+	if species == "inklings":
+		payload["species"] = "inkling"
+	elif species == "octolings":
+		payload["species"] = "octoling"
 
 	############################
 	## SPLATFEST TITLES/POWER ##
@@ -964,7 +974,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	## SCOREBOARD ##
 	################
 	if YOUR_COOKIE != "" or debug: # requires online (or battle json). if no cookie, don't do - will fail
-		mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked, title_before, principal_id, star_rank, gender]
+		mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked, title_before, principal_id, star_rank, gender, species]
 		if filename == None:
 			payload = set_scoreboard(payload, bn, mystats, s_flag)
 		else:
