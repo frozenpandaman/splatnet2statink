@@ -868,7 +868,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 
 	try:
 		if results[i]["udemae"]["is_x"]: # == true. results[i]["udemae"]["number"] should be 128
-			payload["x_power"] = results[i]["x_power"] # can be null if not played placement games
+			payload["x_power_after"] = results[i]["x_power"] # can be null if not played placement games
 			if mode == "gachi":
 				payload["estimate_x_power"] = results[i]["estimate_x_power"] # team power, approx
 			payload["worldwide_rank"] = results[i]["rank"] # goes below 500, not sure how low (doesn't exist in league)
