@@ -373,7 +373,8 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 								splatfest_losses += 1
 						if splatfest_match and mirror_match:
 							mirror_matches += 1
-						mapname = result["stage"]["name"]
+						fullname = result["stage"]["name"]
+						mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), fullname)
 						print("New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl))
 					battles.append(int(result["battle_number"]))
 					# if custom key prevents uploading, we deal with that in post_battle
@@ -406,7 +407,8 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 								splatfest_losses += 1
 						if splatfest_match and mirror_match:
 							mirror_matches += 1
-						mapname = result["stage"]["name"]
+						fullname = result["stage"]["name"]
+						mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), fullname)
 						print("New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl))
 					battles.append(int(result["battle_number"]))
 					post_battle(0, [result], s_flag, t_flag, secs, True if i == 0 else False, debug, True)
