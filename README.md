@@ -38,6 +38,7 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
   - [x] Battle start & end times
   - [x] Ranked power level & league power
   - [x] Splatfest title, EXP & power
+  - [x] Species (Inkling or Octoling)
 - [x] Gear/ability recognition, gear & user profile image upload, new Ver. 3.0 & Octo Expansion gear
 - [x] Monitoring for new battle results in real-time
 - [x] Scoreboard stats, player ranking & battle result image upload
