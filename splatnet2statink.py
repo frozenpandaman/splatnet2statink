@@ -903,10 +903,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	gender = results[i]["player_result"]["player"]["player_type"]["style"]
 	payload["gender"] = gender
 	species = results[i]["player_result"]["player"]["player_type"]["species"]
-	if species == "inklings":
-		payload["species"] = "inkling"
-	elif species == "octolings":
-		payload["species"] = "octoling"
+	payload["species"] = species
 
 	############################
 	## SPLATFEST TITLES/POWER ##
