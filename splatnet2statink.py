@@ -511,7 +511,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	principal_id = mystats[11]
 	star_rank    = mystats[12]
 	gender       = mystats[13]
-	species      = mystats[14]
+	my_species   = mystats[14]
 
 	ally_scoreboard = []
 	for n in range(len(battledata["my_team_members"])):
@@ -596,7 +596,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	my_stats.append(principal_id) # 13
 	my_stats.append(star_rank) # 14
 	my_stats.append(gender) # 15
-	my_stats.append(species) # 16
+	my_stats.append(my_species) # 16
 	try:
 		if battledata["crown_players"] != None and principal_id in battledata["crown_players"]:
 			my_stats.append("yes") #17
