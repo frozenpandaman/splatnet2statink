@@ -5,104 +5,108 @@
 # https://stat.ink/api-info/weapon2?_lang_=en-US
 # https://stat.ink/api/v2/weapon
 weapons = {
-	0:    'bold',                 # Sploosh-o-matic
-	1:    'bold_neo',             # Neo Sploosh-o-matic
-	10:   'wakaba',               # Splattershot Jr.
-	11:   'momiji',               # Custom Splattershot Jr.
-	20:   'sharp',                # Splash-o-matic
-	21:   'sharp_neo',            # Neo Splash-o-matic
-	30:   'promodeler_mg',        # Aerospray MG
-	31:   'promodeler_rg',        # Aerospray RG
-	40:   'sshooter',             # Splattershot
-	41:   'sshooter_collabo',     # Tentatek Splattershot
-	45:   'heroshooter_replica',  # Hero Shot Replica
-	46:   'octoshooter_replica',  # Octo Shot Replica
-	50:   '52gal',                # .52 Gal
-	51:   '52gal_deco',           # .52 Gal Deco
-	60:   'nzap85',               # N-ZAP '85
-	61:   'nzap89',               # N-ZAP '89
-	70:   'prime',                # Splattershot Pro
-	71:   'prime_collabo',        # Forge Splattershot Pro
-	80:   '96gal',                # .96 Gal
-	81:   '96gal_deco',           # .96 Gal Deco
-	90:   'jetsweeper',           # Jet Squelcher
-	91:   'jetsweeper_custom',    # Custom Jet Squelcher
-	200:  'nova',                 # Luna Blaster
-	201:  'nova_neo',             # Luna Blaster Neo
-	210:  'hotblaster',           # Blaster
-	211:  'hotblaster_custom',    # Custom Blaster
-	215:  'heroblaster_replica',  # Hero Blaster Replica
-	220:  'longblaster',          # Range Blaster
-	221:  'longblaster_custom',   # Custom Range Blaster
-	230:  'clashblaster',         # Clash Blaster
-	231:  'clashblaster_neo',     # Clash Blaster Neo
-	240:  'rapid',                # Rapid Blaster
-	241:  'rapid_deco',           # Rapid Blaster Deco
-	250:  'rapid_elite',          # Rapid Blaster Pro
-	251:  'rapid_elite_deco',     # Rapid Blaster Pro Deco
-	300:  'l3reelgun',            # L-3 Nozzlenose
-	301:  'l3reelgun_d',          # L-3 Nozzlenose D
-	310:  'h3reelgun',            # H-3 Nozzlenose
-	311:  'h3reelgun_d',          # H-3 Nozzlenose D
-	400:  'bottlegeyser',         # Squeezer
-	401:  'bottlegeyser_foil',    # Foil Squeezer
-	1000: 'carbon',               # Carbon Roller
-	1001: 'carbon_deco',          # Carbon Roller Deco
-	1010: 'splatroller',          # Splat Roller
-	1011: 'splatroller_collabo',  # Krak-On Splat Roller
-	1015: 'heroroller_replica',   # Hero Roller Replica
-	1020: 'dynamo',               # Dynamo Roller
-	1021: 'dynamo_tesla',         # Gold Dynamo Roller
-	1030: 'variableroller',       # Flingza Roller
-	1031: 'variableroller_foil',  # Foil Flingza Roller
-	1100: 'pablo',                # Inkbrush
-	1101: 'pablo_hue',            # Inkbrush Nouveau
-	1110: 'hokusai',              # Octobrush
-	1111: 'hokusai_hue',          # Octobrush Nouveau
-	1115: 'herobrush_replica',    # Herobrush Replica
-	2000: 'squiclean_a',          # Classic Squiffer
-	2001: 'squiclean_b',          # New Squiffer
-	2010: 'splatcharger',         # Splat Charger
-	2011: 'splatcharger_collabo', # Firefin Splat Charger
-	2015: 'herocharger_replica',  # Hero Charger Replica
-	2020: 'splatscope',           # Splatterscope
-	2021: 'splatscope_collabo',   # Firefin Splatterscope
-	2030: 'liter4k',              # E-liter 4K
-	2031: 'liter4k_custom',       # Custom E-liter 4K
-	2040: 'liter4k_scope',        # E-liter 4K Scope
-	2041: 'liter4k_scope_custom', # Custom E-liter 4K Scope
-	2050: 'bamboo14mk1',          # Bamboozler 14 Mk I
-	2060: 'soytuber',             # Goo Tuber
-	2061: 'soytuber_custom',      # Custom Goo Tuber
-	3000: 'bucketslosher',        # Slosher
-	3001: 'bucketslosher_deco',   # Slosher Deco
-	3005: 'heroslosher_replica',  # Hero Slosher Replica
-	3010: 'hissen',               # Tri-Slosher
-	3011: 'hissen_hue',           # Tri-Slosher Nouveau
-	3020: 'screwslosher',         # Sloshing Machine
-	3021: 'screwslosher_neo',     # Sloshing Machine Neo
-	4000: 'splatspinner',         # Mini Splatling
-	4001: 'splatspinner_collabo', # Zink Mini Splatling
-	4010: 'barrelspinner',        # Heavy Splatling
-	4011: 'barrelspinner_deco',   # Heavy Splatling Deco
-	4015: 'herospinner_replica',  # Hero Splatling Replica
-	4020: 'hydra',                # Hydra Splatling
-	5000: 'sputtery',             # Dapple Dualies
-	5001: 'sputtery_hue',         # Dapple Dualies Nouveau
-	5010: 'maneuver',             # Splat Dualies
-	5011: 'maneuver_collabo',     # Enperry Splat Dualies
-	5015: 'heromaneuver_replica', # Hero Dualie Replicas
-	5020: 'kelvin525',            # Glooga Dualies
-	5021: 'kelvin525_deco',       # Glooga Dualies Deco
-	5030: 'dualsweeper',          # Dualie Squelchers
-	5031: 'dualsweeper_custom',   # Custom Dualie Squelchers
-	5040: 'quadhopper_black',     # Dark Tetra Dualies
-	6000: 'parashelter',          # Splat Brella
-	6001: 'parashelter_sorella',  # Sorella Brella
-	6005: 'heroshelter_replica',  # Hero Brella Replica
-	6010: 'campingshelter',       # Tenta Brella
-	6020: 'spygadget',            # Undercover Brella
-	6021: 'spygadget_sorella',    # Undercover Sorella Brella
+	0:    'bold',                   # Sploosh-o-matic
+	1:    'bold_neo',               # Neo Sploosh-o-matic
+	10:   'wakaba',                 # Splattershot Jr.
+	11:   'momiji',                 # Custom Splattershot Jr.
+	20:   'sharp',                  # Splash-o-matic
+	21:   'sharp_neo',              # Neo Splash-o-matic
+	30:   'promodeler_mg',          # Aerospray MG
+	31:   'promodeler_rg',          # Aerospray RG
+	40:   'sshooter',               # Splattershot
+	41:   'sshooter_collabo',       # Tentatek Splattershot
+	45:   'heroshooter_replica',    # Hero Shot Replica
+	46:   'octoshooter_replica',    # Octo Shot Replica
+	50:   '52gal',                  # .52 Gal
+	51:   '52gal_deco',             # .52 Gal Deco
+	60:   'nzap85',                 # N-ZAP '85
+	61:   'nzap89',                 # N-ZAP '89
+	70:   'prime',                  # Splattershot Pro
+	71:   'prime_collabo',          # Forge Splattershot Pro
+	80:   '96gal',                  # .96 Gal
+	81:   '96gal_deco',             # .96 Gal Deco
+	90:   'jetsweeper',             # Jet Squelcher
+	91:   'jetsweeper_custom',      # Custom Jet Squelcher
+	200:  'nova',                   # Luna Blaster
+	201:  'nova_neo',               # Luna Blaster Neo
+	210:  'hotblaster',             # Blaster
+	211:  'hotblaster_custom',      # Custom Blaster
+	215:  'heroblaster_replica',    # Hero Blaster Replica
+	220:  'longblaster',            # Range Blaster
+	221:  'longblaster_custom',     # Custom Range Blaster
+	230:  'clashblaster',           # Clash Blaster
+	231:  'clashblaster_neo',       # Clash Blaster Neo
+	240:  'rapid',                  # Rapid Blaster
+	241:  'rapid_deco',             # Rapid Blaster Deco
+	250:  'rapid_elite',            # Rapid Blaster Pro
+	251:  'rapid_elite_deco',       # Rapid Blaster Pro Deco
+	300:  'l3reelgun',              # L-3 Nozzlenose
+	301:  'l3reelgun_d',            # L-3 Nozzlenose D
+	310:  'h3reelgun',              # H-3 Nozzlenose
+	311:  'h3reelgun_d',            # H-3 Nozzlenose D
+	400:  'bottlegeyser',           # Squeezer
+	401:  'bottlegeyser_foil',      # Foil Squeezer
+	1000: 'carbon',                 # Carbon Roller
+	1001: 'carbon_deco',            # Carbon Roller Deco
+	1010: 'splatroller',            # Splat Roller
+	1011: 'splatroller_collabo',    # Krak-On Splat Roller
+	1015: 'heroroller_replica',     # Hero Roller Replica
+	1020: 'dynamo',                 # Dynamo Roller
+	1021: 'dynamo_tesla',           # Gold Dynamo Roller
+	1030: 'variableroller',         # Flingza Roller
+	1031: 'variableroller_foil',    # Foil Flingza Roller
+	1100: 'pablo',                  # Inkbrush
+	1101: 'pablo_hue',              # Inkbrush Nouveau
+	1110: 'hokusai',                # Octobrush
+	1111: 'hokusai_hue',            # Octobrush Nouveau
+	1115: 'herobrush_replica',      # Herobrush Replica
+	2000: 'squiclean_a',            # Classic Squiffer
+	2001: 'squiclean_b',            # New Squiffer
+	2010: 'splatcharger',           # Splat Charger
+	2011: 'splatcharger_collabo',   # Firefin Splat Charger
+	2015: 'herocharger_replica',    # Hero Charger Replica
+	2020: 'splatscope',             # Splatterscope
+	2021: 'splatscope_collabo',     # Firefin Splatterscope
+	2030: 'liter4k',                # E-liter 4K
+	2031: 'liter4k_custom',         # Custom E-liter 4K
+	2040: 'liter4k_scope',          # E-liter 4K Scope
+	2041: 'liter4k_scope_custom',   # Custom E-liter 4K Scope
+	2050: 'bamboo14mk1',            # Bamboozler 14 Mk I
+	2051: 'bamboo14mk2',            # Bamboozler 14 Mk II
+	2060: 'soytuber',               # Goo Tuber
+	2061: 'soytuber_custom',        # Custom Goo Tuber
+	3000: 'bucketslosher',          # Slosher
+	3001: 'bucketslosher_deco',     # Slosher Deco
+	3005: 'heroslosher_replica',    # Hero Slosher Replica
+	3010: 'hissen',                 # Tri-Slosher
+	3011: 'hissen_hue',             # Tri-Slosher Nouveau
+	3020: 'screwslosher',           # Sloshing Machine
+	3021: 'screwslosher_neo',       # Sloshing Machine Neo
+	3030: 'explosher',              # Explosher
+	4000: 'splatspinner',           # Mini Splatling
+	4001: 'splatspinner_collabo',   # Zink Mini Splatling
+	4010: 'barrelspinner',          # Heavy Splatling
+	4011: 'barrelspinner_deco',     # Heavy Splatling Deco
+	4015: 'herospinner_replica',    # Hero Splatling Replica
+	4020: 'hydra',                  # Hydra Splatling
+	4030: 'kugelschreiber',         # Ballpoint Splatling
+	5000: 'sputtery',               # Dapple Dualies
+	5001: 'sputtery_hue',           # Dapple Dualies Nouveau
+	5010: 'maneuver',               # Splat Dualies
+	5011: 'maneuver_collabo',       # Enperry Splat Dualies
+	5015: 'heromaneuver_replica',   # Hero Dualie Replicas
+	5020: 'kelvin525',              # Glooga Dualies
+	5021: 'kelvin525_deco',         # Glooga Dualies Deco
+	5030: 'dualsweeper',            # Dualie Squelchers
+	5031: 'dualsweeper_custom',     # Custom Dualie Squelchers
+	5040: 'quadhopper_black',       # Dark Tetra Dualies
+	6000: 'parashelter',            # Splat Brella
+	6001: 'parashelter_sorella',    # Sorella Brella
+	6005: 'heroshelter_replica',    # Hero Brella Replica
+	6010: 'campingshelter',         # Tenta Brella
+	6011: 'campingshelter_sorella', # Tenta Sorella Brella
+	6020: 'spygadget',              # Undercover Brella
+	6021: 'spygadget_sorella',      # Undercover Sorella Brella
 }
 
 # Stage database
