@@ -127,6 +127,7 @@ stages = {
 	16:   'mongara',   # Camp Triggerfish
 	17:   'shottsuru', # Piranha Pit
 	18:   'ajifry',    # Goby Arena
+	19:   'otoro',     # New Albacore Hotel
 	20:   'sumeshi',   # Wahoo World
 	9999: 'mystery',   # Shifty Station (Splatfest only)
 
@@ -150,6 +151,7 @@ stages = {
 	'mongara':   'Camp',
 	'shottsuru': 'Pit',
 	'ajifry':    'Arena',
+	'otoro':     'Hotel',
 	'sumeshi':   'World',
 	'mystery':   'Shifty',
 }
