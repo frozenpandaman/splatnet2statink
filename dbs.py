@@ -82,7 +82,7 @@ weapons = {
 	3011: 'hissen_hue',             # Tri-Slosher Nouveau
 	3020: 'screwslosher',           # Sloshing Machine
 	3021: 'screwslosher_neo',       # Sloshing Machine Neo
-	3030: 'explosher',              # Explosher
+	3040: 'explosher',              # Explosher
 	4000: 'splatspinner',           # Mini Splatling
 	4001: 'splatspinner_collabo',   # Zink Mini Splatling
 	4010: 'barrelspinner',          # Heavy Splatling
