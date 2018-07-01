@@ -274,7 +274,7 @@ headgears = {
 	9005:  'soccer_headband',
 	9007:  'fishfry_biscuit_bandana',
 	9008:  'black_fishfry_bandana',
-	10000: 'kaiser_cuff',
+	10000: 'kaiser_cuff', # Eminence Cuff
 	21000: 'headlamp_helmet',
 	21001: 'dust_blocker_2000',
 	21002: 'welding_mask',
@@ -438,7 +438,7 @@ clothes = {
 	5029:  'light_bomber_jacket',
 	5030:  'brown_fa_11_bomber',
 	5031:  'gray_fa_11_bomber',
-	5032:  'king_bench_kaiser', # milky eminence jacket
+	5032:  'king_bench_kaiser', # Milky Eminence Jacket
 	5033:  'navy_eminence_jacket',
 	5034:  'tumeric_zekko_coat',
 	5035:  'custom_painted_f_3',
@@ -525,6 +525,7 @@ clothes = {
 	21003: 'garden_gear',
 	21004: 'crustwear_xxl',
 	21006: 'octoleet_armor',
+	21007: 'record_shop_look_ep',
 	25000: 'school_uniform',
 	25001: 'samurai_jacket',
 	25002: 'power_armor',
@@ -582,7 +583,7 @@ shoes = {
 	2018:  'blue_and_black_squidkid_iv',
 	2019:  'gray_sea_slug_hi_tops',
 	2020:  'orca_hi_tops',
-	2021:  'imperial_kaiser', # milky enperrials
+	2021:  'imperial_kaiser', # Milky Enperrials
 	2022:  'navy_enperrials',
 	2023:  'amber_sea_slug_hi_tops',
 	2024:  'yellow_iromaki_750s',
