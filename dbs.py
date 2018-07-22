@@ -133,6 +133,7 @@ stages = {
 	18:   'ajifry',    # Goby Arena
 	19:   'otoro',     # New Albacore Hotel
 	20:   'sumeshi',   # Wahoo World
+	21:   'anchovy',   # Ancho-V Games
 	9999: 'mystery',   # Shifty Station (Splatfest only)
 
 	# clearly the funniest way to go about doing this
@@ -157,6 +158,7 @@ stages = {
 	'ajifry':    'Arena',
 	'otoro':     'Hotel',
 	'sumeshi':   'World',
+	'anchovy':   'Ancho-V',
 	'mystery':   'Shifty',
 }
 
@@ -195,6 +197,7 @@ headgears = {
 	2003:  'sporty_bobble_hat',
 	2004:  'special_forces_beret',
 	2005:  'squid_nordic',
+	2006:  'sennyu_bon_bon_beanie',
 	2008:  'knitted_hat',
 	2009:  'annaki_beret',
 	2010:  'yamagiri_beanie',
@@ -218,6 +221,8 @@ headgears = {
 	3016:  'swim_goggles',
 	3017:  'ink_guard_goggles',
 	3018:  'toni_kensa_goggles',
+	3019:  'sennyu_goggles',
+	3020:  'sennyu_specs',
 	4000:  'safari_hat',
 	4001:  'jungle_hat',
 	4002:  'camping_hat',
@@ -239,6 +244,7 @@ headgears = {
 	5003:  'squidfin_hook_cans',
 	5004:  'squidlife_headphones',
 	5005:  'studio_octophones',
+	5006:  'sennyu_headphones',
 	6000:  'golf_visor',
 	6001:  'fishfry_visor',
 	6002:  'sun_visor',
@@ -452,6 +458,7 @@ clothes = {
 	5041:  'rockin_leather_jacket',
 	5042:  'kung_fu_zip_up',
 	5043:  'panda_kung_fu_zip_up',
+	5044:  'sennyu_suit',
 	6000:  'b_ball_jersey_home',
 	6001:  'b_ball_jersey_away',
 	6003:  'white_king_tank',
@@ -676,6 +683,7 @@ shoes = {
 	8009:  'inky_kid_clams',
 	8010:  'annaki_habaneros',
 	8011:  'annaki_tigers',
+	8012:  'sennyu_inksoles',
 	21001: 'angry_rain_boots',
 	21002: 'non_slip_senseis',
 	21003: 'octoleet_boots',
