@@ -1168,6 +1168,7 @@ def main():
 	is_s = parser_result.s
 	is_t = parser_result.t
 	is_r = parser_result.r
+	global filename
 	filename = parser_result.filename
 
 	if is_s:
