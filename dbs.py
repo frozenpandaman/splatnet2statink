@@ -82,6 +82,7 @@ weapons = {
 	3011: 'hissen_hue',             # Tri-Slosher Nouveau
 	3020: 'screwslosher',           # Sloshing Machine
 	3021: 'screwslosher_neo',       # Sloshing Machine Neo
+	3030: 'furo',                   # Bloblobber
 	3040: 'explosher',              # Explosher
 	4000: 'splatspinner',           # Mini Splatling
 	4001: 'splatspinner_collabo',   # Zink Mini Splatling
@@ -89,7 +90,9 @@ weapons = {
 	4011: 'barrelspinner_deco',     # Heavy Splatling Deco
 	4015: 'herospinner_replica',    # Hero Splatling Replica
 	4020: 'hydra',                  # Hydra Splatling
+	4021: 'hydra_custom',           # Custom Hydra Splatling
 	4030: 'kugelschreiber',         # Ballpoint Splatling
+	4040: 'nautilus47',             # Nautilus 47
 	5000: 'sputtery',               # Dapple Dualies
 	5001: 'sputtery_hue',           # Dapple Dualies Nouveau
 	5010: 'maneuver',               # Splat Dualies
@@ -100,6 +103,7 @@ weapons = {
 	5030: 'dualsweeper',            # Dualie Squelchers
 	5031: 'dualsweeper_custom',     # Custom Dualie Squelchers
 	5040: 'quadhopper_black',       # Dark Tetra Dualies
+	5041: 'quadhopper_white',       # Light Tetra Dualies
 	6000: 'parashelter',            # Splat Brella
 	6001: 'parashelter_sorella',    # Sorella Brella
 	6005: 'heroshelter_replica',    # Hero Brella Replica
@@ -149,7 +153,7 @@ stages = {
 	'engawa':    'Canal',
 	'mozuku':    'Dome',
 	'bbass':     'Skatepark',
-	'devon' :    'Institute',
+	'devon':     'Institute',
 	'zatou':     'Mart',
 	'hakofugu':  'Warehouse',
 	'arowana':   'Mall',
