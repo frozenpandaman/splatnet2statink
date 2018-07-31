@@ -947,15 +947,22 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		# WIN BONUS EXP
 		if result == "victory":
 			if results[i]["other_estimate_fes_power"] < 1400:
-				points_gained += 3 # 1290 - 1380
-			elif 1400 <= results[i]["other_estimate_fes_power"] < 1700:
-				points_gained += 4 # 1400 - 1680
-			elif 1700 <= results[i]["other_estimate_fes_power"] < 1800:
+				points_gained += 3 # 1200 - 1380
+			elif 1400 <= results[i]["other_estimate_fes_power"] <= 1700:
+				points_gained += 4 # 1400 - 1700
+			elif 1700 < results[i]["other_estimate_fes_power"] < 1800:
 				points_gained += 5 # 1720 - 1780
 			elif 1800 <= results[i]["other_estimate_fes_power"] < 1900:
-				points_gained += 6 # 1810 - 1890
+				points_gained += 6 # 1800 - 1890
 			elif results[i]["other_estimate_fes_power"] >= 1900:
 				points_gained += 7 # 1900 - 2240
+
+			# https://github.com/frozenpandaman/splatnet2statink/issues/52
+			if title_after > title_before:
+				if results[i]["other_estimate_fes_power"] == 1700:
+					points_gained += 1 # +4 -> +5 edge case
+				elif results[i]["other_estimate_fes_power"] == 1800:
+					points_gained -= 1 # +6 -> +5 edge case
 
 		# SPECIAL CASE - KING/QUEEN MAX
 		if title_before == 4 and title_after == 4 and fest_exp_after == 0:
@@ -978,6 +985,10 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 			elif title_before == 2 and title_after == 3: # defender (50) to champion (99)
 				fest_rank_rollover = 50
 			payload["fest_exp"] = fest_rank_rollover + fest_exp_after - points_gained
+
+		# temp fix
+		if payload["fest_exp"] < 0:
+			payload["fest_exp"] = None
 
 	else: # not splatfest
 		title_before = None # for scoreboard param
