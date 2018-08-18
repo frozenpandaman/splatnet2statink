@@ -162,7 +162,7 @@ stages = {
 	'ajifry':    'Arena',
 	'otoro':     'Hotel',
 	'sumeshi':   'World',
-	'anchovy':   'Ancho-V',
+	'anchovy':   'Games',
 	'mystery':   'Shifty',
 }
 
