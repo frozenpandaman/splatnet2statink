@@ -20,7 +20,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.1.7"
+A_VERSION = "1.1.8"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -210,7 +210,7 @@ def check_for_updates():
 					print("Successfully updated to v{}. Please restart splatnet2statink.".format(new_version))
 					return True
 				else:
-					print("Remember to update later with \"git pull\" to get the latest database.")
+					print("Remember to update later with \"git pull\" to get the latest version.")
 			else: # non-git user
 				print("Visit the site below to update:\nhttps://github.com/frozenpandaman/splatnet2statink\n")
 				# dbs_freshness = time.time() - os.path.getmtime("dbs.py")
@@ -946,23 +946,17 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 
 		# WIN BONUS EXP
 		if result == "victory":
+			# https://github.com/frozenpandaman/splatnet2statink/issues/52#issuecomment-414609225
 			if results[i]["other_estimate_fes_power"] < 1400:
-				points_gained += 3 # 1200 - 1380
-			elif 1400 <= results[i]["other_estimate_fes_power"] <= 1700:
-				points_gained += 4 # 1400 - 1700
-			elif 1700 < results[i]["other_estimate_fes_power"] < 1800:
-				points_gained += 5 # 1720 - 1780
+				points_gained += 3
+			elif 1400 <= results[i]["other_estimate_fes_power"] < 1700:
+				points_gained += 4
+			elif 1700 <= results[i]["other_estimate_fes_power"] < 1800:
+				points_gained += 5
 			elif 1800 <= results[i]["other_estimate_fes_power"] < 1900:
-				points_gained += 6 # 1800 - 1890
+				points_gained += 6
 			elif results[i]["other_estimate_fes_power"] >= 1900:
-				points_gained += 7 # 1900 - 2240
-
-			# https://github.com/frozenpandaman/splatnet2statink/issues/52
-			if title_after > title_before:
-				if results[i]["other_estimate_fes_power"] == 1700:
-					points_gained += 1 # +4 -> +5 edge case
-				elif results[i]["other_estimate_fes_power"] == 1800:
-					points_gained -= 1 # +6 -> +5 edge case
+				points_gained += 7
 
 		# SPECIAL CASE - KING/QUEEN MAX
 		if title_before == 4 and title_after == 4 and fest_exp_after == 0:
@@ -986,9 +980,9 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 				fest_rank_rollover = 50
 			payload["fest_exp"] = fest_rank_rollover + fest_exp_after - points_gained
 
-		# temp fix
+		# avoid mysterious, fatal -1 case...
 		if payload["fest_exp"] and payload["fest_exp"] < 0:
-			payload["fest_exp"] = None
+			payload["fest_exp"] = 0
 
 	else: # not splatfest
 		title_before = None # for scoreboard param
