@@ -13,7 +13,7 @@ from past.utils import old_div
 import os.path, argparse, sys
 import requests, json, time, datetime, random, re
 import msgpack, uuid
-import iksm, dbs
+from splatnet2statink import iksm, dbs
 from io import BytesIO
 from operator import itemgetter
 from distutils.version import StrictVersion
@@ -224,50 +224,6 @@ def check_for_updates():
 					pass # then we don't modify the database
 	except: # if there's a problem connecting to github
 		pass # then we assume there's no update available
-
-def main():
-	'''I/O and setup.'''
-
-	if check_for_updates():
-		exit(0)
-
-	check_statink_key()
-	set_language()
-
-	parser = argparse.ArgumentParser()
-	parser.add_argument("-M", dest="N", required=False, nargs="?", action="store",
-						help="monitoring mode; pull data every N secs (default: 300)", const=300)
-	parser.add_argument("-r", required=False, action="store_true",
-						help="retroactively post unuploaded battles")
-	parser.add_argument("-s", required=False, action="store_true",
-						help="don't post scoreboard result image")
-	parser.add_argument("-t", required=False, action="store_true",
-						help="dry run for testing (won't post to stat.ink)")
-	parser.add_argument("-i", dest="filename", required=False, help=argparse.SUPPRESS)
-
-	parser_result = parser.parse_args()
-
-	if parser_result.N != None:
-		try:
-			m_value = int(parser_result.N)
-		except ValueError:
-			print("Number provided must be an integer. Exiting.")
-			exit(1)
-		if m_value < 0:
-				print("No.")
-				exit(1)
-		elif m_value < 60:
-				print("Minimum number of seconds in monitoring mode is 60. Exiting.")
-				exit(1)
-	else:
-		m_value = -1
-
-	is_s = parser_result.s
-	is_t = parser_result.t
-	is_r = parser_result.r
-	filename = parser_result.filename
-
-	return m_value, is_s, is_t, is_r, filename
 
 def load_results():
 	'''Returns the data we need from the results JSON, if possible.'''
@@ -1172,8 +1128,49 @@ def blackout(image_result_content, players):
 		pass
 	return scoreboard
 
-if __name__ == "__main__":
-	m_value, is_s, is_t, is_r, filename = main()
+def main():
+	'''I/O and setup.'''
+
+	if check_for_updates():
+		exit(0)
+
+	check_statink_key()
+	set_language()
+
+	parser = argparse.ArgumentParser()
+	parser.add_argument("-M", dest="N", required=False, nargs="?", action="store",
+						help="monitoring mode; pull data every N secs (default: 300)", const=300)
+	parser.add_argument("-r", required=False, action="store_true",
+						help="retroactively post unuploaded battles")
+	parser.add_argument("-s", required=False, action="store_true",
+						help="don't post scoreboard result image")
+	parser.add_argument("-t", required=False, action="store_true",
+						help="dry run for testing (won't post to stat.ink)")
+	parser.add_argument("-i", dest="filename", required=False, help=argparse.SUPPRESS)
+
+	parser_result = parser.parse_args()
+
+	if parser_result.N != None:
+		try:
+			m_value = int(parser_result.N)
+		except ValueError:
+			print("Number provided must be an integer. Exiting.")
+			exit(1)
+		if m_value < 0:
+				print("No.")
+				exit(1)
+		elif m_value < 60:
+				print("Minimum number of seconds in monitoring mode is 60. Exiting.")
+				exit(1)
+	else:
+		m_value = -1
+
+	is_s = parser_result.s
+	is_t = parser_result.t
+	is_r = parser_result.r
+	global filename
+	filename = parser_result.filename
+
 	if is_s:
 		from PIL import Image, ImageDraw
 	if m_value != -1: # m flag exists
@@ -1186,3 +1183,6 @@ if __name__ == "__main__":
 			post_battle(i, results, is_s, is_t, m_value, True if i == 0 else False, debug)
 		if debug:
 			print("")
+
+if __name__ == "__main__":
+	main()
