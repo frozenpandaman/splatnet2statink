@@ -1,7 +1,7 @@
 splatnet2statink
 ================
 
-splatnet2statink is a script that uploads battle data from the SplatNet 2 app ("Nintendo Switch Online") to [https://stat.ink/](https://stat.ink/), a site for recording, visualizing, and aggregating statistics from *Splatoon* and *Splatoon 2*.
+splatnet2statink is a script that uploads battle data from the SplatNet 2 app ("Nintendo Switch Online") to [stat.ink](https://stat.ink/), a site for recording, visualizing, and aggregating statistics from *Splatoon* and *Splatoon 2*.
 
 (ja) 日本語版セットアップ手順は[こちら](https://archive.fo/td52p)。
 
@@ -31,18 +31,18 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
 
 - [x] Full automation of SplatNet cookie generation/acquisition via user log-in
 - [x] Complete battle stats
-  - [x] Lobby/mode, stage, weapon
+  - [x] Lobby/mode, stage, weapon – including new Ver. 4.0 weapons
   - [x] Result, final count/percent, turf inked
   - [x] Kills, deaths, assists, specials
-  - [x] Rank & rank after, level & level after, star levels (&#9733;), X Rank & Power
+  - [x] Rank, level & star emblems (&#9733;), X Rank & Power
   - [x] Battle start & end times
-  - [x] Ranked power level & league power
-  - [x] Splatfest title, EXP & power
+  - [x] Ranked power level & League Power
+  - [x] Splatfest title, EXP & Power
   - [x] Species (Inkling or Octoling)
-- [x] Gear/ability recognition, gear & user profile image upload, new Ver. 3.0 & Octo Expansion gear
+- [x] Gear/ability recognition, gear & user profile image upload – including Ver. 3.0 & Octo Expansion gear
 - [x] Monitoring for new battle results in real-time
 - [x] Scoreboard stats, player ranking & battle result image upload
-- [x] Non-English language game support
+- [x] Full support for all available game languages
 
 ## Setup instructions
 
@@ -64,13 +64,13 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
 
     This token (used to access your SplatNet battle results) along with your stat.ink API key and language will automatically be saved into `config.txt` for you. You're now ready to upload battles!
 
-Have any questions, issues, or suggestions? Feel free to message me on [Twitter](https://twitter.com/frozenpandaman) or [Reddit](https://www.reddit.com/user/frozenpandaman).
+Have any questions, issues, or suggestions? Feel free to message me on [Twitter](https://twitter.com/frozenpandaman) or create an [issue](https://github.com/frozenpandaman/splatnet2statink/issues) here.
 
 質問があれば、ツイッター([@frozenpandaman](https://twitter.com/frozenpandaman))で連絡してください。日本語OK。
 
 ### Accessing SplatNet 2 from your browser
 
-If you wish to access SplatNet 2 from your computer rather than via the phone app, navigate to [https://app.splatoon2.nintendo.net/home](https://app.splatoon2.nintendo.net/home) (it should show a forbidden error). Use a cookie editor – such as [EditThisCookie](https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg?hl=en) for Chrome – to change `iksm_session` to the value you obtained previously (automatically or via [mitmproxy](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions) – stored as  `cookie` in `config.txt`), and refresh the page. If you only want to access SplatNet and don't have a stat.ink API key, simply enter "skip" for this step during setup.
+If you wish to access SplatNet 2 from your computer rather than via the phone app, navigate to [https://app.splatoon2.nintendo.net/home](https://app.splatoon2.nintendo.net/home) (it should show a forbidden error). Use a cookie editor – such as [EditThisCookie](https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg?hl=en) for Chrome – to change `iksm_session` to the value you obtained previously (automatically or via [mitmproxy](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions), stored as  `cookie` in `config.txt`), and refresh the page. If you only want to access SplatNet and don't have a stat.ink API key, simply enter "skip" for this step during setup.
 
 *Splatoon 2* stage rotation information (including Salmon Run) and current SplatNet gear are viewable at [https://splatoon2.ink/](https://splatoon2.ink/).
 
@@ -84,7 +84,7 @@ Automatic cookie generation involves making a **secure request to a _non-Nintend
 
 The v1.1.0 update to the Nintendo Switch Online app, released in September 2017, changed the method used to log in to Nintendo accounts, complicating the ability to generate cookies within the script. The update introduced the requirement of a [message authentication code](https://en.wikipedia.org/wiki/Message_authentication_code), known as `f`, to verify the authenticity of the login request.
 
-This code is only able to be generated using a [key](https://en.wikipedia.org/wiki/Key_\(cryptography\)) provided within the app. However, this key is sensitive and, if revealed, may assist users looking to use it for malicious purposes. To prevent sharing this key publicly (e.g. distributing it in the script's source code), I've created a small API which will generate an `f` token given a valid input.
+This code is only able to be generated using a [key](https://en.wikipedia.org/wiki/Key_\(cryptography\)) provided within the app. However, this key is sensitive and, if revealed, may assist users looking to use it for malicious purposes. To prevent sharing this key publicly (e.g. distributing it in the script's source code), I've created a small [API](https://en.wikipedia.org/wiki/Application_programming_interface) which will generate an `f` token given a valid input.
 
 **_Privacy statement:_ No identifying information is ever sent to the API server. Usernames and passwords are far removed from where the API comes into play and are never readable by anyone but you. Returned `f` tokens  are never logged or stored and do not contain meaningful information. It is not possible to use either sent or stored data to identify which account/user performed a request, to view any identifying information about a user, or to gain access to an account.**
 
