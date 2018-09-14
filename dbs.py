@@ -15,6 +15,7 @@ weapons = {
 	31:   'promodeler_rg',          # Aerospray RG
 	40:   'sshooter',               # Splattershot
 	41:   'sshooter_collabo',       # Tentatek Splattershot
+	42:   'sshooter_becchu',        # Kensa Splattershot
 	45:   'heroshooter_replica',    # Hero Shot Replica
 	46:   'octoshooter_replica',    # Octo Shot Replica
 	50:   '52gal',                  # .52 Gal
@@ -50,6 +51,7 @@ weapons = {
 	1001: 'carbon_deco',            # Carbon Roller Deco
 	1010: 'splatroller',            # Splat Roller
 	1011: 'splatroller_collabo',    # Krak-On Splat Roller
+	1012: 'splatroller_becchu',     # Kensa Splat Roller
 	1015: 'heroroller_replica',     # Hero Roller Replica
 	1020: 'dynamo',                 # Dynamo Roller
 	1021: 'dynamo_tesla',           # Gold Dynamo Roller
@@ -64,9 +66,11 @@ weapons = {
 	2001: 'squiclean_b',            # New Squiffer
 	2010: 'splatcharger',           # Splat Charger
 	2011: 'splatcharger_collabo',   # Firefin Splat Charger
+	2012: 'splatcharger_becchu',    # Kensa Charger
 	2015: 'herocharger_replica',    # Hero Charger Replica
 	2020: 'splatscope',             # Splatterscope
 	2021: 'splatscope_collabo',     # Firefin Splatterscope
+	2022: 'splatscope_becchu',      # Kensa Splatterscope
 	2030: 'liter4k',                # E-liter 4K
 	2031: 'liter4k_custom',         # Custom E-liter 4K
 	2040: 'liter4k_scope',          # E-liter 4K Scope
@@ -97,6 +101,7 @@ weapons = {
 	5001: 'sputtery_hue',           # Dapple Dualies Nouveau
 	5010: 'maneuver',               # Splat Dualies
 	5011: 'maneuver_collabo',       # Enperry Splat Dualies
+	5012: 'maneuver_becchu',        # Kensa Splat Dualies
 	5015: 'heromaneuver_replica',   # Hero Dualie Replicas
 	5020: 'kelvin525',              # Glooga Dualies
 	5021: 'kelvin525_deco',         # Glooga Dualies Deco
