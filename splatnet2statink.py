@@ -269,9 +269,20 @@ def main():
 
 	return m_value, is_s, is_t, is_r, filename
 
-def load_results():
+def load_results(calledby):
 	'''Returns the data we need from the results JSON, if possible.'''
+
 	# initial checks
+	if filename != None: # local file provided (users should not really be using this)
+		if calledby == "monitor": # hits first
+			vp = "run in monitoring mode"
+		elif calledby == "populate": # -r and -M
+			vp = "check for previously-unuploaded battles"
+		else:
+			vp = "run"
+		print("Cannot {} given a local file. Exiting.".format(vp))
+		exit(1)
+
 	data = load_json(False)
 	try:
 		results = data["results"] # all we care about
@@ -295,7 +306,7 @@ def load_results():
 def populate_battles(s_flag, t_flag, r_flag, debug):
 	'''Populates the battles list with SplatNet battles. Optionally uploads unuploaded battles.'''
 
-	results = load_results()
+	results = load_results("populate")
 
 	battles = [] # 50 recent battles on splatnet
 
@@ -327,12 +338,7 @@ def populate_battles(s_flag, t_flag, r_flag, debug):
 def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 	'''Monitors JSON for changes/new battles and uploads them.'''
 
-	# initial checks
-	if filename != None: # local file provided (users should not really be using this)
-		print("Cannot run in monitoring mode provided a local file. Exiting.")
-		exit(1)
-
-	results = load_results() # make sure we can do it first. if error, throw it before main process
+	results = load_results("monitor") # make sure we can do it first. if error, throw it before main process
 
 	battles = populate_battles(s_flag, t_flag, r_flag, debug)
 	wins, losses, splatfest_wins, splatfest_losses, mirror_matches = [0]*5 # init all to 0
