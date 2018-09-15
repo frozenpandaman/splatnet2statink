@@ -696,6 +696,7 @@ shoes = {
 	21001: 'angry_rain_boots',
 	21002: 'non_slip_senseis',
 	21003: 'octoleet_boots',
+	21005: 'flipper_floppers',
 	25000: 'school_shoes',
 	25001: 'samurai_shoes',
 	25002: 'power_boots',
