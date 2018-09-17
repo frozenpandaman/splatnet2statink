@@ -269,7 +269,7 @@ def main():
 
 	return m_value, is_s, is_t, is_r, filename
 
-def load_results(calledby):
+def load_results(calledby=""):
 	'''Returns the data we need from the results JSON, if possible.'''
 
 	# initial checks
