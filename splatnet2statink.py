@@ -273,15 +273,18 @@ def load_results(calledby=""):
 	'''Returns the data we need from the results JSON, if possible.'''
 
 	# initial checks
-	if filename != None: # local file provided (users should not really be using this)
-		if calledby == "monitor": # hits first
-			vp = "run in monitoring mode"
-		elif calledby == "populate": # -r and -M
-			vp = "check for previously-unuploaded battles"
-		else:
-			vp = "run"
-		print("Cannot {} given a local file. Exiting.".format(vp))
-		exit(1)
+	try:
+		if filename != None: # local file provided (users should not really be using this)
+			if calledby == "monitor": # hits first
+				vp = "run in monitoring mode"
+			elif calledby == "populate": # -r and -M
+				vp = "check for previously-unuploaded battles"
+			else:
+				vp = "run"
+			print("Cannot {} given a local file. Exiting.".format(vp))
+			exit(1)
+	except NameError: # some other script is probably plugging into s2s and calling load_results() directly
+		pass
 
 	data = load_json(False)
 	try:
