@@ -323,7 +323,7 @@ def populate_battles(s_flag, t_flag, r_flag, debug):
 		statink_battles = json.loads(resp.text) # 100 recent battles on stat.ink. should avoid dupes
 
 	# always does this to populate battles array, regardless of r_flag
-	for result in reversed(results):
+	for i, result in reversed(list(enumerate(results))):
 		bn = int(result["battle_number"]) # get all recent battle_numbers
 		battles.append(bn) # for main process, don't upload any of the ones already in the file
 		if r_flag:
@@ -331,7 +331,7 @@ def populate_battles(s_flag, t_flag, r_flag, debug):
 				if not printed:
 					printed = True
 					print("Previously-unuploaded battles detected. Uploading now...")
-				post_battle(0, [result], s_flag, t_flag, -1, False, debug, True)
+				post_battle(0, [result], s_flag, t_flag, -1, True if i == 0 else False, debug, False)
 
 	if r_flag and not printed:
 		print("No previously-unuploaded battles found.")
@@ -1136,7 +1136,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 				print("Battle #{} already uploaded to {}".format(i+1, headerloc))
 				# continue trying to upload remaining
 			else: # http status code should be OK (200)
-				if not ismonitor:
+				if not ismonitor and len(results) > 1:
 					print("Battle #{} uploaded to {}".format(i+1, headerloc))
 				else: # monitoring mode
 					print("Battle uploaded to {}".format(headerloc))
@@ -1144,7 +1144,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 			if t_flag:
 				print("Battle #{} - message from server:".format(i+1))
 			else:
-				if not ismonitor:
+				if not ismonitor and len(results) > 1:
 					print("Error uploading battle #{}. Message from server:".format(i+1))
 				else: # monitoring mode
 					print("Error uploading battle. Message from server:")
