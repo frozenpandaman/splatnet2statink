@@ -20,7 +20,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.1.9"
+A_VERSION = "1.2.0"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -744,6 +744,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	agent_variables = {'upload_mode': "Monitoring" if ismonitor else "Manual"}
 	payload["agent_variables"] = agent_variables
 	bn = results[i]["battle_number"]
+	ver4 = True if "version" in results[i] and results[i]["version"] == 4 else False
 	principal_id = results[i]["player_result"]["player"]["principal_id"]
 	namespace = uuid.UUID(u'{73cf052a-fd0b-11e7-a5ee-001b21a098c2}')
 	name = "{}@{}".format(bn, principal_id)
@@ -752,7 +753,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	##################
 	## LOBBY & MODE ##
 	##################
-	lobby = results[i]["game_mode"]["key"] # regular, league_team, league_pair, private, fes_solo, fes_team
+	lobby = results[i]["game_mode"]["key"]
 	if lobby == "regular": # turf war
 		payload["lobby"] = "standard"
 		payload["mode"]  = "regular"
@@ -768,17 +769,19 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	elif lobby == "private": # private battle
 		payload["lobby"] = "private"
 		payload["mode"]  = "private"
-	elif lobby == "fes_solo": # splatfest solo
-		payload["lobby"] = "standard"
+	elif lobby == "fes_solo": # splatfest pro / solo
+		payload["lobby"] = "fest_pro" if ver4 else "standard"
 		payload["mode"]  = "fest"
-	elif lobby == "fes_team":# splatfest team
-		payload["lobby"] = "squad_4"
+		# ["fes_mode"]["key"] == "fes.result.challenge"
+	elif lobby == "fes_team": # splatfest normal / team
+		payload["lobby"] = "fest_normal" if ver4 else "squad_4"
 		payload["mode"]  = "fest"
+		# ["fes_mode"]["key"] == "fes.result.regular"
 
 	##########
 	## RULE ##
 	##########
-	rule = results[i]["rule"]["key"] # turf_war, rainmaker, splat_zones, tower_control, clam_blitz
+	rule = results[i]["rule"]["key"]
 	if rule == "turf_war":
 		payload["rule"] = "nawabari"
 	elif rule == "splat_zones":
@@ -933,60 +936,68 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	## SPLATFEST TITLES/POWER ##
 	############################ https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md#fest_title-fest_title_after
 	if mode == "fes":
-		title_before = results[i]["player_result"]["player"]["fes_grade"]["rank"]
-		title_after = results[i]["fes_grade"]["rank"]
+		title_before   = results[i]["player_result"]["player"]["fes_grade"]["rank"]
+		title_after    = results[i]["fes_grade"]["rank"]
 		fest_exp_after = results[i]["fes_point"]
-		payload["fest_power"] = results[i]["fes_power"]
-		payload["my_team_estimate_fest_power"] = results[i]["my_estimate_fes_power"]
-		payload["his_team_estimate_fest_power"] = results[i]["other_estimate_fes_power"]
-		payload["my_team_fest_theme"] = results[i]["my_team_fes_theme"]["name"]
-		payload["his_team_fest_theme"] = results[i]["other_team_fes_theme"]["name"]
 
-		payload["fest_title"] = translate_fest_rank[title_before]
-		payload["fest_title_after"] = translate_fest_rank[title_after]
-		payload["fest_exp_after"] = fest_exp_after
+		# present in pro, 0 in normal
+		payload["fest_power"] = results[i]["fes_power"]
+		# universal system pre-ver.4. now present in both pro & normal but hidden in normal
+		payload["my_team_estimate_fest_power"]  = results[i]["my_estimate_fes_power"]
+		payload["his_team_estimate_fest_power"] = results[i]["other_estimate_fes_power"]
+
+		payload["my_team_fest_theme"]  = results[i]["my_team_fes_theme"]["name"]
+		payload["his_team_fest_theme"] = results[i]["other_team_fes_theme"]["name"]
+		payload["fest_title"]          = translate_fest_rank[title_before]
+		payload["fest_title_after"]    = translate_fest_rank[title_after]
+		payload["fest_exp_after"]      = fest_exp_after
 		points_gained = 0
+
+		if ver4: # in ver.4, everything got multiplied x10...
+			multiplier = 10
+		else:
+			multiplier = 1
 
 		# TURF INKED EXP
 		if results[i]["player_result"]["game_paint_point"] >= 200:
-			points_gained += 1
+			points_gained += 1 * multiplier
 		if results[i]["player_result"]["game_paint_point"] >= 400:
-			points_gained += 1 # +2 total
+			points_gained += 1 * multiplier # +20 total (post-ver.4)
 
 		# WIN BONUS EXP
 		if result == "victory":
 			# https://github.com/frozenpandaman/splatnet2statink/issues/52#issuecomment-414609225
 			if results[i]["other_estimate_fes_power"] < 1400:
-				points_gained += 3
+				points_gained += 3 * multiplier
 			elif 1400 <= results[i]["other_estimate_fes_power"] < 1700:
-				points_gained += 4
+				points_gained += 4 * multiplier
 			elif 1700 <= results[i]["other_estimate_fes_power"] < 1800:
-				points_gained += 5
+				points_gained += 5 * multiplier
 			elif 1800 <= results[i]["other_estimate_fes_power"] < 1900:
-				points_gained += 6
+				points_gained += 6 * multiplier
 			elif results[i]["other_estimate_fes_power"] >= 1900:
-				points_gained += 7
+				points_gained += 7 * multiplier
 
 		# SPECIAL CASE - KING/QUEEN MAX
 		if title_before == 4 and title_after == 4 and fest_exp_after == 0:
 			payload["fest_exp"] = 0 # already at max, no exp gained
 
-		# SPECIAL CASE - CHAMPION (99) TO KING/QUEEN
+		# SPECIAL CASE - CHAMPION (999) TO KING/QUEEN
 		elif title_before == 3 and title_after == 4:
 			# fes_point == 0 should always be true (reached max). if reaching max *exactly*,
-			# then fest_exp = 99 - points_gained. if curtailed rollover, no way to know
-			# e.g. even if user got +7, max (99->0) could have been reached after, say, +2
+			# then fest_exp = 999 - points_gained. if curtailed rollover, no way to know
+			# e.g. even if user got +70, max (999->0) could have been reached after, say, +20
 			payload["fest_exp"] = None
 
 		else:
 			if title_before == title_after: # within same title
 				fest_rank_rollover = 0
-			elif title_before == 0 and title_after == 1: # fanboy/girl (10) to fiend (25)
-				fest_rank_rollover = 10
-			elif title_before == 1 and title_after == 2: # fiend (25) to defender (50)
-				fest_rank_rollover = 25
-			elif title_before == 2 and title_after == 3: # defender (50) to champion (99)
-				fest_rank_rollover = 50
+			elif title_before == 0 and title_after == 1: # fanboy/girl (100) to fiend (250)
+				fest_rank_rollover = 10 * multiplier
+			elif title_before == 1 and title_after == 2: # fiend (250) to defender (500)
+				fest_rank_rollover = 25 * multiplier
+			elif title_before == 2 and title_after == 3: # defender (500) to champion (999)
+				fest_rank_rollover = 50 * multiplier
 			payload["fest_exp"] = fest_rank_rollover + fest_exp_after - points_gained
 
 		# avoid mysterious, fatal -1 case...
@@ -994,7 +1005,46 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 			payload["fest_exp"] = 0
 
 	else: # not splatfest
-		title_before = None # for scoreboard param
+		title_before = None # required to set for scoreboard param
+
+	#####################
+	## SPLATFEST VER.4 ##
+	#####################
+	if ver4 and mode == "fes":
+		# indiv. & team fest_powers in above section
+		payload["my_team_win_streak"]  = results[i]["my_team_consecutive_win"]
+		payload["his_team_win_streak"] = results[i]["other_team_consecutive_win"]
+
+		if results[i]["event_type"]["key"] == "10_x_match":
+			payload["special_battle"] = "10x"
+		elif results[i]["event_type"]["key"] == "100_x_match":
+			payload["special_battle"] = "100x"
+
+		total_clout_after = results[i]["contribution_point_total"] # after
+		payload["total_clout_after"] = total_clout_after
+
+		if lobby == "fes_team": # normal
+			try:
+				payload["my_team_nickname"] = results[i]["my_team_another_name"]
+			except:
+				pass
+			try:
+				payload["his_team_nickname"] = results[i]["other_team_another_name"]
+			except:
+				pass
+
+		# synergy bonus
+		synergy_mult = results[i]["uniform_bonus"]
+		if synergy_mult == 0: # always 0 in pro
+			synergy_mult = 1.0
+		payload["synergy_bonus"] = synergy_mult # max 2.0
+
+		# clout
+		clout = results[i]["contribution_point"]
+		# in pro, = his_team_estimate_fest_power
+		# in normal, = turfinked (if victory: +1000) -> = int(round(floor((clout * synergy_bonus) + 0.5)))
+		payload["clout"] = clout
+		payload["total_clout"] = total_clout_after - clout # before
 
 	################
 	## SCOREBOARD ##
