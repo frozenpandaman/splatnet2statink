@@ -774,7 +774,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	elif lobby == "fes_team": # splatfest team (legacy)
 		payload["lobby"] = "squad_4"
 		payload["mode"]  = "fest"
-	elif lobby == "fes_pro": # splatfest pro TODO
+	elif lobby == "fes_pro": # splatfest pro TODO (check ["fes_mode"]["key"])
 		payload["lobby"] = "fest_pro"
 		payload["mode"]  = "fest"
 	elif lobby == "fes_normal": # splatfest normal TODO
@@ -943,6 +943,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		title_after = results[i]["fes_grade"]["rank"]
 		fest_exp_after = results[i]["fes_point"]
 		try: # post-ver.4 = only in pro TODO
+			payload["my_team_fest_theme"] = results[i]["my_team_fes_theme"]["name"]
+			payload["his_team_fest_theme"] = results[i]["other_team_fes_theme"]["name"]
 			payload["fest_power"] = results[i]["fes_power"]
 			payload["my_team_estimate_fest_power"] = results[i]["my_estimate_fes_power"]
 			payload["his_team_estimate_fest_power"] = results[i]["other_estimate_fes_power"]
@@ -1011,25 +1013,25 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	if mode == "fes":
 		if lobby == "fes_normal": # TODO
 			try:
-				payload["my_team_nickname"] = # TODO
+				payload["my_team_nickname"] = results[i]["my_team_another_name"]
 			except:
 				pass
 			try:
-				payload["his_team_nickname"] = # TODO
+				payload["his_team_nickname"] = results[i]["other_team_another_name"]
 			except:
 				pass
-			synergy_mult = # default 1.0 TODO
+			synergy_mult = results[i]["uniform_bonus"]
 			payload["synergy_bonus"] = synergy_mult
 
-		payload["my_team_win_streak"] = # TODO
-		payload["his_team_win_streak"] = # TODO
+		payload["my_team_win_streak"] = results[i]["my_team_consecutive_win"]
+		payload["his_team_win_streak"] = results[i]["other_team_consecutive_win"]
 
 		if : # TODO
 			payload["special_battle"] = "10x"
 		elif : # TODO
 			payload["special_battle"] = "100x"
 
-		total_clout = # TODO
+		total_clout = # TODO (keys will have "contribution" in them)
 		payload["total_clout"] = total_clout
 
 		if lobby == "fes_normal": # TODO
