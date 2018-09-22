@@ -20,7 +20,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.1.9"
+A_VERSION = "1.1.10"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -752,7 +752,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	##################
 	## LOBBY & MODE ##
 	##################
-	lobby = results[i]["game_mode"]["key"] # regular, league_team, league_pair, private, fes_solo, fes_team
+	lobby = results[i]["game_mode"]["key"]
 	if lobby == "regular": # turf war
 		payload["lobby"] = "standard"
 		payload["mode"]  = "regular"
@@ -768,11 +768,17 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	elif lobby == "private": # private battle
 		payload["lobby"] = "private"
 		payload["mode"]  = "private"
-	elif lobby == "fes_solo": # splatfest solo
+	elif lobby == "fes_solo": # splatfest solo (legacy)
 		payload["lobby"] = "standard"
 		payload["mode"]  = "fest"
-	elif lobby == "fes_team":# splatfest team
+	elif lobby == "fes_team": # splatfest team (legacy)
 		payload["lobby"] = "squad_4"
+		payload["mode"]  = "fest"
+	elif lobby == "fes_pro": # splatfest pro TODO
+		payload["lobby"] = "fest_pro"
+		payload["mode"]  = "fest"
+	elif lobby == "fes_normal": # splatfest normal TODO
+		payload["lobby"] = "fest_normal"
 		payload["mode"]  = "fest"
 
 	##########
@@ -936,11 +942,14 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		title_before = results[i]["player_result"]["player"]["fes_grade"]["rank"]
 		title_after = results[i]["fes_grade"]["rank"]
 		fest_exp_after = results[i]["fes_point"]
-		payload["fest_power"] = results[i]["fes_power"]
-		payload["my_team_estimate_fest_power"] = results[i]["my_estimate_fes_power"]
-		payload["his_team_estimate_fest_power"] = results[i]["other_estimate_fes_power"]
-		payload["my_team_fest_theme"] = results[i]["my_team_fes_theme"]["name"]
-		payload["his_team_fest_theme"] = results[i]["other_team_fes_theme"]["name"]
+		try: # post-ver.4 = only in pro TODO
+			payload["fest_power"] = results[i]["fes_power"]
+			payload["my_team_estimate_fest_power"] = results[i]["my_estimate_fes_power"]
+			payload["his_team_estimate_fest_power"] = results[i]["other_estimate_fes_power"]
+			payload["my_team_fest_theme"] = results[i]["my_team_fes_theme"]["name"]
+			payload["his_team_fest_theme"] = results[i]["other_team_fes_theme"]["name"]
+		except:
+			pass
 
 		payload["fest_title"] = translate_fest_rank[title_before]
 		payload["fest_title_after"] = translate_fest_rank[title_after]
@@ -995,6 +1004,43 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 
 	else: # not splatfest
 		title_before = None # for scoreboard param
+
+	#####################
+	## SPLATFEST VER.4 ##
+	#####################
+	if mode == "fes":
+		if lobby == "fes_normal": # TODO
+			try:
+				payload["my_team_nickname"] = # TODO
+			except:
+				pass
+			try:
+				payload["his_team_nickname"] = # TODO
+			except:
+				pass
+			synergy_mult = # default 1.0 TODO
+			payload["synergy_bonus"] = synergy_mult
+
+		payload["my_team_win_streak"] = # TODO
+		payload["his_team_win_streak"] = # TODO
+
+		if : # TODO
+			payload["special_battle"] = "10x"
+		elif : # TODO
+			payload["special_battle"] = "100x"
+
+		total_clout = # TODO
+		payload["total_clout"] = total_clout
+
+		if lobby == "fes_normal": # TODO
+			cloutgained = turfinked
+			if result == "victory":
+				cloutgained += 1000
+			cloutgained *= synergy_mult
+		elif lobby == "fes_pro": # TODO
+			cloutgained = results[i]["other_estimate_fes_power"] # his_team_estimate_fest_power
+		payload["clout"] = cloutgained
+		payload["total_clout_after"] = total_clout + cloutgained
 
 	################
 	## SCOREBOARD ##
