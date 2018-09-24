@@ -2,7 +2,7 @@
 # clovervidia
 from __future__ import print_function
 from builtins import input
-import requests, json, re
+import requests, json, re, sys
 import os, base64, hashlib, hmac
 import getpass, uuid, time
 
@@ -175,6 +175,8 @@ def get_cookie(session_token, userLang, ver):
 			'requestId': str(uuid.uuid4()),
 			'timestamp': int(time.time())
 		}
+	except SystemExit:
+		exit(1)
 	except:
 		print("Error(s) from Nintendo:")
 		print(json.dumps(id_response, indent=2))
@@ -246,6 +248,20 @@ def get_cookie(session_token, userLang, ver):
 def get_f_from_s2s_api(id_token):
 	'''Passes an id_token to the splatnet2statink API and fetches the f token from the response.'''
 
+	# check to make sure we're allowed to contact the API
+	config_file = open("config.txt", "r")
+	config_data = json.load(config_file)
+	config_file.close()
+	try:
+		num_errors = config_data["api_errors"]
+	except:
+		num_errors = 0
+
+	if num_errors >= 5:
+		print("Too many errors received from the splatnet2statink API. Further requests have been blocked until the \"api_errors\" line is manually removed from config.txt. If this issue persists, please contact @frozenpandaman on Twitter/GitHub for assistance.")
+		sys.exit(1)
+
+	# proceed normally
 	try:
 		api_app_head = { 'User-Agent': "splatnet2statink/" + version }
 		api_body = { 'naIdToken': id_token }
@@ -253,7 +269,24 @@ def get_f_from_s2s_api(id_token):
 		return json.loads(api_response.text)["f"]
 	except:
 		print("Error from the splatnet2statink API:\n" + json.dumps(json.loads(api_response.text), indent=2))
-		exit(1)
+
+		# add 1 to api_errors in config
+		config_file = open("config.txt", "r")
+		config_data = json.load(config_file)
+		config_file.close()
+		try:
+			num_errors = config_data["api_errors"]
+		except:
+			num_errors = 0
+		num_errors += 1
+		config_data["api_errors"] = num_errors
+
+		config_file = open("config.txt", "w") # from write_config()
+		config_file.seek(0)
+		config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
+		config_file.close()
+
+		sys.exit(1)
 
 def enter_cookie():
 	'''Prompts the user to enter their iksm_session cookie'''
