@@ -992,6 +992,11 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 			elif results[i]["other_estimate_fes_power"] >= 1900:
 				points_gained += 7 * multiplier
 
+		if ver4:
+			uniform_bonus = results[i]["uniform_bonus"]
+			if uniform_bonus > 1:
+				points_gained *= uniform_bonus
+
 		# SPECIAL CASE - KING/QUEEN MAX
 		if title_before == 4 and title_after == 4 and fest_exp_after == 0:
 			payload["fest_exp"] = 0 # already at max, no exp gained
