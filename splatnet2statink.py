@@ -71,8 +71,6 @@ app_head = {
 	'Accept-Language': USER_LANG
 }
 
-print(json.dumps(app_head).replace("'", "\'"))
-
 translate_weapons       = dbs.weapons
 translate_stages        = dbs.stages
 translate_profile_color = dbs.profile_colors
