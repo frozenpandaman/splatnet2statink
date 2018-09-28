@@ -55,9 +55,9 @@ debug = False # print out payload and exit. can use with geargrabber2.py & savin
 try: # Timezone offset value. (e.g. ja-JP : UTC+9 : 9 * -60 = -540)
 	TIMEZONE_OFFSET = config_data["timezone_offset"]
 except:
-	TIMEZONE_OFFSET = "0"
+	TIMEZONE_OFFSET = str(int(time.timezone/60))
 if debug:
-	print("Timezone offset to {} ".format(TIMEZONE_OFFSET))
+	print("Timezone offset to {} minutes.".format(TIMEZONE_OFFSET))
 
 app_head = {
 	'Host': 'app.splatoon2.nintendo.net',
@@ -70,6 +70,8 @@ app_head = {
 	'Accept-Encoding': 'gzip, deflate',
 	'Accept-Language': USER_LANG
 }
+
+print(json.dumps(app_head).replace("'", "\'"))
 
 translate_weapons       = dbs.weapons
 translate_stages        = dbs.stages
