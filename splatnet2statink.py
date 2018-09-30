@@ -52,17 +52,39 @@ USER_LANG     = config_data["user_lang"] # only works with your game region's su
 
 debug = False # print out payload and exit. can use with geargrabber2.py & saving battle jsons
 
+##############
+## APP_HEAD ##
+try: # Timezone offset value. (e.g. ja-JP : UTC+9 : 9 * -60 = -540)
+	TIMEZONE_OFFSET = str(config_data["timezone_offset"])
+except:
+	TIMEZONE_OFFSET = str(int(time.timezone/60))
+if debug:
+	print("Timezone offset to {} minutes.".format(TIMEZONE_OFFSET))
+
+try: # x-unique-id
+	APP_UNIQUE_ID = str(config_data["app_unique_id"])
+except:
+	APP_UNIQUE_ID = '32449507786579989234' # random 19-20 digit token. used for splatnet store
+
+try: # User-Agent
+	APP_USER_AGENT = config_data["app_user_agent"]
+except:
+	APP_USER_AGENT = 'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36'
+
 app_head = {
 	'Host': 'app.splatoon2.nintendo.net',
-	'x-unique-id': '32449507786579989234', # random 19-20 digit token. used for splatnet store
+	'x-unique-id': APP_UNIQUE_ID,
 	'x-requested-with': 'XMLHttpRequest',
-	'x-timezone-offset': '0',
-	'User-Agent': 'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36',
+	'x-timezone-offset': TIMEZONE_OFFSET,
+	'User-Agent': APP_USER_AGENT,
 	'Accept': '*/*',
 	'Referer': 'https://app.splatoon2.nintendo.net/home',
 	'Accept-Encoding': 'gzip, deflate',
 	'Accept-Language': USER_LANG
 }
+if debug:
+	print(json.dumps(app_head).replace("'", "\'"))
+##############
 
 translate_weapons       = dbs.weapons
 translate_stages        = dbs.stages
