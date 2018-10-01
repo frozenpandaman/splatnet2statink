@@ -544,6 +544,7 @@ clothes = {
 	21004: 'crustwear_xxl',
 	21006: 'octoleet_armor',
 	21007: 'record_shop_look_ep',
+	21008: 'dev_uniform',
 	25000: 'school_uniform',
 	25001: 'samurai_jacket',
 	25002: 'power_armor',
