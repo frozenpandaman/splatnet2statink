@@ -1,7 +1,8 @@
 # eli fessler
 from __future__ import print_function
 from builtins import input
-import requests, json
+import requests, json, uuid
+import dbs
 
 version = "unknown"
 cookie = ""
@@ -27,36 +28,86 @@ def salmon_post_profile(profile):
 		"total_point":       profile["card"]["kuma_point_total"]
 	}
 
-	url  = 'https://stat.ink/api/v2/salmon-stats'
-	auth = {'Authorization': 'Bearer {}'.format(api_key)}
-	updateprofile = requests.post(url, headers=auth, data=payload)
+	## PRINT OUT, DON'T UPLOAD
+	print("\nYour profile:")
+	for x in payload:
+		print("{}: {}".format(x, payload[x]))
+	print()
+	# url  = 'https://stat.ink/api/v2/salmon-stats'
+	# auth = {'Authorization': 'Bearer {}'.format(api_key)}
+	# updateprofile = requests.post(url, headers=auth, data=payload)
 
-	if updateprofile.ok:
-		print("Successfully updated your Salmon Run profile.")
-	else:
-		print("Error from stat.ink:")
-		print(updateprofile.text)
+	# if updateprofile.ok:
+	# 	print("Successfully updated your Salmon Run profile.")
+	# else:
+	# 	print("Error from stat.ink:")
+	# 	print(updateprofile.text)
 
 def salmon_post_shift(i, results):
 	'''Uploads shift #i from the provided results dictionary.'''
 
-	print("Not implemented yet by the stat.ink API.")
-	exit(0)
+	payload = {'agent': 'splatnet2statink', 'agent_version': version, 'automated': 'yes'}
 
-	# payload = {'agent': 'splatnet2statink', 'agent_version': version, 'automated': 'yes'}
+	# stat.ink UUID
+	job_id = results[i]["job_id"]
+	principal_id = results[i]["my_result"]["pid"]
+	namespace = uuid.UUID(u'{73cf052a-fd0b-11e7-a5ee-001b21a098c2}')
+	name = "{}@{}".format(job_id, principal_id)
+	payload["uuid"] = str(uuid.uuid5(namespace, name))
 
-	# job_id = results[i]["job_id"]
-	# principal_id = results[i]["my_result"]["pid"]
-	# namespace = uuid.UUID(u'{73cf052a-fd0b-11e7-a5ee-001b21a098c2}')
-	# name = "{}@{}".format(job_id, principal_id)
-	# payload["uuid"] = str(uuid.uuid5(namespace, name))
+	###############################
+	# Consistent throughout shift #
+	###############################
 
-	# title_num = int(results[i]["grade"]["id"])
-	# translate_titles = {5: "profreshional", 4: "overachiever", 3: "go_getter", 2: "part_timer", 1: "apprentice", 0: "intern"}
-	# payload["title"] = translate_titles[title_num]
+	# Title
+	title_num = int(results[i]["grade"]["id"])
+	translate_titles = {5: "profreshional", 4: "overachiever", 3: "go_getter", 2: "part_timer", 1: "apprentice", 0: "intern"}
+	payload["title"] = translate_titles[title_num]
 
-	# ...
+	# Special weapon
+	translate_specials = {2: "pitcher", 7: "presser", 8: "jetpack", 9: "chakuchi"}
+	payload["special_weapon"] = translate_specials[int(results[i]["my_result"]["special"]["id"])]
 
+	# Boss count
+	num_of_bosses = {}
+	num_of_bosses["goldie"]    = results[i]["boss_counts"]["3"]["count"]
+	num_of_bosses["steelhead"] = results[i]["boss_counts"]["6"]["count"]
+	num_of_bosses["flyfish"]   = results[i]["boss_counts"]["9"]["count"]
+	num_of_bosses["scrapper"]  = results[i]["boss_counts"]["12"]["count"]
+	num_of_bosses["steel_eel"] = results[i]["boss_counts"]["13"]["count"]
+	num_of_bosses["stinger"]   = results[i]["boss_counts"]["14"]["count"]
+	num_of_bosses["maws"]      = results[i]["boss_counts"]["15"]["count"]
+	num_of_bosses["griller"]   = results[i]["boss_counts"]["16"]["count"]
+	num_of_bosses["drizzler"]  = results[i]["boss_counts"]["21"]["count"]
+	payload["boss"] = num_of_bosses
+
+	##################
+	# Wave-dependent #
+	##################
+
+	for wave in range(3):
+		wave_str = "wave_{}".format(wave+1)
+		payload[wave_str] = {}
+
+		# Water level
+		payload[wave_str]["water_level"] = results[i]["wave_details"][wave]["water_level"]["key"] # low, normal, high
+
+		# Known Occurrence
+		# cohock_charge, fog, goldie_seeking, griller, mothership, rush
+		event = results[i]["wave_details"][wave]["event_type"]["key"].replace("-", "_").replace("the", "")
+		if event != "water_levels":
+			payload[wave_str]["known_occurrence"] = event
+
+		# Main Weapon
+		payload[wave_str]["main_weapon"] = dbs.weapons.get(int(results[i]["my_result"]["weapon_list"][wave]["id"]), "")
+
+	## PRINT OUT, DON'T UPLOAD
+	print("\nShift details:")
+	for x in payload:
+		print("{}: {}".format(x, payload[x]))
+	##########
+	## POST ##
+	##########
 	# url  = 'https://stat.ink/api/v2/salmon'
 	# auth = {'Authorization': 'Bearer {}'.format(api_key), 'Content-Type': 'application/json'}
 	# postshift = requests.post(url, headers=auth, data=payload)
@@ -95,13 +146,13 @@ def salmon_get_data():
 
 	return profile, results
 
-def salmon_get_num_shifts():
+def salmon_get_num_shifts(results):
 	'''Prompt user to upload a certain number of recent shift data.'''
 
 	try:
 		n = int(input("Number of recent Salmon Run shifts to upload (0-50)? "))
 	except ValueError:
-		print("Exiting without uploading any shifts.")
+		print("Please enter an integer between 0 and 50. Exiting.")
 		exit(0)
 	if n < 1:
 		print("Exiting without uploading any shifts.")
@@ -109,8 +160,15 @@ def salmon_get_num_shifts():
 	elif n > 50:
 		print("SplatNet 2 only stores the 50 most recent shifts. Exiting.")
 		exit(1)
-	else:
-		return n
+
+	if len(results) == 0:
+		print("You do not have any Salmon Run shifts recorded on SplatNet 2. Exiting.")
+		exit(1)
+	elif n > len(results):
+		print("You do not have {} Salmon Run shifts recorded on SplatNet 2. Uploading all {}.".format(n, len(results)))
+		n = len(results)
+
+	return n
 
 def upload_salmon_run(s2s_version, s2s_cookie, s2s_api_key, s2s_app_head):
 	'''Main process for uploading Salmon Run shifts.'''
@@ -124,8 +182,10 @@ def upload_salmon_run(s2s_version, s2s_cookie, s2s_api_key, s2s_app_head):
 	global app_head
 	app_head = s2s_app_head
 
+	print("\nNOTE: Not fully implemented or ready for use! This only prints out your Salmon Run info and doesn't upload anything yet.\n")
+
 	profile, results = salmon_get_data()
 	salmon_post_profile(profile)
-	# n = salmon_get_num_shifts()
-	# for i in reversed(range(n)):
-	# 	salmon_post_shift(i, results)
+	n = salmon_get_num_shifts(results)
+	for i in reversed(range(n)):
+		salmon_post_shift(i, results)
