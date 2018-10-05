@@ -64,6 +64,17 @@ def salmon_post_shift(i, results):
 	translate_titles = {5: "profreshional", 4: "overachiever", 3: "go_getter", 2: "part_timer", 1: "apprentice", 0: "intern"}
 	payload["title"] = translate_titles[title_num]
 
+	# Stage
+	stage_img_url = results[i]["schedule"]["stage"]["image"]
+	if "6d68f5baa75f3a94e5e9bfb89b82e7377e3ecd2c" in stage_img_url:
+		payload["stage"] = "shaketoba"
+	elif "e07d73b7d9f0c64e552b34a2e6c29b8564c63388" in stage_img_url:
+		payload["stage"] = "donburako"
+	elif "e9f7c7b35e6d46778cd3cbc0d89bd7e1bc3be493" in stage_img_url:
+		payload["stage"] = "tokishirazu"
+	elif "65c68c6f0641cc5654434b78a6f10b0ad32ccdee" in stage_img_url:
+		payload["stage"] = "dam"
+
 	# Special weapon
 	translate_specials = {2: "pitcher", 7: "presser", 8: "jetpack", 9: "chakuchi"}
 	payload["special_weapon"] = translate_specials[int(results[i]["my_result"]["special"]["id"])]
