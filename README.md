@@ -10,7 +10,7 @@ splatnet2statink is a script that uploads battle data from the SplatNet 2 app ("
 ## Usage
 
 ```
-$ python splatnet2statink.py [-M [N]] [-r] [-s] [-t]
+$ python splatnet2statink.py [-M [N]] [-r] [-s] [-t] [--salmon]
 ```
 
 The `-M` flag runs the script in monitoring mode, uploading new battle results as you play matches. The script checks for new battles every `N` seconds; if no `N` is provided, the script defaults to 300 (5 minutes).
@@ -21,6 +21,8 @@ The `-s` flag blacks out other players' names on the scoreboard result image and
 
 The `-t` flag sends the data to stat.ink as a dry run, without uploading, for testing/validation purposes.
 
+The `--salmon` flag updates your Salmon Run profile and uploads shifts worked. **(experimental)**
+
 Note: Executing the script via `./splatnet2statink.py` is also possible on macOS or Linux. If you've downloaded a .zip of this repository using the green "Clone or download" button above (instead of via `git clone`), the script must first be made executable by running `chmod +x splatnet2statink.py`.
 
 ### Example usage
@@ -29,7 +31,6 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
 
 ## Features
 
-- [x] ~~Full automation of SplatNet cookie generation/acquisition via user log-in~~ ([more info](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions))
 - [x] Complete battle stats
   - [x] Lobby/mode, stage, weapon – including new Ver. 4.0 weapons
   - [x] Result, final count/percent, turf inked
@@ -42,7 +43,10 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
 - [x] Gear/ability recognition, gear & user profile image upload – including Ver. 3.0 & Octo Expansion gear
 - [x] Monitoring for new battle results in real-time
 - [x] Scoreboard stats, player ranking & battle result image upload
+- [x] Salmon Run support, including Grizzco profile/point card stats and shifts worked
 - [x] Full support for all available game languages
+- [x] ~~Full automation of SplatNet cookie generation/acquisition via user log-in~~ ([more info](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions))
+
 
 ## Setup instructions
 
@@ -64,7 +68,7 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
 
     ---
 
-    **UPDATE:** The authentication process has changed in the 1.4.1 update to the Nintendo Switch Online app. Existing, non-expired cookies can still be used to run the script and access the site, but trying to generate a new cookie will now produce the message "Invalid token." We're working on a fix ASAP. For now, follow the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions) to manually obtain your cookie.
+    **UPDATE:** The authentication process has changed in the 1.4.1 update to the Nintendo Switch Online app. Existing, non-expired cookies can still be used to run the script and access the site, but trying to generate a new cookie will now produce the message "Invalid token." We're working on a fix ASAP – please see [this issue](https://github.com/frozenpandaman/splatnet2statink/issues/62) for more information. For now, follow the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions) to manually obtain your cookie.
 
     ---
 
