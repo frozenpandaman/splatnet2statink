@@ -120,6 +120,10 @@ weapons = {
 	6011: 'campingshelter_sorella', # Tenta Sorella Brella
 	6020: 'spygadget',              # Undercover Brella
 	6021: 'spygadget_sorella',      # Undercover Sorella Brella
+	20000: 'kuma_blaster',          # Grizzco Blaster
+	20010: 'kuma_brella',           # Grizzco Brella
+	20020: 'kuma_charger',          # Grizzco Charger
+	20030: 'kuma_slosher'           # Grizzco Slosher
 }
 
 # Stage database
