@@ -96,7 +96,9 @@ def salmon_post_shift(i, results):
 	# Wave-dependent #
 	##################
 
-	for wave in range(3):
+	num_waves = len(results[i]["wave_details"])
+	print(num_waves)
+	for wave in range(num_waves):
 		wave_str = "wave_{}".format(wave+1)
 		payload[wave_str] = {}
 
@@ -105,7 +107,7 @@ def salmon_post_shift(i, results):
 
 		# Known Occurrence
 		# cohock_charge, fog, goldie_seeking, griller, mothership, rush
-		event = results[i]["wave_details"][wave]["event_type"]["key"].replace("-", "_").replace("the", "")
+		event = results[i]["wave_details"][wave]["event_type"]["key"].replace("the", "", 1).replace("-", "_")
 		if event != "water_levels":
 			payload[wave_str]["known_occurrence"] = event
 
