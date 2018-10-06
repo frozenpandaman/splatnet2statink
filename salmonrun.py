@@ -107,7 +107,7 @@ def salmon_post_shift(i, results):
 
 		# Known Occurrence
 		# cohock_charge, fog, goldie_seeking, griller, mothership, rush
-		event = results[i]["wave_details"][wave]["event_type"]["key"].replace("the", "", 1).replace("-", "_")
+		event = results[i]["wave_details"][wave]["event_type"]["key"].replace("the-", "", 1).replace("-", "_")
 		if event != "water_levels":
 			payload[wave_str]["known_occurrence"] = event
 
