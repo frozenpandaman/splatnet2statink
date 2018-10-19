@@ -128,6 +128,12 @@ def salmon_post_shift(i, results):
 		# Main Weapon
 		payload["waves"][wave]["main_weapon"] = dbs.weapons.get(int(results[i]["my_result"]["weapon_list"][wave]["id"]), "")
 
+		# Eggs
+		payload["waves"][wave]["golden_egg_quota"]       = results[i]["wave_details"][wave]["quota_num"]
+		payload["waves"][wave]["golden_egg_appearances"] = results[i]["wave_details"][wave]["golden_ikura_pop_num"]
+		payload["waves"][wave]["golden_egg_delivered"]   = results[i]["wave_details"][wave]["golden_ikura_num"]
+		payload["waves"][wave]["power_egg_collected"]    = results[i]["wave_details"][wave]["ikura_num"]
+
 	## PRINT OUT, DON'T UPLOAD
 	print("\nShift details:")
 	for x in payload:
