@@ -47,11 +47,12 @@ def salmon_post_shift(i, results):
 	'''Uploads shift #i from the provided results dictionary.'''
 
 	payload = {'agent': 'splatnet2statink', 'agent_version': version, 'automated': 'yes'}
+	job_id = results[i]["job_id"]
+	payload["splatnet_number"] = job_id
 
 	# stat.ink UUID
-	job_id = results[i]["job_id"]
 	principal_id = results[i]["my_result"]["pid"]
-	namespace = uuid.UUID(u'{73cf052a-fd0b-11e7-a5ee-001b21a098c2}')
+	namespace = uuid.UUID(u'{418fe150-cb33-11e8-8816-d050998473ba}')
 	name = "{}@{}".format(job_id, principal_id)
 	payload["uuid"] = str(uuid.uuid5(namespace, name))
 
@@ -63,6 +64,9 @@ def salmon_post_shift(i, results):
 	title_num = int(results[i]["grade"]["id"])
 	translate_titles = {5: "profreshional", 4: "overachiever", 3: "go_getter", 2: "part_timer", 1: "apprentice", 0: "intern"}
 	payload["title"] = translate_titles[title_num]
+	grade_point = results[i]["grade_point"]
+	payload["title_exp_after"] = grade_point
+	payload["title_exp"] = grade_point - results[i]["grade_point_delta"]
 
 	# Stage
 	stage_img_url = results[i]["schedule"]["stage"]["image"]
@@ -75,44 +79,54 @@ def salmon_post_shift(i, results):
 	elif "65c68c6f0641cc5654434b78a6f10b0ad32ccdee" in stage_img_url:
 		payload["stage"] = "dam"
 
+	# Hazard level
+	payload["danger_rate"] = results[i]["danger_rate"]
+
 	# Special weapon
 	translate_specials = {2: "pitcher", 7: "presser", 8: "jetpack", 9: "chakuchi"}
 	payload["special_weapon"] = translate_specials[int(results[i]["my_result"]["special"]["id"])]
 
-	# Boss count
+	# Boss appearances/count
 	num_of_bosses = {}
-	num_of_bosses["goldie"]    = results[i]["boss_counts"]["3"]["count"]
-	num_of_bosses["steelhead"] = results[i]["boss_counts"]["6"]["count"]
-	num_of_bosses["flyfish"]   = results[i]["boss_counts"]["9"]["count"]
-	num_of_bosses["scrapper"]  = results[i]["boss_counts"]["12"]["count"]
-	num_of_bosses["steel_eel"] = results[i]["boss_counts"]["13"]["count"]
-	num_of_bosses["stinger"]   = results[i]["boss_counts"]["14"]["count"]
-	num_of_bosses["maws"]      = results[i]["boss_counts"]["15"]["count"]
-	num_of_bosses["griller"]   = results[i]["boss_counts"]["16"]["count"]
-	num_of_bosses["drizzler"]  = results[i]["boss_counts"]["21"]["count"]
-	payload["boss"] = num_of_bosses
+	num_of_bosses["goldie"]     = results[i]["boss_counts"]["3"]["count"]
+	num_of_bosses["steelhead"]  = results[i]["boss_counts"]["6"]["count"]
+	num_of_bosses["flyfish"]    = results[i]["boss_counts"]["9"]["count"]
+	num_of_bosses["scrapper"]   = results[i]["boss_counts"]["12"]["count"]
+	num_of_bosses["steel_eel"]  = results[i]["boss_counts"]["13"]["count"]
+	num_of_bosses["stinger"]    = results[i]["boss_counts"]["14"]["count"]
+	num_of_bosses["maws"]       = results[i]["boss_counts"]["15"]["count"]
+	num_of_bosses["griller"]    = results[i]["boss_counts"]["16"]["count"]
+	num_of_bosses["drizzler"]   = results[i]["boss_counts"]["21"]["count"]
+	payload["boss_appearances"] = num_of_bosses
+
+	# Number of waves played
+	num_waves = len(results[i]["wave_details"])
+	payload["clear_waves"] = num_waves # or failure_wave - 1
+	payload["waves"] = []
+	payload["fail_reason"] = results[i]["job_result"]["failure_reason"]
+
+	# Time
+	payload["start_at"] = results[i]["start_time"]
+	payload["end_at"] = results[i]["end_time"]
 
 	##################
 	# Wave-dependent #
 	##################
 
-	num_waves = len(results[i]["wave_details"])
-	print(num_waves)
 	for wave in range(num_waves):
-		wave_str = "wave_{}".format(wave+1)
-		payload[wave_str] = {}
+		payload["waves"].append({})
 
 		# Water level
-		payload[wave_str]["water_level"] = results[i]["wave_details"][wave]["water_level"]["key"] # low, normal, high
+		payload["waves"][wave]["water_level"] = results[i]["wave_details"][wave]["water_level"]["key"] # low, normal, high
 
 		# Known Occurrence
 		# cohock_charge, fog, goldie_seeking, griller, mothership, rush
 		event = results[i]["wave_details"][wave]["event_type"]["key"].replace("the-", "", 1).replace("-", "_")
 		if event != "water_levels":
-			payload[wave_str]["known_occurrence"] = event
+			payload["waves"][wave]["known_occurrence"] = event
 
 		# Main Weapon
-		payload[wave_str]["main_weapon"] = dbs.weapons.get(int(results[i]["my_result"]["weapon_list"][wave]["id"]), "")
+		payload["waves"][wave]["main_weapon"] = dbs.weapons.get(int(results[i]["my_result"]["weapon_list"][wave]["id"]), "")
 
 	## PRINT OUT, DON'T UPLOAD
 	print("\nShift details:")
