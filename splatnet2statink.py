@@ -993,9 +993,9 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 				points_gained += 7 * multiplier
 
 		if ver4:
-			uniform_bonus = results[i]["uniform_bonus"]
-			if uniform_bonus > 1:
-				points_gained *= uniform_bonus
+			synergy_mult = results[i]["uniform_bonus"]
+			if synergy_mult > 1:
+				points_gained *= synergy_mult
 
 		# SPECIAL CASE - KING/QUEEN MAX
 		if title_before == 4 and title_after == 4 and fest_exp_after == 0:
@@ -1053,7 +1053,6 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 				pass
 
 		# synergy bonus
-		synergy_mult = results[i]["uniform_bonus"]
 		if synergy_mult == 0: # always 0 in pro
 			synergy_mult = 1.0
 		payload["synergy_bonus"] = synergy_mult # max 2.0
