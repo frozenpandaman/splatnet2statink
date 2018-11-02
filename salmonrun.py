@@ -28,25 +28,76 @@ def salmon_post_profile(profile):
 		"total_point":       profile["card"]["kuma_point_total"]
 	}
 
-	## PRINT OUT, DON'T UPLOAD
-	print("\nYour profile:")
-	for x in payload:
-		print("{}: {}".format(x, payload[x]))
-	print()
-	# url  = 'https://stat.ink/api/v2/salmon-stats'
-	# auth = {'Authorization': 'Bearer {}'.format(api_key)}
-	# updateprofile = requests.post(url, headers=auth, data=payload)
+	url  = 'https://stat.ink/api/v2/salmon-stats'
+	auth = {'Authorization': 'Bearer {}'.format(api_key)}
+	updateprofile = requests.post(url, headers=auth, data=payload)
 
-	# if updateprofile.ok:
-	# 	print("Successfully updated your Salmon Run profile.")
-	# else:
-	# 	print("Error from stat.ink:")
-	# 	print(updateprofile.text)
+	if updateprofile.ok:
+		print("Successfully updated your Salmon Run profile.")
+	else:
+		print("Could not update your Salmon Run profile. Error from stat.ink:")
+		print(updateprofile.text)
+
+def set_teammates(payload, job_id):
+	'''Returns a new payload with the teammates key present.'''
+
+	url = "https://app.splatoon2.nintendo.net/api/coop_results/{}".format(job_id)
+	job = requests.get(url, headers=app_head, cookies=dict(iksm_session=cookie))
+	results = json.loads(job.text)
+
+	try:
+		results["other_results"] # only present in shift jsons
+	except KeyError:
+		print("Problem retrieving shift details. Continuing without teammates' scoreboard statistics.")
+		return payload # same payload as passed in, no modifications
+
+	payload["teammates"] = []
+	num_teammates = len(results["other_results"])
+	for num in range(num_teammates):
+		payload["teammates"].append({})
+
+		# Principal ID & nickname
+		payload["teammates"][num]["splatnet_id"] = results["other_results"][num]["pid"]
+		payload["teammates"][num]["name"]        = results["other_results"][num]["name"]
+
+		# Special weapon
+		translate_specials = {2: "pitcher", 7: "presser", 8: "jetpack", 9: "chakuchi"}
+		payload["teammates"][num]["special"] = translate_specials[int(results["other_results"][num]["special"]["id"])]
+
+		# Rescues, deaths, egg stats
+		payload["teammates"][num]["rescue"]               = results["other_results"][num]["help_count"]
+		payload["teammates"][num]["death"]                = results["other_results"][num]["dead_count"]
+		payload["teammates"][num]["golden_egg_delivered"] = results["other_results"][num]["golden_ikura_num"]
+		payload["teammates"][num]["power_egg_collected"]  = results["other_results"][num]["ikura_num"]
+
+		# Special uses, main weapon
+		weapon_list = results["other_results"][num]["weapon_list"]
+		payload["teammates"][num]["special_uses"] = results["other_results"][num]["special_counts"] # list
+		payload["teammates"][num]["weapons"]      = [dbs.weapons.get(int(d["id"]), None) for d in weapon_list]
+
+		# Boss kills
+		boss_kills = {}
+		boss_kills["goldie"]    = results["other_results"][num]["boss_kill_counts"]["3"]["count"]
+		boss_kills["steelhead"] = results["other_results"][num]["boss_kill_counts"]["6"]["count"]
+		boss_kills["flyfish"]   = results["other_results"][num]["boss_kill_counts"]["9"]["count"]
+		boss_kills["scrapper"]  = results["other_results"][num]["boss_kill_counts"]["12"]["count"]
+		boss_kills["steel_eel"] = results["other_results"][num]["boss_kill_counts"]["13"]["count"]
+		boss_kills["stinger"]   = results["other_results"][num]["boss_kill_counts"]["14"]["count"]
+		boss_kills["maws"]      = results["other_results"][num]["boss_kill_counts"]["15"]["count"]
+		boss_kills["griller"]   = results["other_results"][num]["boss_kill_counts"]["16"]["count"]
+		boss_kills["drizzler"]  = results["other_results"][num]["boss_kill_counts"]["21"]["count"]
+		payload["teammates"][num]["boss_kills"] = boss_kills
+
+	return payload # return modified payload w/ teammates key
 
 def salmon_post_shift(i, results):
 	'''Uploads shift #i from the provided results dictionary.'''
 
 	payload = {'agent': 'splatnet2statink', 'agent_version': version, 'automated': 'yes'}
+
+	################
+	# PAYLOAD ROOT #
+	################
 	job_id = results[i]["job_id"]
 	payload["splatnet_number"] = job_id
 
@@ -56,14 +107,10 @@ def salmon_post_shift(i, results):
 	name = "{}@{}".format(job_id, principal_id)
 	payload["uuid"] = str(uuid.uuid5(namespace, name))
 
-	###############################
-	# Consistent throughout shift #
-	###############################
-
 	# Title
 	title_num = int(results[i]["grade"]["id"])
 	translate_titles = {5: "profreshional", 4: "overachiever", 3: "go_getter", 2: "part_timer", 1: "apprentice", 0: "intern"}
-	payload["title"] = translate_titles[title_num]
+	payload["title_after"] = translate_titles[title_num]
 	grade_point = results[i]["grade_point"]
 	payload["title_exp_after"] = grade_point
 	payload["title_exp"] = grade_point - results[i]["grade_point_delta"]
@@ -82,42 +129,34 @@ def salmon_post_shift(i, results):
 	# Hazard level
 	payload["danger_rate"] = results[i]["danger_rate"]
 
-	# Special weapon
-	translate_specials = {2: "pitcher", 7: "presser", 8: "jetpack", 9: "chakuchi"}
-	payload["special_weapon"] = translate_specials[int(results[i]["my_result"]["special"]["id"])]
-
 	# Boss appearances/count
 	num_of_bosses = {}
-	num_of_bosses["goldie"]     = results[i]["boss_counts"]["3"]["count"]
-	num_of_bosses["steelhead"]  = results[i]["boss_counts"]["6"]["count"]
-	num_of_bosses["flyfish"]    = results[i]["boss_counts"]["9"]["count"]
-	num_of_bosses["scrapper"]   = results[i]["boss_counts"]["12"]["count"]
-	num_of_bosses["steel_eel"]  = results[i]["boss_counts"]["13"]["count"]
-	num_of_bosses["stinger"]    = results[i]["boss_counts"]["14"]["count"]
-	num_of_bosses["maws"]       = results[i]["boss_counts"]["15"]["count"]
-	num_of_bosses["griller"]    = results[i]["boss_counts"]["16"]["count"]
-	num_of_bosses["drizzler"]   = results[i]["boss_counts"]["21"]["count"]
+	num_of_bosses["goldie"]    = results[i]["boss_counts"]["3"]["count"]
+	num_of_bosses["steelhead"] = results[i]["boss_counts"]["6"]["count"]
+	num_of_bosses["flyfish"]   = results[i]["boss_counts"]["9"]["count"]
+	num_of_bosses["scrapper"]  = results[i]["boss_counts"]["12"]["count"]
+	num_of_bosses["steel_eel"] = results[i]["boss_counts"]["13"]["count"]
+	num_of_bosses["stinger"]   = results[i]["boss_counts"]["14"]["count"]
+	num_of_bosses["maws"]      = results[i]["boss_counts"]["15"]["count"]
+	num_of_bosses["griller"]   = results[i]["boss_counts"]["16"]["count"]
+	num_of_bosses["drizzler"]  = results[i]["boss_counts"]["21"]["count"]
 	payload["boss_appearances"] = num_of_bosses
 
 	# Number of waves played
 	num_waves = len(results[i]["wave_details"])
-	payload["clear_waves"] = num_waves # or failure_wave - 1
-	payload["waves"] = []
-	payload["fail_reason"] = results[i]["job_result"]["failure_reason"]
+	payload["clear_waves"] = num_waves - 1
+	fail_reason = results[i]["job_result"]["failure_reason"]
 
 	# Time
-	payload["start_at"] = results[i]["start_time"]
-	payload["end_at"] = results[i]["end_time"]
+	payload["shift_start_at"] = results[i]["start_time"] # rotation start time
+	payload["start_at"]       = results[i]["play_time"] # job/shift start time
 
-	##################
-	# Wave-dependent #
-	##################
-
+	##############
+	# WAVES LIST #
+	##############
+	payload["waves"] = []
 	for wave in range(num_waves):
 		payload["waves"].append({})
-
-		# Water level
-		payload["waves"][wave]["water_level"] = results[i]["wave_details"][wave]["water_level"]["key"] # low, normal, high
 
 		# Known Occurrence
 		# cohock_charge, fog, goldie_seeking, griller, mothership, rush
@@ -125,8 +164,8 @@ def salmon_post_shift(i, results):
 		if event != "water_levels":
 			payload["waves"][wave]["known_occurrence"] = event
 
-		# Main Weapon
-		payload["waves"][wave]["main_weapon"] = dbs.weapons.get(int(results[i]["my_result"]["weapon_list"][wave]["id"]), "")
+		# Water level
+		payload["waves"][wave]["water_level"] = results[i]["wave_details"][wave]["water_level"]["key"] # low, normal, high
 
 		# Eggs
 		payload["waves"][wave]["golden_egg_quota"]       = results[i]["wave_details"][wave]["quota_num"]
@@ -134,33 +173,75 @@ def salmon_post_shift(i, results):
 		payload["waves"][wave]["golden_egg_delivered"]   = results[i]["wave_details"][wave]["golden_ikura_num"]
 		payload["waves"][wave]["power_egg_collected"]    = results[i]["wave_details"][wave]["ikura_num"]
 
-	## PRINT OUT, DON'T UPLOAD
-	print("\nShift details:")
-	for x in payload:
-		print("{}: {}".format(x, payload[x]))
-	##########
-	## POST ##
-	##########
-	# url  = 'https://stat.ink/api/v2/salmon'
-	# auth = {'Authorization': 'Bearer {}'.format(api_key), 'Content-Type': 'application/json'}
-	# postshift = requests.post(url, headers=auth, data=payload)
+	#################
+	# PLAYER'S DATA #
+	#################
+	payload["my_data"] = {}
 
-	# # Response
-	# headerloc = postshift.headers.get('location')
-	# if headerloc != None:
-	# 	if postshift.status_code == 302: # receive redirect
-	# 		print("Shift #{} already uploaded to {}".format(i+1, headerloc))
-	# 		# continue trying to upload remaining
-	# 	else: # http status code should be OK (200)
-	# 		print("Shift #{} uploaded to {}".format(i+1, headerloc))
-	# else: # error of some sort
-	# 	print("Error uploading shift #{}. Message from server:".format(i+1))
-	# 	print(postshift.content.decode("utf-8"))
-	# 	if i != 0: # don't prompt for final shift
-	# 		cont = input('Continue? [Y/n] ')
-	# 		if cont[0].lower() == "n":
-	# 			print("Exiting.")
-	# 			exit(1)
+	# Principal ID & nickname
+	payload["my_data"]["splatnet_id"] = principal_id
+	payload["my_data"]["name"]        = results[i]["my_result"]["name"]
+
+	# Special weapon
+	translate_specials = {2: "pitcher", 7: "presser", 8: "jetpack", 9: "chakuchi"}
+	payload["my_data"]["special"] = translate_specials[int(results[i]["my_result"]["special"]["id"])]
+
+	# Rescues, deaths, egg stats
+	payload["my_data"]["rescue"]               = results[i]["my_result"]["help_count"]
+	payload["my_data"]["death"]                = results[i]["my_result"]["dead_count"]
+	payload["my_data"]["golden_egg_delivered"] = results[i]["my_result"]["golden_ikura_num"]
+	payload["my_data"]["power_egg_collected"]  = results[i]["my_result"]["ikura_num"]
+
+	# Species, gender
+	payload["my_data"]["species"] = results[i]["player_type"]["species"][:-1] # inklings -> inkling
+	payload["my_data"]["gender"]  = results[i]["player_type"]["style"]
+
+	# Special uses, main weapon
+	weapon_list = results[i]["my_result"]["weapon_list"]
+	payload["my_data"]["special_uses"] = results[i]["my_result"]["special_counts"] # list
+	payload["my_data"]["weapons"]      = [dbs.weapons.get(int(d["id"]), None) for d in weapon_list]
+
+	# Boss kills
+	boss_kills = {}
+	boss_kills["goldie"]    = results[i]["my_result"]["boss_kill_counts"]["3"]["count"]
+	boss_kills["steelhead"] = results[i]["my_result"]["boss_kill_counts"]["6"]["count"]
+	boss_kills["flyfish"]   = results[i]["my_result"]["boss_kill_counts"]["9"]["count"]
+	boss_kills["scrapper"]  = results[i]["my_result"]["boss_kill_counts"]["12"]["count"]
+	boss_kills["steel_eel"] = results[i]["my_result"]["boss_kill_counts"]["13"]["count"]
+	boss_kills["stinger"]   = results[i]["my_result"]["boss_kill_counts"]["14"]["count"]
+	boss_kills["maws"]      = results[i]["my_result"]["boss_kill_counts"]["15"]["count"]
+	boss_kills["griller"]   = results[i]["my_result"]["boss_kill_counts"]["16"]["count"]
+	boss_kills["drizzler"]  = results[i]["my_result"]["boss_kill_counts"]["21"]["count"]
+	payload["my_data"]["boss_kills"] = boss_kills
+
+	#########################
+	# TEAMMATES LIST & DATA #
+	#########################
+	payload = set_teammates(payload, job_id)
+
+	#************
+	#*** POST ***
+	#************
+	url  = 'https://stat.ink/api/v2/salmon'
+	auth = {'Authorization': 'Bearer {}'.format(api_key), 'Content-Type': 'application/json'}
+	postshift = requests.post(url, headers=auth, data=json.dumps(payload))
+
+	# Response
+	headerloc = postshift.headers.get('location')
+	if headerloc != None:
+		if postshift.status_code == 302: # receive redirect
+			print("Shift #{} already uploaded to {}".format(i+1, headerloc))
+			# continue trying to upload remaining
+		else: # http status code should be OK (200)
+			print("Shift #{} uploaded to {}".format(i+1, headerloc))
+	else: # error of some sort
+		print("Error uploading shift #{}. Message from server:".format(i+1))
+		print(postshift.content.decode("utf-8"))
+		if i != 0: # don't prompt for final shift
+			cont = input('Continue? [Y/n] ')
+			if cont[0].lower() == "n":
+				print("Exiting.")
+				exit(1)
 
 def salmon_get_data():
 	'''Retrieves JSON data from SplatNet.'''
@@ -180,7 +261,7 @@ def salmon_get_data():
 	return profile, results
 
 def salmon_get_num_shifts(results):
-	'''Prompt user to upload a certain number of recent shift data.'''
+	'''Prompt user to upload a certain number of recent job data.'''
 
 	try:
 		n = int(input("Number of recent Salmon Run shifts to upload (0-50)? "))
@@ -215,10 +296,9 @@ def upload_salmon_run(s2s_version, s2s_cookie, s2s_api_key, s2s_app_head):
 	global app_head
 	app_head = s2s_app_head
 
-	print("\nNOTE: Not fully implemented or ready for use! This only prints out your Salmon Run info and doesn't upload anything yet.\n")
-
 	profile, results = salmon_get_data()
 	salmon_post_profile(profile)
 	n = salmon_get_num_shifts(results)
 	for i in reversed(range(n)):
 		salmon_post_shift(i, results)
+		exit(0)
