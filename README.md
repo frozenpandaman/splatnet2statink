@@ -19,15 +19,17 @@ The `-r` flag uploads any recent battle records present on SplatNet 2 that haven
 
 The `-s` flag blacks out other players' names on the scoreboard result image and doesn't send them to stat.ink.
 
-The `-t` flag sends the data to stat.ink as a dry run, without uploading, for testing/validation purposes.
+The `-t` flag sends battle data to stat.ink as a dry run, without uploading, for testing/validation purposes.
 
-The `--salmon` flag updates your Salmon Run profile and uploads shifts worked. **(experimental)**
+The `--salmon` flag updates your Salmon Run profile and allows you to upload shifts worked.
 
 Note: Executing the script via `./splatnet2statink.py` is also possible on macOS or Linux. If you've downloaded a .zip of this repository using the green "Clone or download" button above (instead of via `git clone`), the script must first be made executable by running `chmod +x splatnet2statink.py`.
 
 ### Example usage
 
 Running `python splatnet2statink.py -M 900` from the command line launches the script in monitoring mode, checking for and uploading battles every 15 minutes.
+
+Running `python splatnet2statink.py --salmon` prompts you to enter a number of recent Salmon Run shifts to upload.
 
 ## Features
 
@@ -43,7 +45,7 @@ Running `python splatnet2statink.py -M 900` from the command line launches the s
 - [x] Gear/ability recognition, gear & user profile image upload – including Ver. 3.0 & Octo Expansion gear
 - [x] Monitoring for new battle results in real-time
 - [x] Scoreboard stats, player ranking & battle result image upload
-- [x] Salmon Run support, including Grizzco profile/point card stats and shifts worked
+- [x] Salmon Run support – upload shift details & stats along with your Grizzco Point Card
 - [x] Full support for all available game languages
 - [x] ~~Full automation of SplatNet cookie generation/acquisition via user log-in~~ ([more info](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions))
 
@@ -84,7 +86,11 @@ If you wish to access SplatNet 2 from your computer rather than via the phone ap
 
 *Splatoon 2* stage rotation information (including Salmon Run) and current SplatNet gear are viewable at [https://splatoon2.ink/](https://splatoon2.ink/).
 
-## Cookie generation (IMPORTANT)
+---
+
+## ~~Cookie generation (IMPORTANT)~~
+
+***NOTE: This section is currently irrelevant as automatic cookie generation is broken!***
 
 For splatnet2statink to work, a cookie known as `iksm_session` is required to access SplatNet. This cookie may be obtained automatically, using the script, or manually via the app. Please read the following sections carefully to decide whether or not you want to use automatic cookie generation.
 
