@@ -583,13 +583,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			ally_stats.append(ally_pid) # 13
 		ally_stats.append(battledata["my_team_members"][n]["player"]["star_rank"]) # 14
 		ally_stats.append(battledata["my_team_members"][n]["player"]["player_type"]["style"]) # 15
-		species = battledata["my_team_members"][n]["player"]["player_type"]["species"]
-		if species == "inklings":
-			ally_stats.append("inkling") # 16
-		elif species == "octolings":
-			ally_stats.append("octoling") # 16
-		else:
-			ally_stats.append(None) # 16
+		ally_stats.append(battledata["my_team_members"][n]["player"]["player_type"]["species"][:-1]) # 16
 		try:
 			if battledata["crown_players"] != None and ally_pid in battledata["crown_players"]:
 				ally_stats.append("yes") # 17
@@ -688,13 +682,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			enemy_stats.append(enemy_pid) # 13
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["star_rank"]) # 14
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_type"]["style"]) # 15
-		species = battledata["other_team_members"][n]["player"]["player_type"]["species"]
-		if species == "inklings":
-			enemy_stats.append("inkling") # 16
-		elif species == "octolings":
-			enemy_stats.append("octoling") # 16
-		else:
-			enemy_stats.append(None) # 16
+		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_type"]["species"][:-1]) # 16
 		try:
 			if battledata["crown_players"] != None and enemy_pid in battledata["crown_players"]:
 				enemy_stats.append("yes") # 17
@@ -947,11 +935,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		payload["estimate_gachi_power"] = results[i]["estimate_gachi_power"]
 	gender = results[i]["player_result"]["player"]["player_type"]["style"]
 	payload["gender"] = gender
-	species = results[i]["player_result"]["player"]["player_type"]["species"]
-	if species == "inklings":
-		payload["species"] = "inkling"
-	elif species == "octolings":
-		payload["species"] = "octoling"
+	species = results[i]["player_result"]["player"]["player_type"]["species"][:-1]
+	payload["species"] = species
 
 	############################
 	## SPLATFEST TITLES/POWER ##
