@@ -144,7 +144,8 @@ def salmon_post_shift(i, results):
 
 	# Number of waves played
 	num_waves = len(results[i]["wave_details"])
-	payload["clear_waves"] = num_waves - 1
+	cleared = results[i]["job_result"]["is_clear"]
+	payload["clear_waves"] = 3 if cleared else num_waves - 1
 	fail_reason = results[i]["job_result"]["failure_reason"]
 
 	# Time
@@ -301,4 +302,3 @@ def upload_salmon_run(s2s_version, s2s_cookie, s2s_api_key, s2s_app_head):
 	n = salmon_get_num_shifts(results)
 	for i in reversed(range(n)):
 		salmon_post_shift(i, results)
-		exit(0)
