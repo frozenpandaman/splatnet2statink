@@ -146,7 +146,7 @@ def salmon_post_shift(i, results):
 	num_waves = len(results[i]["wave_details"])
 	cleared = results[i]["job_result"]["is_clear"]
 	payload["clear_waves"] = 3 if cleared else num_waves - 1
-	fail_reason = results[i]["job_result"]["failure_reason"]
+	payload["fail_reason"] = results[i]["job_result"]["failure_reason"]
 
 	# Time
 	payload["shift_start_at"] = results[i]["start_time"] # rotation start time
