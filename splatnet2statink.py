@@ -13,14 +13,14 @@ from past.utils import old_div
 import os.path, argparse, sys
 import requests, json, time, datetime, random, re
 import msgpack, uuid
-import iksm, dbs
+import iksm, dbs, salmonrun
 from io import BytesIO
 from operator import itemgetter
 from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.2.2"
+A_VERSION = "1.3.0"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -257,6 +257,8 @@ def main():
 						help="don't post scoreboard result image")
 	parser.add_argument("-t", required=False, action="store_true",
 						help="dry run for testing (won't post to stat.ink)")
+	parser.add_argument("--salmon", required=False, action="store_true",
+						help="uploads salmon run shifts")
 	parser.add_argument("-i", dest="filename", required=False, help=argparse.SUPPRESS)
 
 	parser_result = parser.parse_args()
@@ -280,8 +282,13 @@ def main():
 	is_t = parser_result.t
 	is_r = parser_result.r
 	filename = parser_result.filename
+	salmon = parser_result.salmon
 
-	return m_value, is_s, is_t, is_r, filename
+	if salmon and len(sys.argv) > 2:
+		print("Must use --salmon flag alone in Salmon Run mode. Exiting.")
+		exit(1)
+
+	return m_value, is_s, is_t, is_r, filename, salmon
 
 def load_results(calledby=""):
 	'''Returns the data we need from the results JSON, if possible.'''
@@ -451,7 +458,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 		print("Bye!")
 
 def get_num_battles():
-	'''Returns number of battles to upload along with results json.'''
+	'''Returns number of battles to upload along with results JSON.'''
 
 	while True:
 		if filename != None:
@@ -576,13 +583,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			ally_stats.append(ally_pid) # 13
 		ally_stats.append(battledata["my_team_members"][n]["player"]["star_rank"]) # 14
 		ally_stats.append(battledata["my_team_members"][n]["player"]["player_type"]["style"]) # 15
-		species = battledata["my_team_members"][n]["player"]["player_type"]["species"]
-		if species == "inklings":
-			ally_stats.append("inkling") # 16
-		elif species == "octolings":
-			ally_stats.append("octoling") # 16
-		else:
-			ally_stats.append(None) # 16
+		ally_stats.append(battledata["my_team_members"][n]["player"]["player_type"]["species"][:-1]) # 16
 		try:
 			if battledata["crown_players"] != None and ally_pid in battledata["crown_players"]:
 				ally_stats.append("yes") # 17
@@ -681,13 +682,7 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 			enemy_stats.append(enemy_pid) # 13
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["star_rank"]) # 14
 		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_type"]["style"]) # 15
-		species = battledata["other_team_members"][n]["player"]["player_type"]["species"]
-		if species == "inklings":
-			enemy_stats.append("inkling") # 16
-		elif species == "octolings":
-			enemy_stats.append("octoling") # 16
-		else:
-			enemy_stats.append(None) # 16
+		enemy_stats.append(battledata["other_team_members"][n]["player"]["player_type"]["species"][:-1]) # 16
 		try:
 			if battledata["crown_players"] != None and enemy_pid in battledata["crown_players"]:
 				enemy_stats.append("yes") # 17
@@ -940,11 +935,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		payload["estimate_gachi_power"] = results[i]["estimate_gachi_power"]
 	gender = results[i]["player_result"]["player"]["player_type"]["style"]
 	payload["gender"] = gender
-	species = results[i]["player_result"]["player"]["player_type"]["species"]
-	if species == "inklings":
-		payload["species"] = "inkling"
-	elif species == "octolings":
-		payload["species"] = "octoling"
+	species = results[i]["player_result"]["player"]["player_type"]["species"][:-1]
+	payload["species"] = species
 
 	############################
 	## SPLATFEST TITLES/POWER ##
@@ -1080,11 +1072,11 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	if not debug:
 		url = "https://app.splatoon2.nintendo.net/api/share/results/{}".format(bn)
 		share_result = requests.post(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
-		if share_result.status_code == requests.codes.ok:
+		if share_result.ok:
 			image_result_url = share_result.json().get("url")
 			if image_result_url:
 				image_result = requests.get(image_result_url, stream=True)
-				if image_result.status_code == requests.codes.ok:
+				if image_result.ok:
 					if not s_flag: # normal scoreboard
 						payload["image_result"] = BytesIO(image_result.content).getvalue()
 					else:
@@ -1121,11 +1113,11 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 				fav_stage = stage
 			settings = {'stage': fav_stage, 'color': translate_profile_color[random.randrange(0, 6)]}
 			share_result = requests.post(url_profile, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE), data=settings)
-			if share_result.status_code == requests.codes.ok:
+			if share_result.ok:
 				profile_result_url = share_result.json().get("url")
 				if profile_result_url:
 					profile_result = requests.get(profile_result_url, stream=True)
-					if profile_result.status_code == requests.codes.ok:
+					if profile_result.ok:
 						payload["image_gear"] = BytesIO(profile_result.content).getvalue()
 
 	##########
@@ -1218,7 +1210,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 					print("Error uploading battle. Message from server:")
 			print(postbattle.content.decode("utf-8"))
 			if not t_flag and i != 0: # don't prompt for final battle
-				cont = input('Continue (y/n)? ')
+				cont = input('Continue? [Y/n] ')
 				if cont[0].lower() == "n":
 					print("Exiting.")
 					exit(1)
@@ -1251,16 +1243,19 @@ def blackout(image_result_content, players):
 	return scoreboard
 
 if __name__ == "__main__":
-	m_value, is_s, is_t, is_r, filename = main()
-	if is_s:
-		from PIL import Image, ImageDraw
-	if m_value != -1: # m flag exists
-		monitor_battles(is_s, is_t, is_r, m_value, debug)
-	elif is_r: # r flag exists without m, so run only the recent battle upload
-		populate_battles(is_s, is_t, is_r, debug)
-	else:
-		n, results = get_num_battles()
-		for i in reversed(range(n)):
-			post_battle(i, results, is_s, is_t, m_value, True if i == 0 else False, debug)
-		if debug:
-			print("")
+	m_value, is_s, is_t, is_r, filename, salmon = main()
+	if salmon: # salmon run mode
+		salmonrun.upload_salmon_run(A_VERSION, YOUR_COOKIE, API_KEY, app_head)
+	else: # normal mode
+		if is_s:
+			from PIL import Image, ImageDraw
+		if m_value != -1: # m flag exists
+			monitor_battles(is_s, is_t, is_r, m_value, debug)
+		elif is_r: # r flag exists without m, so run only the recent battle upload
+			populate_battles(is_s, is_t, is_r, debug)
+		else:
+			n, results = get_num_battles()
+			for i in reversed(range(n)):
+				post_battle(i, results, is_s, is_t, m_value, True if i == 0 else False, debug)
+			if debug:
+				print("")
