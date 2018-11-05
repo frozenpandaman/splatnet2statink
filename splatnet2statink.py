@@ -284,10 +284,6 @@ def main():
 	filename = parser_result.filename
 	salmon = parser_result.salmon
 
-	if salmon and len(sys.argv) > 2:
-		print("Must use --salmon flag alone in Salmon Run mode. Exiting.")
-		exit(1)
-
 	return m_value, is_s, is_t, is_r, filename, salmon
 
 def load_results(calledby=""):
@@ -1245,7 +1241,7 @@ def blackout(image_result_content, players):
 if __name__ == "__main__":
 	m_value, is_s, is_t, is_r, filename, salmon = main()
 	if salmon: # salmon run mode
-		salmonrun.upload_salmon_run(A_VERSION, YOUR_COOKIE, API_KEY, app_head)
+		salmonrun.upload_salmon_run(A_VERSION, YOUR_COOKIE, API_KEY, app_head, is_r)
 	else: # normal mode
 		if is_s:
 			from PIL import Image, ImageDraw

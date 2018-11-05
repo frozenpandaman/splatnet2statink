@@ -285,7 +285,15 @@ def salmon_get_num_shifts(results):
 
 	return n
 
-def upload_salmon_run(s2s_version, s2s_cookie, s2s_api_key, s2s_app_head):
+def get_statink_jobs(api_key):
+	print("Checking if there are previously-unuploaded jobs...")
+	url  = 'https://stat.ink/api/v2/user-salmon?only=splatnet_number&count=100'
+	auth = {'Authorization': 'Bearer {}'.format(api_key)}
+	resp = requests.get(url, headers=auth)
+	statink_battles = json.loads(resp.text)
+	return statink_battles
+
+def upload_salmon_run(s2s_version, s2s_cookie, s2s_api_key, s2s_app_head, r_flag):
 	'''Main process for uploading Salmon Run shifts.'''
 
 	global version
@@ -299,6 +307,15 @@ def upload_salmon_run(s2s_version, s2s_cookie, s2s_api_key, s2s_app_head):
 
 	profile, results = salmon_get_data()
 	salmon_post_profile(profile)
-	n = salmon_get_num_shifts(results)
-	for i in reversed(range(n)):
-		salmon_post_shift(i, results)
+
+	if r_flag:
+		# Checking if there are previously-unuploaded jobs
+		statink_jobs = get_statink_jobs(s2s_api_key)
+		new_results = list(filter(lambda r: not(r['job_id'] in statink_jobs), results))
+		new_n = len(new_results)
+		for i in reversed(range(new_n)):
+			salmon_post_shift(i, new_results)
+	else:
+		n = salmon_get_num_shifts(results)
+		for i in reversed(range(n)):
+			salmon_post_shift(i, results)
