@@ -21,7 +21,7 @@ The `-s` flag blacks out other players' names on the scoreboard result image and
 
 The `-t` flag sends battle data to stat.ink as a dry run, without uploading, for testing/validation purposes.
 
-The `--salmon` flag updates your Salmon Run profile and allows you to upload shifts worked.
+The `--salmon` flag updates your Salmon Run profile and allows you to upload shifts (jobs) worked.
 
 Note: Executing the script via `./splatnet2statink.py` is also possible on macOS or Linux. If you've downloaded a .zip of this repository using the green "Clone or download" button above (instead of via `git clone`), the script must first be made executable by running `chmod +x splatnet2statink.py`.
 
@@ -29,7 +29,7 @@ Note: Executing the script via `./splatnet2statink.py` is also possible on macOS
 
 Running `python splatnet2statink.py -M 900` from the command line launches the script in monitoring mode, checking for and uploading battles every 15 minutes.
 
-Running `python splatnet2statink.py --salmon` prompts you to enter a number of recent Salmon Run shifts to upload.
+Running `python splatnet2statink.py --salmon -r` uploads all recent Salmon Run shifts not already present on stat.ink.
 
 ## Features
 
