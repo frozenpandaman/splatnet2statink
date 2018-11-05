@@ -20,7 +20,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.3.0"
+A_VERSION = "1.3.1"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -263,6 +263,18 @@ def main():
 
 	parser_result = parser.parse_args()
 
+	is_s = parser_result.s
+	is_t = parser_result.t
+	is_r = parser_result.r
+	filename = parser_result.filename
+	salmon = parser_result.salmon
+
+	salmon_and_not_r = True if salmon and len(sys.argv) == 3 and "-r" not in sys.argv else False
+	salmon_and_more = True if salmon and len(sys.argv) > 3 else False
+	if salmon_and_not_r or salmon_and_more:
+		print("Can only use --salmon flag alone or with -r. Exiting.")
+		exit(1)
+
 	if parser_result.N != None:
 		try:
 			m_value = int(parser_result.N)
@@ -277,16 +289,6 @@ def main():
 				exit(1)
 	else:
 		m_value = -1
-
-	is_s = parser_result.s
-	is_t = parser_result.t
-	is_r = parser_result.r
-	filename = parser_result.filename
-	salmon = parser_result.salmon
-
-	if salmon and len(sys.argv) > 2:
-		print("Must use --salmon flag alone in Salmon Run mode. Exiting.")
-		exit(1)
 
 	return m_value, is_s, is_t, is_r, filename, salmon
 
@@ -1245,7 +1247,7 @@ def blackout(image_result_content, players):
 if __name__ == "__main__":
 	m_value, is_s, is_t, is_r, filename, salmon = main()
 	if salmon: # salmon run mode
-		salmonrun.upload_salmon_run(A_VERSION, YOUR_COOKIE, API_KEY, app_head)
+		salmonrun.upload_salmon_run(A_VERSION, YOUR_COOKIE, API_KEY, app_head, is_r)
 	else: # normal mode
 		if is_s:
 			from PIL import Image, ImageDraw
