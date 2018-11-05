@@ -9,6 +9,7 @@ weapons = {
 	1:    'bold_neo',               # Neo Sploosh-o-matic
 	10:   'wakaba',                 # Splattershot Jr.
 	11:   'momiji',                 # Custom Splattershot Jr.
+	12:   'ochiba',                 # Kensa Splattershot Jr.
 	20:   'sharp',                  # Splash-o-matic
 	21:   'sharp_neo',              # Neo Splash-o-matic
 	30:   'promodeler_mg',          # Aerospray MG
@@ -45,6 +46,7 @@ weapons = {
 	251:  'rapid_elite_deco',       # Rapid Blaster Pro Deco
 	300:  'l3reelgun',              # L-3 Nozzlenose
 	301:  'l3reelgun_d',            # L-3 Nozzlenose D
+	302:  'l3reelgun_becchu',       # Kensa L-3 Nozzlenose
 	310:  'h3reelgun',              # H-3 Nozzlenose
 	311:  'h3reelgun_d',            # H-3 Nozzlenose D
 	400:  'bottlegeyser',           # Squeezer
@@ -64,6 +66,7 @@ weapons = {
 	1101: 'pablo_hue',              # Inkbrush Nouveau
 	1110: 'hokusai',                # Octobrush
 	1111: 'hokusai_hue',            # Octobrush Nouveau
+	1112: 'hokusai_becchu',         # Kensa Octobrush
 	1115: 'herobrush_replica',      # Herobrush Replica
 	2000: 'squiclean_a',            # Classic Squiffer
 	2001: 'squiclean_b',            # New Squiffer
@@ -120,6 +123,7 @@ weapons = {
 	6011: 'campingshelter_sorella', # Tenta Sorella Brella
 	6020: 'spygadget',              # Undercover Brella
 	6021: 'spygadget_sorella',      # Undercover Sorella Brella
+	6022: 'spygadget_becchu',       # Kensa Undercover Brella
 	20000: 'kuma_blaster',          # Grizzco Blaster
 	20010: 'kuma_brella',           # Grizzco Brella
 	20020: 'kuma_charger',          # Grizzco Charger
