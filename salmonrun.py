@@ -18,7 +18,7 @@ def salmon_load_json():
 	return json.loads(results_list.text)
 
 def salmon_post_profile(profile):
-	''' Update stat.ink Salmon Run stats/profile.'''
+	''' Updates stat.ink Salmon Run stats/profile.'''
 
 	payload = {
 		"work_count":        profile["card"]["job_num"],
@@ -262,7 +262,7 @@ def salmon_get_data():
 	return profile, results
 
 def salmon_get_num_shifts(results):
-	'''Prompt user to upload a certain number of recent job data.'''
+	'''Prompts user to upload a certain number of recent shifts.'''
 
 	try:
 		n = int(input("Number of recent Salmon Run shifts to upload (0-50)? "))
@@ -285,13 +285,15 @@ def salmon_get_num_shifts(results):
 
 	return n
 
-def get_statink_jobs(api_key):
-	print("Checking if there are previously-unuploaded jobs...")
+def get_statink_shifts(api_key):
+	'''Returns the 100 most recently-uploaded Salmon Run shifts from stat.ink.'''
+
+	print("Checking if there are previously-unuploaded shifts...")
 	url  = 'https://stat.ink/api/v2/user-salmon?only=splatnet_number&count=100'
 	auth = {'Authorization': 'Bearer {}'.format(api_key)}
 	resp = requests.get(url, headers=auth)
-	statink_battles = json.loads(resp.text)
-	return statink_battles
+	statink_shifts = json.loads(resp.text)
+	return statink_shifts
 
 def upload_salmon_run(s2s_version, s2s_cookie, s2s_api_key, s2s_app_head, r_flag):
 	'''Main process for uploading Salmon Run shifts.'''
@@ -308,14 +310,17 @@ def upload_salmon_run(s2s_version, s2s_cookie, s2s_api_key, s2s_app_head, r_flag
 	profile, results = salmon_get_data()
 	salmon_post_profile(profile)
 
-	if r_flag:
-		# Checking if there are previously-unuploaded jobs
-		statink_jobs = get_statink_jobs(s2s_api_key)
-		new_results = list(filter(lambda r: not(r['job_id'] in statink_jobs), results))
-		new_n = len(new_results)
-		for i in reversed(range(new_n)):
-			salmon_post_shift(i, new_results)
-	else:
+	if r_flag: # upload all unuploaded shifts
+		statink_shifts = get_statink_shifts(s2s_api_key)
+		new_results = list(filter(lambda r: not(r['job_id'] in statink_shifts), results))
+		unup_shifts = len(new_results)
+		if unup_shifts > 0:
+			print("Previously-unuploaded shifts detected. Uploading now...")
+			for i in reversed(range(unup_shifts)):
+				salmon_post_shift(i, new_results)
+		else:
+			print("No previously-unuploaded shifts found.")
+	else: # manually upload a number of shifts
 		n = salmon_get_num_shifts(results)
 		for i in reversed(range(n)):
 			salmon_post_shift(i, results)
