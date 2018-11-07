@@ -125,6 +125,8 @@ def salmon_post_shift(i, results):
 		payload["stage"] = "tokishirazu"
 	elif "65c68c6f0641cc5654434b78a6f10b0ad32ccdee" in stage_img_url:
 		payload["stage"] = "dam"
+	elif "50064ec6e97aac91e70df5fc2cfecf61ad8615fd" in stage_img_url:
+		payload["stage"] = "polaris"
 
 	# Hazard level
 	payload["danger_rate"] = results[i]["danger_rate"]
