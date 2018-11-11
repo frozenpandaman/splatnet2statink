@@ -53,6 +53,7 @@ def set_teammates(payload, job_id):
 
 	payload["teammates"] = []
 	num_teammates = len(results["other_results"])
+	translate_specials = {2: 'pitcher', 7: 'presser', 8: 'jetpack', 9: 'chakuchi'}
 	for num in range(num_teammates):
 		payload["teammates"].append({})
 
@@ -61,7 +62,6 @@ def set_teammates(payload, job_id):
 		payload["teammates"][num]["name"]        = results["other_results"][num]["name"]
 
 		# Special weapon
-		translate_specials = {2: "pitcher", 7: "presser", 8: "jetpack", 9: "chakuchi"}
 		payload["teammates"][num]["special"] = translate_specials[int(results["other_results"][num]["special"]["id"])]
 
 		# Rescues, deaths, egg stats
@@ -109,11 +109,21 @@ def salmon_post_shift(i, results):
 
 	# Title
 	title_num = int(results[i]["grade"]["id"])
-	translate_titles = {5: "profreshional", 4: "overachiever", 3: "go_getter", 2: "part_timer", 1: "apprentice", 0: "intern"}
+	translate_titles = {5: 'profreshional', 4: 'overachiever', 3: 'go_getter', 2: 'part_timer', 1: 'apprentice'}
 	payload["title_after"] = translate_titles[title_num]
-	grade_point = results[i]["grade_point"]
-	payload["title_exp_after"] = grade_point
-	payload["title_exp"] = grade_point - results[i]["grade_point_delta"]
+
+	title_exp_after = results[i]["grade_point"]
+	title_exp_delta = results[i]["grade_point_delta"] # positive for win, negative for loss
+	title_exp = title_exp_after - title_exp_delta
+	payload["title_exp_after"] = title_exp_after
+	payload["title_exp"] = title_exp
+
+	if title_exp_after == 40 and title_exp_delta == 20:
+		pass # could be legit clear 20->40, or could be rank up ?->40
+	elif title_exp_after == 40 and title_exp_delta == -20:
+		pass # could be legit wave 1 fail 60->40, or could be rank down ?->40
+	else: # rank/title did not change
+		payload["title"] = translate_titles[title_num]
 
 	# Stage
 	stage_img_url = results[i]["schedule"]["stage"]["image"]
@@ -186,7 +196,7 @@ def salmon_post_shift(i, results):
 	payload["my_data"]["name"]        = results[i]["my_result"]["name"]
 
 	# Special weapon
-	translate_specials = {2: "pitcher", 7: "presser", 8: "jetpack", 9: "chakuchi"}
+	translate_specials = {2: 'pitcher', 7: 'presser', 8: 'jetpack', 9: 'chakuchi'}
 	payload["my_data"]["special"] = translate_specials[int(results[i]["my_result"]["special"]["id"])]
 
 	# Rescues, deaths, egg stats
@@ -314,7 +324,7 @@ def upload_salmon_run(s2s_version, s2s_cookie, s2s_api_key, s2s_app_head, r_flag
 
 	if r_flag: # upload all unuploaded shifts
 		statink_shifts = get_statink_shifts(s2s_api_key)
-		new_results = list(filter(lambda r: not(r['job_id'] in statink_shifts), results))
+		new_results = list(filter(lambda r: not(r["job_id"] in statink_shifts), results))
 		unup_shifts = len(new_results)
 		if unup_shifts > 0:
 			print("Previously-unuploaded shifts detected. Uploading now...")
