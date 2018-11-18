@@ -120,7 +120,7 @@ def salmon_post_shift(i, results):
 
 	if title_exp_after == 40 and title_exp_delta == 20:
 		pass # could be legit clear 20->40, or could be rank up ?->40
-	elif title_exp_after == 40 and title_exp_delta < 0:
+	elif title_exp_after == 40 and title_exp_delta < 0 and title_num != 5:
 		pass # could be legit wave 1 fail 60->40, or could be rank down ?->40; not always -20 for loss
 	else: # rank/title did not change
 		payload["title"] = translate_titles[title_num]
