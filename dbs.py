@@ -94,7 +94,9 @@ weapons = {
 	3021: 'screwslosher_neo',       # Sloshing Machine Neo
 	3022: 'screwslosher_becchu',    # Kensa Sloshing Machine
 	3030: 'furo',                   # Bloblobber
+	3031: 'furo_deco',              # Bloblobber Deco
 	3040: 'explosher',              # Explosher
+	3041: 'explosher_custom',       # Custom Explosher
 	4000: 'splatspinner',           # Mini Splatling
 	4001: 'splatspinner_collabo',   # Zink Mini Splatling
 	4010: 'barrelspinner',          # Heavy Splatling
@@ -103,7 +105,9 @@ weapons = {
 	4020: 'hydra',                  # Hydra Splatling
 	4021: 'hydra_custom',           # Custom Hydra Splatling
 	4030: 'kugelschreiber',         # Ballpoint Splatling
+	4031: 'kugelschreiber_hue',     # Ballpoint Splatling Nouveau
 	4040: 'nautilus47',             # Nautilus 47
+	4041: 'nautilus79',             # Nautilus 79
 	5000: 'sputtery',               # Dapple Dualies
 	5001: 'sputtery_hue',           # Dapple Dualies Nouveau
 	5010: 'maneuver',               # Splat Dualies
