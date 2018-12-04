@@ -21,6 +21,7 @@ weapons = {
 	46:   'octoshooter_replica',    # Octo Shot Replica
 	50:   '52gal',                  # .52 Gal
 	51:   '52gal_deco',             # .52 Gal Deco
+	52:   '52gal_becchu',           # Kensa .52 Gal
 	60:   'nzap85',                 # N-ZAP '85
 	61:   'nzap89',                 # N-ZAP '89
 	70:   'prime',                  # Splattershot Pro
@@ -42,6 +43,7 @@ weapons = {
 	231:  'clashblaster_neo',       # Clash Blaster Neo
 	240:  'rapid',                  # Rapid Blaster
 	241:  'rapid_deco',             # Rapid Blaster Deco
+	242:  'rapid_becchu',           # Kensa Rapid Blaster
 	250:  'rapid_elite',            # Rapid Blaster Pro
 	251:  'rapid_elite_deco',       # Rapid Blaster Pro Deco
 	300:  'l3reelgun',              # L-3 Nozzlenose
@@ -99,6 +101,7 @@ weapons = {
 	3041: 'explosher_custom',       # Custom Explosher
 	4000: 'splatspinner',           # Mini Splatling
 	4001: 'splatspinner_collabo',   # Zink Mini Splatling
+	4002: 'splatspinner_becchu',    # Kensa Mini Splatling
 	4010: 'barrelspinner',          # Heavy Splatling
 	4011: 'barrelspinner_deco',     # Heavy Splatling Deco
 	4015: 'herospinner_replica',    # Hero Splatling Replica
@@ -116,6 +119,7 @@ weapons = {
 	5015: 'heromaneuver_replica',   # Hero Dualie Replicas
 	5020: 'kelvin525',              # Glooga Dualies
 	5021: 'kelvin525_deco',         # Glooga Dualies Deco
+	5022: 'kelvin525_becchu',       # Kensa Glooga Dualies
 	5030: 'dualsweeper',            # Dualie Squelchers
 	5031: 'dualsweeper_custom',     # Custom Dualie Squelchers
 	5040: 'quadhopper_black',       # Dark Tetra Dualies
