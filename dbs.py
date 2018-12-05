@@ -782,7 +782,9 @@ abilities = {
 	108: 'ability_doubler',
 	109: 'stealth_jump',
 	110: 'object_shredder',
-	111: 'drop_roller'
+	111: 'drop_roller',
+	200: 'bomb_defense_up_dx',
+	201: 'main_power_up'
 }
 
 # Colors for the profile image's background
