@@ -15,8 +15,6 @@ def log_in(ver):
 	global version
 	version = ver
 
-	token = re.compile(r'(eyJhbGciOiJIUzI1NiJ9\.[a-zA-Z0-9_-]*\.[a-zA-Z0-9_-]*)')
-
 	auth_state = base64.urlsafe_b64encode(os.urandom(36))
 
 	auth_code_verifier = base64.urlsafe_b64encode(os.urandom(32))
@@ -48,8 +46,6 @@ def log_in(ver):
 
 	url = 'https://accounts.nintendo.com/connect/1.0.0/authorize'
 	r = session.get(url, headers=app_head, params=body)
-
-	csrf_token = token.findall(r.text)[0]
 
 	post_login = r.history[0].url
 
@@ -147,8 +143,6 @@ def get_cookie(session_token, userLang, ver):
 
 	r = requests.get(url, headers=app_head)
 	user_info = json.loads(r.text)
-
-	nickname = user_info["nickname"]
 
 	# get access token
 	app_head = {
