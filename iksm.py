@@ -3,16 +3,14 @@
 from __future__ import print_function
 from builtins import input
 import requests, json, re, sys
-import os, base64, hashlib, hmac
-import getpass, uuid, time
+import os, base64, hashlib
+import uuid, time
 
 session = requests.Session()
 version = "unknown"
 
 def log_in(ver):
 	'''Logs in to a Nintendo Account and returns a session_token.'''
-
-	authenticated = False
 
 	global version
 	version = ver
@@ -23,7 +21,7 @@ def log_in(ver):
 
 	auth_code_verifier = base64.urlsafe_b64encode(os.urandom(32))
 	auth_cv_hash = hashlib.sha256()
-	auth_cv_hash.update(auth_code_verifier.replace(b"=",b""))
+	auth_cv_hash.update(auth_code_verifier.replace(b"=", b""))
 	auth_code_challenge = base64.urlsafe_b64encode(auth_cv_hash.digest())
 
 	app_head = {
@@ -43,7 +41,7 @@ def log_in(ver):
 		'client_id':                            '71b963c1b7b6d119',
 		'scope':                                'openid user user.birthday user.mii user.screenName',
 		'response_type':                        'session_token_code',
-		'session_token_code_challenge':         auth_code_challenge.replace(b"=",b""),
+		'session_token_code_challenge':         auth_code_challenge.replace(b"=", b""),
 		'session_token_code_challenge_method': 'S256',
 		'theme':                               'login_form'
 	}
@@ -64,11 +62,11 @@ def log_in(ver):
 			use_account_url = input("")
 			if use_account_url == "skip":
 				return "skip"
-			session_token_code = re.search('de=(.*)\&', use_account_url)
+			session_token_code = re.search('de=(.*)&', use_account_url)
 			return get_session_token(session_token_code.group(1), auth_code_verifier)
 		except KeyboardInterrupt:
 			print("\nBye!")
-			exit(1)
+			sys.exit(1)
 		except:
 			print("Malformed URL. Please try again, or press Ctrl+C to exit.")
 			print("URL:", end=' ')
@@ -90,7 +88,7 @@ def get_session_token(session_token_code, auth_code_verifier):
 	body = {
 		'client_id':                   '71b963c1b7b6d119',
 		'session_token_code':          session_token_code,
-		'session_token_code_verifier': auth_code_verifier.replace(b"=",b"")
+		'session_token_code_verifier': auth_code_verifier.replace(b"=", b"")
 	}
 
 	url = 'https://accounts.nintendo.com/connect/1.0.0/api/session_token'
@@ -144,7 +142,7 @@ def get_cookie(session_token, userLang, ver):
 		print("Not a valid authorization request. Please delete config.txt and try again.")
 		print("Error from Nintendo:")
 		print(json.dumps(id_response, indent=2))
-		exit(1)
+		sys.exit(1)
 	url = "https://api.accounts.nintendo.com/2.0.0/users/me"
 
 	r = requests.get(url, headers=app_head)
@@ -180,12 +178,12 @@ def get_cookie(session_token, userLang, ver):
 			'timestamp': timestamp
 		}
 	except SystemExit:
-		exit(1)
+		sys.exit(1)
 	except:
 		print("Error(s) from Nintendo:")
 		print(json.dumps(id_response, indent=2))
 		print(json.dumps(user_info, indent=2))
-		exit(1)
+		sys.exit(1)
 	body["parameter"] = parameter
 
 	url = "https://api-lp1.znc.srv.nintendo.net/v1/Account/Login"
@@ -210,7 +208,7 @@ def get_cookie(session_token, userLang, ver):
 	except:
 		print("Error from Nintendo:")
 		print(json.dumps(splatoon_token, indent=2))
-		exit(1)
+		sys.exit(1)
 
 	body = {}
 	parameter = {
@@ -241,7 +239,7 @@ def get_cookie(session_token, userLang, ver):
 	except:
 		print("Error from Nintendo:")
 		print(json.dumps(splatoon_access_token, indent=2))
-		exit(1)
+		sys.exit(1)
 
 	url = "https://app.splatoon2.nintendo.net/?lang={}".format(userLang)
 
@@ -267,12 +265,12 @@ def get_hash_from_s2s_api(id_token, timestamp):
 
 	# proceed normally
 	try:
-		api_app_head = { 'User-Agent': "splatnet2statink/" + version }
+		api_app_head = { 'User-Agent': "splatnet2statink/{}".format(version) }
 		api_body = { 'naIdToken': id_token, 'timestamp': timestamp }
 		api_response = requests.post("https://elifessler.com/s2s/api/gen", headers=api_app_head, data=api_body)
 		return json.loads(api_response.text)["hash"]
 	except:
-		print("Error from the splatnet2statink API:\n" + json.dumps(json.loads(api_response.text), indent=2))
+		print("Error from the splatnet2statink API:\n{}".format(json.dumps(json.loads(api_response.text), indent=2)))
 
 		# add 1 to api_errors in config
 		config_file = open("config.txt", "r")
