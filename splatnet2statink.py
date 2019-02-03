@@ -20,7 +20,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.3.4"
+A_VERSION = "1.4.0"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -30,7 +30,7 @@ try:
 	config_file.close()
 except (IOError, ValueError):
 	print("Generating new config file.")
-	config_data = {"api_key": "", "cookie": "", "user_lang": "", "session_token": "skip"}
+	config_data = {"api_key": "", "cookie": "", "user_lang": "", "session_token": ""}
 	config_file = open("config.txt", "w")
 	config_file.seek(0)
 	config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
@@ -46,7 +46,7 @@ YOUR_COOKIE   = config_data["cookie"] # iksm_session
 try: # support for pre-v1.0.0 config.txts
 	SESSION_TOKEN = config_data["session_token"] # to generate new cookies in the future
 except:
-	SESSION_TOKEN = "skip"
+	SESSION_TOKEN = ""
 USER_LANG     = config_data["user_lang"] # only works with your game region's supported languages
 #########################
 
@@ -126,7 +126,7 @@ def gen_new_cookie(reason):
 			write_config(config_data)
 	elif SESSION_TOKEN == "skip":
 		manual = True
-		# print("\nYou have opted against automatic cookie generation and must manually input your iksm_session cookie. You may clear this setting by removing \"skip\" from the session_token field in config.txt.\n")
+		print("\nYou have opted against automatic cookie generation and must manually input your iksm_session cookie. You may clear this setting by removing \"skip\" from the session_token field in config.txt.\n")
 
 	if manual:
 		new_cookie = iksm.enter_cookie()

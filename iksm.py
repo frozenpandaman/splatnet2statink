@@ -104,6 +104,9 @@ def get_cookie(session_token, userLang, ver):
 	global version
 	version = ver
 
+	timestamp = int(time.time())
+	guid = str(uuid.uuid4())
+
 	app_head = {
 		'Host': 'accounts.nintendo.com',
 		'Accept-Encoding': 'gzip',
@@ -166,14 +169,15 @@ def get_cookie(session_token, userLang, ver):
 
 	body = {}
 	try:
+		idToken = id_response["id_token"]
 		parameter = {
-			'f': get_f_from_s2s_api(id_response["id_token"]),
-			'naIdToken': id_response["id_token"],
+			'f': get_f_from_flapg_api(idToken, guid, timestamp),
+			'naIdToken': idToken,
 			'naCountry': user_info["country"],
 			'naBirthday': user_info["birthday"],
 			'language': user_info["language"],
-			'requestId': str(uuid.uuid4()),
-			'timestamp': int(time.time())
+			'requestId': guid,
+			'timestamp': timestamp
 		}
 	except SystemExit:
 		exit(1)
@@ -245,10 +249,10 @@ def get_cookie(session_token, userLang, ver):
 
 	return r.cookies["iksm_session"]
 
-def get_f_from_s2s_api(id_token):
-	'''Passes an id_token to the splatnet2statink API and fetches the f token from the response.'''
+def get_hash_from_s2s_api(id_token, timestamp):
+	'''Passes an id_token and timestamp to the s2s API and fetches the resultant hash from the response.'''
 
-	# check to make sure we're allowed to contact the API
+	# check to make sure we're allowed to contact the API. stop spamming my web server pls
 	config_file = open("config.txt", "r")
 	config_data = json.load(config_file)
 	config_file.close()
@@ -264,9 +268,9 @@ def get_f_from_s2s_api(id_token):
 	# proceed normally
 	try:
 		api_app_head = { 'User-Agent': "splatnet2statink/" + version }
-		api_body = { 'naIdToken': id_token }
+		api_body = { 'naIdToken': id_token, 'timestamp': timestamp }
 		api_response = requests.post("https://elifessler.com/s2s/api/gen", headers=api_app_head, data=api_body)
-		return json.loads(api_response.text)["f"]
+		return json.loads(api_response.text)["hash"]
 	except:
 		print("Error from the splatnet2statink API:\n" + json.dumps(json.loads(api_response.text), indent=2))
 
@@ -286,6 +290,31 @@ def get_f_from_s2s_api(id_token):
 		config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
 		config_file.close()
 
+		sys.exit(1)
+
+def get_f_from_flapg_api(id_token, guid, timestamp):
+	'''Passes in headers to the flapg API (Android emulator) and fetches the f token from the response.'''
+
+	try:
+		api_app_head = {
+			'x-token': id_token,
+			'x-time': str(timestamp),
+			'x-guid': guid,
+			'x-hash': get_hash_from_s2s_api(id_token, timestamp)
+		}
+		api_response = requests.get("https://flapg.com/ika2/api/login", headers=api_app_head)
+		f = json.loads(api_response.text)['f']
+		return f
+	except:
+		try: # if api_response never gets set
+			if api_response.text:
+				print("Error from the flapg API:\n{}".format(json.dumps(json.loads(api_response.text), indent=2)))
+			elif api_response.status_code == requests.codes.not_found:
+				print("Error from the flapg API: Error 404 (incorrect headers).")
+			else:
+				print("Error from the flapg API: Error {}.".format(api_response.status_code))
+		except:
+			pass
 		sys.exit(1)
 
 def enter_cookie():
