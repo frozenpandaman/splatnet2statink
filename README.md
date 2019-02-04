@@ -33,6 +33,7 @@ Running `python splatnet2statink.py --salmon -r` uploads all recent Salmon Run s
 
 ## Features
 
+- [x] Full automation of SplatNet cookie generation/acquisition via user log-in
 - [x] Complete battle stats
   - [x] Lobby/mode, stage, weapon – including new Ver. 4.0 weapons
   - [x] Result, final count/percent, turf inked
@@ -47,7 +48,6 @@ Running `python splatnet2statink.py --salmon -r` uploads all recent Salmon Run s
 - [x] Scoreboard stats, player ranking & battle result image upload
 - [x] Salmon Run support – upload shift details & stats along with your Grizzco Point Card
 - [x] Full support for all available game languages
-- [x] ~~Full automation of SplatNet cookie generation/acquisition via user log-in~~ ([more info](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions))
 
 
 ## Setup instructions
@@ -64,15 +64,9 @@ Running `python splatnet2statink.py --salmon -r` uploads all recent Salmon Run s
 
 4. Running the script for the first time will prompt you to enter your stat.ink API key, which can be found in your [profile settings](https://stat.ink/profile). If you're using the app in a language other than English, you may enter your [language code](https://github.com/frozenpandaman/splatnet2statink/wiki/languages) (locale) as well.
 
-~~**READ THE ENTIRETY OF THE "COOKIE GENERATION" SECTION BELOW BEFORE PROCEEDING. [→](#cookie-generation-important)**~~
+**READ THE ENTIRETY OF THE "COOKIE GENERATION" SECTION BELOW BEFORE PROCEEDING. [→](#cookie-generation-important)**
 
-5. ~~You will then be asked to navigate to a specific URL on Nintendo.com, log in, and follow simple instructions to obtain your `session_token`; this will be used to generate an `iksm_session` cookie. If you are opting against automatic cookie generation, enter "skip" for this step, at which point you will be asked for your `iksm_session` cookie instead (see the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions)).~~
-
-    ---
-
-    **UPDATE:** The authentication process has changed in the 1.4.1 update to the Nintendo Switch Online app. Existing, non-expired cookies can still be used to run the script and access the site, but trying to generate a new cookie will now produce the message "Invalid token." We're working on a fix ASAP – please see [this issue](https://github.com/frozenpandaman/splatnet2statink/issues/62) for more information. For now, follow the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions) to manually obtain your cookie.
-
-    ---
+5. You will then be asked to navigate to a specific URL on Nintendo.com, log in, and follow simple instructions to obtain your `session_token`; this will be used to generate an `iksm_session` cookie. If you are opting against automatic cookie generation, enter "skip" for this step, at which point you will be asked for your `iksm_session` cookie instead (see the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions)).
 
     This token (used to access your SplatNet battle results), along with your stat.ink API key and language, will automatically be saved into `config.txt` for you. You're now ready to upload battles!
 
@@ -88,21 +82,19 @@ If you wish to access SplatNet 2 from your computer rather than via the phone ap
 
 ---
 
-## ~~Cookie generation (IMPORTANT)~~
-
-***NOTE: This section is currently irrelevant as automatic cookie generation is broken!***
+## Cookie generation (IMPORTANT)
 
 For splatnet2statink to work, a cookie known as `iksm_session` is required to access SplatNet. This cookie may be obtained automatically, using the script, or manually via the app. Please read the following sections carefully to decide whether or not you want to use automatic cookie generation.
 
 ### Automatic
 
-Automatic cookie generation involves making a **secure request to a _non-Nintendo server_ with minimal, non-identifying information**. We aim to be 100% transparent about this and provide in-depth information on security and privacy below. Users who feel uncomfortable with this may opt to manually acquire their cookie instead.
+Automatic cookie generation involves making a **secure request to two _non-Nintendo servers_ with minimal, non-identifying information**. We aim to be 100% transparent about this and provide in-depth information on security and privacy below. Users who feel uncomfortable with this may opt to manually acquire their cookie instead.
 
-The v1.1.0 update to the Nintendo Switch Online app, released in September 2017, changed the method used to log in to Nintendo accounts, complicating the ability to generate cookies within the script. The update introduced the requirement of a [message authentication code](https://en.wikipedia.org/wiki/Message_authentication_code), known as `f`, to verify the authenticity of the login request.
+The v1.1.0 update to the Nintendo Switch Online app, released in September 2017, introduced the requirement of a [message authentication code](https://en.wikipedia.org/wiki/Message_authentication_code) (known as `f`), thereby complicating the ability to generate cookies within the script. After figuring out the [key](https://en.wikipedia.org/wiki/Key_\(cryptography\)) previously used to generate `f` tokens, the calculation method was changed in September 2018's v1.4.1 update, heavily obfuscating the new process. As a workaround, an Android server was set up to emulate the app, specifically to generate `f` tokens.
 
-This code is only able to be generated using a [key](https://en.wikipedia.org/wiki/Key_\(cryptography\)) provided within the app. However, this key is sensitive and, if revealed, may assist users looking to use it for malicious purposes. To prevent sharing this key publicly (e.g. distributing it in the script's source code), I've created a small [API](https://en.wikipedia.org/wiki/Application_programming_interface) which will generate an `f` token given a valid input.
+Generation now requires a [hash value](https://en.wikipedia.org/wiki/Hash_function) to further verify the authenticity of the request. The algorithm to calculate this, originally done within the app, is sensitive; to prevent sharing it publicly (e.g. distributing it in the script's source code), I've created a small [API](https://en.wikipedia.org/wiki/Application_programming_interface) which generates a hash value given a valid input. This can be passed to the Android server to generate the corresponding `f` token, which is then used to retrieve an `iksm_session` cookie.
 
-**_Privacy statement:_ No identifying information is ever sent to the API server. Usernames and passwords are far removed from where the API comes into play and are never readable by anyone but you. Returned `f` tokens  are never logged or stored and do not contain meaningful information. It is not possible to use either sent or stored data to identify which account/user performed a request, to view any identifying information about a user, or to gain access to an account.**
+**_Privacy statement:_ No identifying information is ever sent to the API server. Usernames and passwords are far removed from where the API comes into play and are never readable by anyone but you. Returned hash values are never logged or stored and do not contain meaningful information. It is not possible to use either sent or stored data to identify which account/user performed a request, to view any identifying information about a user, or to gain access to an account.**
 
 Please read the **[API documentation wiki page](https://github.com/frozenpandaman/splatnet2statink/wiki/api-docs)** for more information.
 
