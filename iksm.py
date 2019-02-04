@@ -144,6 +144,8 @@ def get_cookie(session_token, userLang, ver):
 	r = requests.get(url, headers=app_head)
 	user_info = json.loads(r.text)
 
+	nickname = user_info["nickname"]
+
 	# get access token
 	app_head = {
 		'Host': 'api-lp1.znc.srv.nintendo.net',
@@ -239,7 +241,7 @@ def get_cookie(session_token, userLang, ver):
 
 	r = requests.get(url, headers=app_head)
 
-	return r.cookies["iksm_session"]
+	return nickname, r.cookies["iksm_session"]
 
 def get_hash_from_s2s_api(id_token, timestamp):
 	'''Passes an id_token and timestamp to the s2s API and fetches the resultant hash from the response.'''
@@ -261,7 +263,7 @@ def get_hash_from_s2s_api(id_token, timestamp):
 	try:
 		api_app_head = { 'User-Agent': "splatnet2statink/{}".format(version) }
 		api_body = { 'naIdToken': id_token, 'timestamp': timestamp }
-		api_response = requests.post("https://elifessler.com/s2s/api/gen", headers=api_app_head, data=api_body)
+		api_response = requests.post("https://elifessler.com/s2s/api/gen2", headers=api_app_head, data=api_body)
 		return json.loads(api_response.text)["hash"]
 	except:
 		print("Error from the splatnet2statink API:\n{}".format(json.dumps(json.loads(api_response.text), indent=2)))

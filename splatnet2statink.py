@@ -132,10 +132,10 @@ def gen_new_cookie(reason):
 		new_cookie = iksm.enter_cookie()
 	else:
 		print("Attempting to generate new cookie...")
-		new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG, A_VERSION) # error handling in get_cookie()
+		acc_name, new_cookie = iksm.get_cookie(SESSION_TOKEN, USER_LANG, A_VERSION)
 	config_data["cookie"] = new_cookie
 	write_config(config_data)
-	print("Wrote iksm_session cookie to config.txt.")
+	print("Wrote iksm_session cookie for {} to config.txt.".format(acc_name))
 
 def write_config(tokens):
 	'''Writes config file and updates the global variables.'''
