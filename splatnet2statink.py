@@ -55,7 +55,7 @@ debug = False # print out payload and exit. can use with geargrabber2.py & savin
 if "app_timezone_offset" in config_data:
 	app_timezone_offset = str(config_data["app_timezone_offset"])
 else:
-	app_timezone_offset = str(int((time.timezone/60)-60)) if time.localtime().tm_isdst else str(int(time.timezone/60))
+	app_timezone_offset = str(int((time.mktime(time.gmtime()) - time.mktime(time.localtime()))/60))
 
 if "app_unique_id" in config_data:
 	app_unique_id = str(config_data["app_unique_id"])
