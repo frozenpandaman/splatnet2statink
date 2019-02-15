@@ -23,7 +23,7 @@ The `-t` flag sends battle data to stat.ink as a dry run, without uploading, for
 
 The `--salmon` flag updates your Salmon Run profile and allows you to upload jobs (shifts) worked.
 
-Note: Executing the script via `./splatnet2statink.py` is also possible on macOS or Linux. If you've downloaded a .zip of this repository using the green "Clone or download" button above (instead of via `git clone`), the script must first be made executable by running `chmod +x splatnet2statink.py`.
+Note: Executing the script via `./splatnet2statink.py` is also possible on macOS or Linux.
 
 ### Example usage
 
@@ -52,19 +52,23 @@ Running `python splatnet2statink.py --salmon -r` uploads all recent Salmon Run j
 
 ## Setup instructions
 
+*These instructions are meant to be accesssible and easy-to-follow for all users, and is the recommended way to run the script. However, an alternative [simple version](https://github.com/frozenpandaman/splatnet2statink/wiki/simple-setup-instructions) is also available.*
+
 1. Download and install Python. On Windows, download the installer from the [official website](https://www.python.org/downloads/) and check the option during setup to add it to your PATH. On macOS, install [Homebrew](https://brew.sh/) and then run `brew install python`.
 
-2. Download the script from the command line (macOS: Terminal; Windows: Command Prompt/PowerShell) by running `git clone https://github.com/frozenpandaman/splatnet2statink.git` (requires [Git](https://git-scm.com/download), pre-installed on macOS). Alternatively, use the green "Clone or download" button above.
+2. If you're on Windows, install [Git](https://git-scm.com/download) (pre-installed on macOS).
 
-3. Navigate to the newly-created directory (`cd splatnet2statink/`) and install the required Python libraries by running `pip install -r requirements.txt`. On Windows, you may have to use `python -m pip` instead.
+3. Download the script from the command line (macOS: Terminal; Windows: Command Prompt/PowerShell) by running `git clone https://github.com/frozenpandaman/splatnet2statink.git`.
 
-4. Running the script for the first time will prompt you to enter your stat.ink API key, which can be found in your [profile settings](https://stat.ink/profile). If you're using the app in a language other than English, you may enter your [language code](https://github.com/frozenpandaman/splatnet2statink/wiki/languages) (locale) as well.
+4. Navigate to the newly-created directory (`cd splatnet2statink/`) and install the required Python libraries by running `pip install -r requirements.txt`. On Windows, you may have to use `python -m pip` instead.
+
+5. Running the script for the first time will prompt you to enter your stat.ink API key, which can be found in your [profile settings](https://stat.ink/profile). If you're using the app in a language other than English, you may enter your [language code](https://github.com/frozenpandaman/splatnet2statink/wiki/languages) (locale) as well.
 
 **NOTE: Read the "Cookie generation" section below before proceeding. [→](#cookie-generation)**
 
-5. You will then be asked to navigate to a specific URL on Nintendo.com, log in, and follow simple instructions to obtain your `session_token`; this will be used to generate an `iksm_session` cookie. If you are opting against automatic cookie generation, enter "skip" for this step, at which point you will be asked to manually input your `iksm_session` cookie instead (see the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions)).
+6. You will then be asked to navigate to a specific URL on Nintendo.com, log in, and follow simple instructions to obtain your `session_token`; this will be used to generate an `iksm_session` cookie. If you are opting against automatic cookie generation, enter "skip" for this step, at which point you will be asked to manually input your `iksm_session` cookie instead (see the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions)).
 
-    This token (used to access your SplatNet battle results), along with your stat.ink API key and language, will automatically be saved into `config.txt` for you. You're now ready to upload battles!
+    This token (used to access your SplatNet battle results) along with your stat.ink API key and language will automatically be saved into `config.txt` for you. You're now ready to upload battles!
 
 Have any questions, issues, or suggestions? Feel free to message me on [Twitter](https://twitter.com/frozenpandaman) or create an [issue](https://github.com/frozenpandaman/splatnet2statink/issues) here.
 
