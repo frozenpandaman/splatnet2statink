@@ -9,6 +9,13 @@ import uuid, time
 session = requests.Session()
 version = "unknown"
 
+# place config.txt in same directory as script (bundled or not)
+if getattr(sys, 'frozen', False):
+	app_path = os.path.dirname(sys.executable)
+elif __file__:
+	app_path = os.path.dirname(__file__)
+config_path = os.path.join(app_path, "config.txt")
+
 def log_in(ver):
 	'''Logs in to a Nintendo Account and returns a session_token.'''
 
@@ -247,7 +254,7 @@ def get_hash_from_s2s_api(id_token, timestamp):
 	'''Passes an id_token and timestamp to the s2s API and fetches the resultant hash from the response.'''
 
 	# check to make sure we're allowed to contact the API. stop spamming my web server pls
-	config_file = open("config.txt", "r")
+	config_file = open(config_path, "r")
 	config_data = json.load(config_file)
 	config_file.close()
 	try:
@@ -269,7 +276,7 @@ def get_hash_from_s2s_api(id_token, timestamp):
 		print("Error from the splatnet2statink API:\n{}".format(json.dumps(json.loads(api_response.text), indent=2)))
 
 		# add 1 to api_errors in config
-		config_file = open("config.txt", "r")
+		config_file = open(config_path, "r")
 		config_data = json.load(config_file)
 		config_file.close()
 		try:
@@ -279,7 +286,7 @@ def get_hash_from_s2s_api(id_token, timestamp):
 		num_errors += 1
 		config_data["api_errors"] = num_errors
 
-		config_file = open("config.txt", "w") # from write_config()
+		config_file = open(config_path, "w") # from write_config()
 		config_file.seek(0)
 		config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
 		config_file.close()
