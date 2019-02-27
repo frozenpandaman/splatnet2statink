@@ -23,7 +23,7 @@ The `-t` flag sends battle data to stat.ink as a dry run, without uploading, for
 
 The `--salmon` flag updates your Salmon Run profile and allows you to upload jobs (shifts) worked.
 
-Note: Executing the script via `./splatnet2statink.py` is also possible on macOS, Linux or Windows.
+Note: Executing the script via `./splatnet2statink.py` is also possible on macOS or Linux. If on Windows, you can type `.\splatnet2statink.py`.
 
 ### Example usage
 
