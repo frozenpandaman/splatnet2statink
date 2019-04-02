@@ -239,7 +239,7 @@ def salmon_post_shift(i, results):
 	#************
 	url  = 'https://stat.ink/api/v2/salmon'
 	auth = {'Authorization': 'Bearer {}'.format(api_key), 'Content-Type': 'application/json'}
-	postshift = requests.post(url, headers=auth, data=json.dumps(payload))
+	postshift = requests.post(url, headers=auth, data=json.dumps(payload), allow_redirects=False)
 
 	# Response
 	headerloc = postshift.headers.get('location')
