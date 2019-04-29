@@ -41,12 +41,12 @@ def log_in(ver):
 	}
 
 	body = {
-		'state':                                auth_state,
-		'redirect_uri':                         'npf71b963c1b7b6d119://auth',
-		'client_id':                            '71b963c1b7b6d119',
-		'scope':                                'openid user user.birthday user.mii user.screenName',
-		'response_type':                        'session_token_code',
-		'session_token_code_challenge':         auth_code_challenge.replace(b"=", b""),
+		'state':                               auth_state,
+		'redirect_uri':                        'npf71b963c1b7b6d119://auth',
+		'client_id':                           '71b963c1b7b6d119',
+		'scope':                               'openid user user.birthday user.mii user.screenName',
+		'response_type':                       'session_token_code',
+		'session_token_code_challenge':        auth_code_challenge.replace(b"=", b""),
 		'session_token_code_challenge_method': 'S256',
 		'theme':                               'login_form'
 	}
@@ -109,20 +109,20 @@ def get_cookie(session_token, userLang, ver):
 	guid = str(uuid.uuid4())
 
 	app_head = {
-		'Host': 'accounts.nintendo.com',
+		'Host':            'accounts.nintendo.com',
 		'Accept-Encoding': 'gzip',
-		'Content-Type': 'application/json; charset=utf-8',
+		'Content-Type':    'application/json; charset=utf-8',
 		'Accept-Language': userLang,
-		'Content-Length': '437',
-		'Accept': 'application/json',
-		'Connection': 'Keep-Alive',
-		'User-Agent': 'OnlineLounge/1.5.0 NASDKAPI Android'
+		'Content-Length':  '437',
+		'Accept':          'application/json',
+		'Connection':      'Keep-Alive',
+		'User-Agent':      'OnlineLounge/1.5.0 NASDKAPI Android'
 	}
 
 	body = {
-		'client_id': '71b963c1b7b6d119', # should always be the same
+		'client_id':     '71b963c1b7b6d119', # Splatoon 2 service
 		'session_token': session_token,
-		'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer-session-token'
+		'grant_type':    'urn:ietf:params:oauth:grant-type:jwt-bearer-session-token'
 	}
 
 	url = "https://accounts.nintendo.com/connect/1.0.0/api/token"
@@ -133,12 +133,12 @@ def get_cookie(session_token, userLang, ver):
 	# get user info
 	try:
 		app_head = {
-			'User-Agent': 'OnlineLounge/1.5.0 NASDKAPI Android',
+			'User-Agent':      'OnlineLounge/1.5.0 NASDKAPI Android',
 			'Accept-Language': userLang,
-			'Accept': 'application/json',
-			'Authorization': 'Bearer {}'.format(id_response["access_token"]),
-			'Host': 'api.accounts.nintendo.com',
-			'Connection': 'Keep-Alive',
+			'Accept':          'application/json',
+			'Authorization':   'Bearer {}'.format(id_response["access_token"]),
+			'Host':            'api.accounts.nintendo.com',
+			'Connection':      'Keep-Alive',
 			'Accept-Encoding': 'gzip'
 		}
 	except:
@@ -155,17 +155,17 @@ def get_cookie(session_token, userLang, ver):
 
 	# get access token
 	app_head = {
-		'Host': 'api-lp1.znc.srv.nintendo.net',
-		'Accept-Language': userLang,
-		'User-Agent': 'com.nintendo.znca/1.5.0 (Android/7.1.2)',
-		'Accept': 'application/json',
+		'Host':             'api-lp1.znc.srv.nintendo.net',
+		'Accept-Language':  userLang,
+		'User-Agent':       'com.nintendo.znca/1.5.0 (Android/7.1.2)',
+		'Accept':           'application/json',
 		'X-ProductVersion': '1.5.0',
-		'Content-Type': 'application/json; charset=utf-8',
-		'Connection': 'Keep-Alive',
-		'Authorization': 'Bearer',
-		'Content-Length': '1036',
-		'X-Platform': 'Android',
-		'Accept-Encoding': 'gzip'
+		'Content-Type':     'application/json; charset=utf-8',
+		'Connection':       'Keep-Alive',
+		'Authorization':    'Bearer',
+		'Content-Length':   '1036',
+		'X-Platform':       'Android',
+		'Accept-Encoding':  'gzip'
 	}
 
 	body = {}
@@ -197,16 +197,16 @@ def get_cookie(session_token, userLang, ver):
 	# get splatoon access token
 	try:
 		app_head = {
-			'Host': 'api-lp1.znc.srv.nintendo.net',
-			'User-Agent': 'com.nintendo.znca/1.5.0 (Android/7.1.2)',
-			'Accept': 'application/json',
+			'Host':             'api-lp1.znc.srv.nintendo.net',
+			'User-Agent':       'com.nintendo.znca/1.5.0 (Android/7.1.2)',
+			'Accept':           'application/json',
 			'X-ProductVersion': '1.5.0',
-			'Content-Type': 'application/json; charset=utf-8',
-			'Connection': 'Keep-Alive',
-			'Authorization': 'Bearer {}'.format(splatoon_token["result"]["webApiServerCredential"]["accessToken"]),
-			'Content-Length': '37',
-			'X-Platform': 'Android',
-			'Accept-Encoding': 'gzip'
+			'Content-Type':     'application/json; charset=utf-8',
+			'Connection':       'Keep-Alive',
+			'Authorization':    'Bearer {}'.format(splatoon_token["result"]["webApiServerCredential"]["accessToken"]),
+			'Content-Length':   '37',
+			'X-Platform':       'Android',
+			'Accept-Encoding':  'gzip'
 		}
 	except:
 		print("Error from Nintendo:")
@@ -227,17 +227,17 @@ def get_cookie(session_token, userLang, ver):
 	# get cookie
 	try:
 		app_head = {
-			'Host': 'app.splatoon2.nintendo.net',
+			'Host':                    'app.splatoon2.nintendo.net',
 			'X-IsAppAnalyticsOptedIn': 'false',
-			'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-			'Accept-Encoding': 'gzip,deflate',
-			'X-GameWebToken': splatoon_access_token["result"]["accessToken"],
-			'Accept-Language': userLang,
-			'X-IsAnalyticsOptedIn': 'false',
-			'Connection': 'keep-alive',
-			'DNT': '0',
-			'User-Agent': 'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36',
-			'X-Requested-With': 'com.nintendo.znca'
+			'Accept':                  'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+			'Accept-Encoding':         'gzip,deflate',
+			'X-GameWebToken':          splatoon_access_token["result"]["accessToken"],
+			'Accept-Language':         userLang,
+			'X-IsAnalyticsOptedIn':    'false',
+			'Connection':              'keep-alive',
+			'DNT':                     '0',
+			'User-Agent':              'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36',
+			'X-Requested-With':        'com.nintendo.znca'
 		}
 	except:
 		print("Error from Nintendo:")
@@ -245,9 +245,7 @@ def get_cookie(session_token, userLang, ver):
 		sys.exit(1)
 
 	url = "https://app.splatoon2.nintendo.net/?lang={}".format(userLang)
-
 	r = requests.get(url, headers=app_head)
-
 	return nickname, r.cookies["iksm_session"]
 
 def get_hash_from_s2s_api(id_token, timestamp):
