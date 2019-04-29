@@ -4,7 +4,7 @@ from __future__ import print_function
 from builtins import input
 import requests, json, re, sys
 import os, base64, hashlib
-import uuid, time
+import uuid, time, random, string
 
 session = requests.Session()
 version = "unknown"
@@ -143,7 +143,7 @@ def get_cookie(session_token, userLang, ver):
 		}
 	except:
 		print("Not a valid authorization request. Please delete config.txt and try again.")
-		print("Error from Nintendo:")
+		print("Error from Nintendo (in api/token step):")
 		print(json.dumps(id_response, indent=2))
 		sys.exit(1)
 	url = "https://api.accounts.nintendo.com/2.0.0/users/me"
@@ -171,14 +171,19 @@ def get_cookie(session_token, userLang, ver):
 	body = {}
 	try:
 		idToken = id_response["id_token"]
+
+		flapg_response = call_flapg_api(idToken, guid, timestamp)
+		flapg_nso = flapg_response["login_nso"]
+		flapg_app = flapg_response["login_app"]
+
 		parameter = {
-			'f': get_f_from_flapg_api(idToken, guid, timestamp),
-			'naIdToken': idToken,
-			'naCountry': user_info["country"],
+			'f':          flapg_nso["f"],
+			'naIdToken':  flapg_nso["p1"],
+			'timestamp':  flapg_nso["p2"],
+			'requestId':  flapg_nso["p3"],
+			'naCountry':  user_info["country"],
 			'naBirthday': user_info["birthday"],
-			'language': user_info["language"],
-			'requestId': guid,
-			'timestamp': timestamp
+			'language':   user_info["language"]
 		}
 	except SystemExit:
 		sys.exit(1)
@@ -209,17 +214,21 @@ def get_cookie(session_token, userLang, ver):
 			'Accept-Encoding':  'gzip'
 		}
 	except:
-		print("Error from Nintendo:")
+		print("Error from Nintendo (in Account/Login step):")
 		print(json.dumps(splatoon_token, indent=2))
 		sys.exit(1)
 
 	body = {}
 	parameter = {
-		"id": 5741031244955648
+		'id':                5741031244955648,
+		'f':                 flapg_app["f"],
+		'registrationToken': flapg_app["p1"],
+		'timestamp':         flapg_app["p2"],
+		'requestId':         flapg_app["p3"]
 	}
 	body["parameter"] = parameter
 
-	url = "https://api-lp1.znc.srv.nintendo.net/v1/Game/GetWebServiceToken"
+	url = "https://api-lp1.znc.srv.nintendo.net/v2/Game/GetWebServiceToken"
 
 	r = requests.post(url, headers=app_head, json=body)
 	splatoon_access_token = json.loads(r.text)
@@ -240,7 +249,7 @@ def get_cookie(session_token, userLang, ver):
 			'X-Requested-With':        'com.nintendo.znca'
 		}
 	except:
-		print("Error from Nintendo:")
+		print("Error from Nintendo (in Game/GetWebServiceToken step):")
 		print(json.dumps(splatoon_access_token, indent=2))
 		sys.exit(1)
 
@@ -291,18 +300,20 @@ def get_hash_from_s2s_api(id_token, timestamp):
 
 		sys.exit(1)
 
-def get_f_from_flapg_api(id_token, guid, timestamp):
-	'''Passes in headers to the flapg API (Android emulator) and fetches the f token from the response.'''
+def call_flapg_api(id_token, guid, timestamp):
+	'''Passes in headers to the flapg API (Android emulator) and fetches the response.'''
 
 	try:
 		api_app_head = {
 			'x-token': id_token,
-			'x-time': str(timestamp),
-			'x-guid': guid,
-			'x-hash': get_hash_from_s2s_api(id_token, timestamp)
+			'x-time':  str(timestamp),
+			'x-guid':  guid,
+			'x-hash':  get_hash_from_s2s_api(id_token, timestamp),
+			'x-ver':   '2',
+			'x-iid':   ''.join([random.choice(string.ascii_letters + string.digits) for n in range(8)])
 		}
 		api_response = requests.get("https://flapg.com/ika2/api/login", headers=api_app_head)
-		f = json.loads(api_response.text)['f']
+		f = json.loads(api_response.text)
 		return f
 	except:
 		try: # if api_response never gets set
