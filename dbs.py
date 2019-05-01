@@ -603,6 +603,7 @@ clothes = {
 	21007: 'record_shop_look_ep',
 	21008: 'dev_uniform',
 	21009: 'office_attire',
+	21010: 'srl_coat',
 	22000: 'mecha_body_akm',
 	25000: 'school_uniform',
 	25001: 'samurai_jacket',
