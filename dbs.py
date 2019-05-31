@@ -761,6 +761,7 @@ shoes = {
 	21001: 'angry_rain_boots',
 	21002: 'non_slip_senseis',
 	21003: 'octoleet_boots',
+	21004: 'friendship_bracelet',
 	21005: 'flipper_floppers',
 	21006: 'wooden_sandals',
 	22000: 'mecha_legs_lbs',
