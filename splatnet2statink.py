@@ -773,7 +773,10 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	principal_id = results[i]["player_result"]["player"]["principal_id"]
 	namespace = uuid.UUID(u'{73cf052a-fd0b-11e7-a5ee-001b21a098c2}')
 	name = "{}@{}".format(bn, principal_id)
-	payload["uuid"] = str(uuid.uuid5(namespace, name))
+	if sys.version_info[0] < 3:
+		payload["uuid"] = str(uuid.uuid5(namespace, name.encode('ascii')))
+	else:
+		payload["uuid"] = str(uuid.uuid5(namespace, name))
 
 	##################
 	## LOBBY & MODE ##
