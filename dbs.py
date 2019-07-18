@@ -153,56 +153,104 @@ weapons = {
 # Stage database
 # https://app.splatoon2.nintendo.net/api/data/stages (needs auth)
 stages = {
-	0:    'battera',   # The Reef
-	1:    'fujitsubo', # Musselforge Fitness
-	2:    'gangaze',   # Starfish Mainstage
-	3:    'chozame',   # Sturgeon Shipyard
-	4:    'ama',       # Inkblot Art Academy
-	5:    'kombu',     # Humpback Pump Track
-	6:    'manta',     # Manta Maria
-	7:    'hokke',     # Port Mackerel
-	8:    'tachiuo',   # Moray Towers
-	9:    'engawa',    # Snapper Canal
-	10:   'mozuku',    # Kelp Dome
-	11:   'bbass',     # Blackbelly Skatepark
-	12:   'devon',     # Shellendorf Institute
-	13:   'zatou',     # MakoMart
-	14:   'hakofugu',  # Walleye Warehouse
-	15:   'arowana',   # Arowana Mall
-	16:   'mongara',   # Camp Triggerfish
-	17:   'shottsuru', # Piranha Pit
-	18:   'ajifry',    # Goby Arena
-	19:   'otoro',     # New Albacore Hotel
-	20:   'sumeshi',   # Wahoo World
-	21:   'anchovy',   # Ancho-V Games
-	22:   'mutsugoro', # Skipper Pavilion
-	9999: 'mystery',   # Shifty Station (Splatfest only)
+	0:    'battera',    # The Reef
+	1:    'fujitsubo',  # Musselforge Fitness
+	2:    'gangaze',    # Starfish Mainstage
+	3:    'chozame',    # Sturgeon Shipyard
+	4:    'ama',        # Inkblot Art Academy
+	5:    'kombu',      # Humpback Pump Track
+	6:    'manta',      # Manta Maria
+	7:    'hokke',      # Port Mackerel
+	8:    'tachiuo',    # Moray Towers
+	9:    'engawa',     # Snapper Canal
+	10:   'mozuku',     # Kelp Dome
+	11:   'bbass',      # Blackbelly Skatepark
+	12:   'devon',      # Shellendorf Institute
+	13:   'zatou',      # MakoMart
+	14:   'hakofugu',   # Walleye Warehouse
+	15:   'arowana',    # Arowana Mall
+	16:   'mongara',    # Camp Triggerfish
+	17:   'shottsuru',  # Piranha Pit
+	18:   'ajifry',     # Goby Arena
+	19:   'otoro',      # New Albacore Hotel
+	20:   'sumeshi',    # Wahoo World
+	21:   'anchovy',    # Ancho-V Games
+	22:   'mutsugoro',  # Skipper Pavilion
+	100:  'mystery_04', # Shifty: Windmill House on the Pearlie
+	101:  'mystery_01', # Shifty: Wayslide Cool
+	102:  'mystery_02', # Shifty: The Secret of S.P.L.A.T.
+	103:  'mystery_03', # Shifty: Goosponge
+	107:  'mystery_05', # Shifty: Fancy Spew
+	106:  'mystery_06', # Shifty: Zone of Glass
+	113:  'mystery_12', # Shifty: Sweet Valley Tentacles
+	115:  'mystery_15', # Shifty: Railway Chillin'
+	116:  'mystery_16', # Shifty: Gusher Towns
+	117:  'mystery_17', # Shifty: The Maze Dasher
+	118:  'mystery_18', # Shifty: Flooders in the Attic
+	119:  'mystery_19', # Shifty: The Splat in Our Zones
+	9999: 'mystery',    # Shifty Station
+	# :   'mystery_07', # Shifty: Cannon Fire Pearl
+	# :   'mystery_08', # Shifty: The Bunker Games
+	# :   'mystery_09', # Shifty: Grapplink Girl
+	# :   'mystery_10', # Shifty: Zappy Longshocking
+	# :   'mystery_11', # Shifty: A Swiftly Tilting Balance
+	# :   'mystery_13', # Shifty: The Switches
+	# :   'mystery_14', # Shifty: The Bouncey Twins
+	# :   'mystery_20', # Shifty: The Ink is Spreading 
+	# :   'mystery_21', # Shifty: Bridge to Tentaswitchia
+	# :   'mystery_22', # Shifty: The Chronicles of Rolonium
+	# :   'mystery_23', # Shifty: Furler in the Ashes
+	# :   'mystery_24', # Shifty: MC.Princess Diaries
 
 	# clearly the funniest way to go about doing this
-	'battera':   'Reef',
-	'fujitsubo': 'Fitness',
-	'gangaze':   'Mainstage',
-	'chozame':   'Shipyard',
-	'ama':       'Academy',
-	'kombu':     'Track',
-	'manta':     'Manta',
-	'hokke':     'Port',
-	'tachiuo':   'Towers',
-	'engawa':    'Canal',
-	'mozuku':    'Dome',
-	'bbass':     'Skatepark',
-	'devon':     'Institute',
-	'zatou':     'Mart',
-	'hakofugu':  'Warehouse',
-	'arowana':   'Mall',
-	'mongara':   'Camp',
-	'shottsuru': 'Pit',
-	'ajifry':    'Arena',
-	'otoro':     'Hotel',
-	'sumeshi':   'World',
-	'anchovy':   'Games',
-	'mutsugoro': 'Pavilion',
-	'mystery':   'Shifty'
+	'battera':    'Reef',
+	'fujitsubo':  'Fitness',
+	'gangaze':    'Mainstage',
+	'chozame':    'Shipyard',
+	'ama':        'Academy',
+	'kombu':      'Track',
+	'manta':      'Manta',
+	'hokke':      'Port',
+	'tachiuo':    'Towers',
+	'engawa':     'Canal',
+	'mozuku':     'Dome',
+	'bbass':      'Skatepark',
+	'devon':      'Institute',
+	'zatou':      'Mart',
+	'hakofugu':   'Warehouse',
+	'arowana':    'Mall',
+	'mongara':    'Camp',
+	'shottsuru':  'Pit',
+	'ajifry':     'Arena',
+	'otoro':      'Hotel',
+	'sumeshi':    'World',
+	'anchovy':    'Games',
+	'mutsugoro':  'Pavilion',
+	'mystery':    'Shifty',
+	'mystery_01': 'Shifty (Side Platforms)',
+	'mystery_02': 'Shifty (Center Platforms)',
+	'mystery_03': 'Shifty (Sponges)',
+	'mystery_04': 'Shifty (Windmills)',
+	'mystery_05': 'Shifty (Big Spreader)',
+	'mystery_06': 'Shifty (Invisible)',
+	'mystery_07': 'Shifty (Cannons)',
+	'mystery_08': 'Shifty (Bunker)',
+	'mystery_09': 'Shifty (Grapplinks)',
+	'mystery_10': 'Shifty (Ink Switches)',
+	'mystery_11': 'Shifty (Balance)',
+	'mystery_12': 'Shifty (Tentacles)',
+	'mystery_13': 'Shifty (Splat-Switches)',
+	'mystery_14': 'Shifty (Bounce Pads)',
+	'mystery_15': 'Shifty (Ride Rails)',
+	'mystery_16': 'Shifty (Gushers)',
+	'mystery_17': 'Shifty (Dash Tracks)',
+	'mystery_18': 'Shifty (Flooders)',
+	'mystery_19': 'Shifty (Zones)',
+	'mystery_20': 'Shifty (Switch-Spreaders)',
+	'mystery_21': 'Shifty (Switch-Platform)',
+	'mystery_22': 'Shifty (Rolonium)',
+	'mystery_23': 'Shifty (Inkfurlers)',
+	'mystery_24': 'Shifty (Final)'
 }
 
 # Gear database
