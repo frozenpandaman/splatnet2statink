@@ -21,7 +21,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.5.0"
+A_VERSION = "1.5.1"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -1006,7 +1006,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		if ver4:
 			synergy_mult = results[i]["uniform_bonus"]
 			if synergy_mult > 1:
-				points_gained *= synergy_mult
+				points_gained = round(points_gained * synergy_mult)
 
 		# SPECIAL CASE - KING/QUEEN MAX
 		if title_before == 4 and title_after == 4 and fest_exp_after == 0:
