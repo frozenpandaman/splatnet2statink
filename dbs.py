@@ -180,27 +180,27 @@ stages = {
 	101:  'mystery_01', # Shifty: Wayslide Cool
 	102:  'mystery_02', # Shifty: The Secret of S.P.L.A.T.
 	103:  'mystery_03', # Shifty: Goosponge
-	107:  'mystery_05', # Shifty: Fancy Spew
+	105:  'mystery_07', # Shifty: Cannon Fire Pearl
 	106:  'mystery_06', # Shifty: Zone of Glass
+	107:  'mystery_05', # Shifty: Fancy Spew
+	108:  'mystery_09', # Shifty: Grapplink Girl
 	109:  'mystery_10', # Shifty: Zappy Longshocking
+	110:  'mystery_08', # Shifty: The Bunker Games
+	111:  'mystery_11', # Shifty: A Swiftly Tilting Balance
+	112:  'mystery_13', # Shifty: The Switches
 	113:  'mystery_12', # Shifty: Sweet Valley Tentacles
+	114:  'mystery_14', # Shifty: The Bouncey Twins
 	115:  'mystery_15', # Shifty: Railway Chillin'
 	116:  'mystery_16', # Shifty: Gusher Towns
 	117:  'mystery_17', # Shifty: The Maze Dasher
 	118:  'mystery_18', # Shifty: Flooders in the Attic
 	119:  'mystery_19', # Shifty: The Splat in Our Zones
+	120:  'mystery_20', # Shifty: The Ink is Spreading
+	121:  'mystery_21', # Shifty: Bridge to Tentaswitchia
+	122:  'mystery_22', # Shifty: The Chronicles of Rolonium
 	123:  'mystery_23', # Shifty: Furler in the Ashes
-	9999: 'mystery',    # Shifty Station
-	# :   'mystery_07', # Shifty: Cannon Fire Pearl
-	# :   'mystery_08', # Shifty: The Bunker Games
-	# :   'mystery_09', # Shifty: Grapplink Girl
-	# :   'mystery_11', # Shifty: A Swiftly Tilting Balance
-	# :   'mystery_13', # Shifty: The Switches
-	# :   'mystery_14', # Shifty: The Bouncey Twins
-	# :   'mystery_20', # Shifty: The Ink is Spreading
-	# :   'mystery_21', # Shifty: Bridge to Tentaswitchia
-	# :   'mystery_22', # Shifty: The Chronicles of Rolonium
 	# :   'mystery_24', # Shifty: MC.Princess Diaries
+	9999: 'mystery',    # Shifty Station
 
 	# clearly the funniest way to go about doing this
 	'battera':    'Reef',
