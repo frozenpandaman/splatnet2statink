@@ -320,7 +320,7 @@ def call_flapg_api(id_token, guid, timestamp):
 			if api_response.text:
 				print(u"Error from the flapg API:\n{}".format(json.dumps(json.loads(api_response.text), indent=2, ensure_ascii=False)))
 			elif api_response.status_code == requests.codes.not_found:
-				print("Error from the flapg API: Error 404 (incorrect headers).")
+				print("Error from the flapg API: Error 404 (offline or incorrect headers).")
 			else:
 				print("Error from the flapg API: Error {}.".format(api_response.status_code))
 		except:
