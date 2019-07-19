@@ -1126,7 +1126,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		if sendgears: # if most recent
 			url_profile = "https://app.splatoon2.nintendo.net/api/share/profile"
 			if stage >= 100: # fav_stage can't be Shifty Station(s)
-				stages_ints = [k for k in translate_stages.keys() if k < 100 and isinstance(k, int)]
+				stages_ints = [k for k in translate_stages.keys() if isinstance(k, int) and k < 100]
 				fav_stage = random.choice(stages_ints)
 			else:
 				fav_stage = stage
