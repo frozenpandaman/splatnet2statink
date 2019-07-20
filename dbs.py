@@ -199,7 +199,7 @@ stages = {
 	121:  'mystery_21', # Shifty: Bridge to Tentaswitchia
 	122:  'mystery_22', # Shifty: The Chronicles of Rolonium
 	123:  'mystery_23', # Shifty: Furler in the Ashes
-	# :   'mystery_24', # Shifty: MC.Princess Diaries
+	124 : 'mystery_24', # Shifty: MC.Princess Diaries
 	9999: 'mystery',    # Shifty Station
 
 	# clearly the funniest way to go about doing this
