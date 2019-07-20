@@ -52,7 +52,7 @@ Running `python splatnet2statink.py --salmon -r` uploads all recent Salmon Run j
 
 ## Setup instructions
 
-*These instructions are meant to be accesssible and easy-to-follow for all users, and is the recommended way to run the script. However, an alternative [simple version](https://github.com/frozenpandaman/splatnet2statink/wiki/simple-setup-instructions) is also available.*
+*These instructions are meant to be accesssible and easy-to-follow for all users, and this is the recommended way to run the script. If you run into trouble, please reach out! However, an alternative [simple version](https://github.com/frozenpandaman/splatnet2statink/wiki/simple-setup-instructions) is also available.*
 
 1. Download and install Python. On Windows, download the installer from the [official website](https://www.python.org/downloads/) and check the option during setup to add it to your PATH. On macOS, install [Homebrew](https://brew.sh/) and then run `brew install python`.
 
