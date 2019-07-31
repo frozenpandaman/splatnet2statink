@@ -658,6 +658,7 @@ clothes = {
 	21009: 'office_attire',
 	21010: 'srl_coat',
 	22000: 'mecha_body_akm',
+	23000: 'splatfest_tee_replica',
 	25000: 'school_uniform',
 	25001: 'samurai_jacket',
 	25002: 'power_armor',
