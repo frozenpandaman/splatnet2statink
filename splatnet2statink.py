@@ -357,7 +357,11 @@ def populate_battles(s_flag, t_flag, r_flag, debug):
 		url  = 'https://stat.ink/api/v2/user-battle?only=splatnet_number&count=100'
 		auth = {'Authorization': 'Bearer {}'.format(API_KEY)}
 		resp = requests.get(url, headers=auth)
-		statink_battles = json.loads(resp.text) # 100 recent battles on stat.ink. should avoid dupes
+		try:
+			statink_battles = json.loads(resp.text) # 100 recent battles on stat.ink. should avoid dupes
+		except:
+			print("Encountered an error while checking recently-uploaded battles. Is stat.ink down?")
+			sys.exit(1)
 
 	# always does this to populate battles array, regardless of r_flag
 	for i, result in reversed(list(enumerate(results))):
