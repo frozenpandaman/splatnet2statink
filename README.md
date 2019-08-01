@@ -35,18 +35,18 @@ Running `python splatnet2statink.py --salmon -r` uploads all recent Salmon Run j
 
 - [x] Full automation of SplatNet cookie generation/acquisition via user log-in
 - [x] Complete battle stats
-  - [x] Lobby/mode, stage, weapon (including new Ver. 4.0+ weapons)
+  - [x] Gamemode, stage, weapon
   - [x] Result, final count/percent, turf inked
   - [x] Kills, deaths, assists, specials
-  - [x] Rank, level & star emblems (&#9733;), X Rank & Power
+  - [x] Rank, level & star emblems (&#9733;), X Rank & Power, weapon freshness
   - [x] Battle start & end times
   - [x] Ranked power level & League Power
   - [x] Splatfest support: Title, EXP, Power, Clout, Synergy Bonus, team nickname, win streak
   - [x] Species (Inkling or Octoling)
-- [x] Gear/ability recognition, gear & user profile image upload (including new Ver. 3.0+ & Octo Expansion gear)
+- [x] Gear/ability recognition, gear & user profile image upload
 - [x] Monitoring for new battle results in real-time
 - [x] Scoreboard stats, player ranking & battle result image upload
-- [x] Salmon Run support – upload job details & stats along with your Grizzco Point Card
+- [x] Salmon Run support – job details/stats & Grizzco Point Card
 - [x] Full support for all available game languages
 
 
