@@ -956,6 +956,8 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		payload["his_team_estimate_league_point"] = results[i]["other_estimate_league_point"]
 	if mode == "gachi":
 		payload["estimate_gachi_power"] = results[i]["estimate_gachi_power"]
+	if mode == "regular":
+		payload["freshness"] = results[i]["win_meter"]
 	gender = results[i]["player_result"]["player"]["player_type"]["style"]
 	payload["gender"] = gender
 	species = results[i]["player_result"]["player"]["player_type"]["species"][:-1]
