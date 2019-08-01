@@ -773,7 +773,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	agent_variables = {'upload_mode': "Monitoring" if ismonitor else "Manual"}
 	payload["agent_variables"] = agent_variables
 	bn = results[i]["battle_number"]
-	ver4 = True if "version" in results[i] and results[i]["version"] == 4 else False
+	ver4 = True if "version" in results[i] and results[i]["version"] >= 4 else False # splatfest only
 	principal_id = results[i]["player_result"]["player"]["principal_id"]
 	namespace = uuid.UUID(u'{73cf052a-fd0b-11e7-a5ee-001b21a098c2}')
 	name = "{}@{}".format(bn, principal_id)
