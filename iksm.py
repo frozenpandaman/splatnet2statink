@@ -70,9 +70,12 @@ def log_in(ver):
 		except KeyboardInterrupt:
 			print("\nBye!")
 			sys.exit(1)
-		except:
+		except AttributeError:
 			print("Malformed URL. Please try again, or press Ctrl+C to exit.")
 			print("URL:", end=' ')
+		except KeyError: # session_token not found
+			print("\nThe URL has expired. Please log out and back into your Nintendo Account and try again.")
+			sys.exit(1)
 
 def get_session_token(session_token_code, auth_code_verifier):
 	'''Helper function for log_in().'''
