@@ -116,7 +116,7 @@ def get_cookie(session_token, userLang, ver):
 		'Accept-Encoding': 'gzip',
 		'Content-Type':    'application/json; charset=utf-8',
 		'Accept-Language': userLang,
-		'Content-Length':  '437',
+		'Content-Length':  '439',
 		'Accept':          'application/json',
 		'Connection':      'Keep-Alive',
 		'User-Agent':      'OnlineLounge/1.5.2 NASDKAPI Android'
