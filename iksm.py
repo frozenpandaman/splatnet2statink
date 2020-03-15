@@ -34,7 +34,7 @@ def log_in(ver):
 		'Connection':                'keep-alive',
 		'Cache-Control':             'max-age=0',
 		'Upgrade-Insecure-Requests': '1',
-		'User-Agent':                'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36',
+		'User-Agent':                'Mozilla/5.0 (iPhone; CPU iPhone OS 13_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
 		'Accept':                    'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8n',
 		'DNT':                       '1',
 		'Accept-Encoding':           'gzip,deflate,br',
@@ -81,11 +81,11 @@ def get_session_token(session_token_code, auth_code_verifier):
 	'''Helper function for log_in().'''
 
 	app_head = {
-		'User-Agent':      'OnlineLounge/1.5.2 NASDKAPI Android',
+		'User-Agent':      'OnlineLounge/1.6.1.2 NASDKAPI Android',
 		'Accept-Language': 'en-US',
 		'Accept':          'application/json',
 		'Content-Type':    'application/x-www-form-urlencoded',
-		'Content-Length':  '540',
+		'Content-Length':  '541',
 		'Host':            'accounts.nintendo.com',
 		'Connection':      'Keep-Alive',
 		'Accept-Encoding': 'gzip'
@@ -119,7 +119,7 @@ def get_cookie(session_token, userLang, ver):
 		'Content-Length':  '439',
 		'Accept':          'application/json',
 		'Connection':      'Keep-Alive',
-		'User-Agent':      'OnlineLounge/1.5.2 NASDKAPI Android'
+		'User-Agent':      'OnlineLounge/1.6.1.2 NASDKAPI Android'
 	}
 
 	body = {
@@ -136,7 +136,7 @@ def get_cookie(session_token, userLang, ver):
 	# get user info
 	try:
 		app_head = {
-			'User-Agent':      'OnlineLounge/1.5.2 NASDKAPI Android',
+			'User-Agent':      'OnlineLounge/1.6.1.2 NASDKAPI Android',
 			'Accept-Language': userLang,
 			'Accept':          'application/json',
 			'Authorization':   'Bearer {}'.format(id_response["access_token"]),
@@ -153,47 +153,39 @@ def get_cookie(session_token, userLang, ver):
 
 	r = requests.get(url, headers=app_head)
 	user_info = json.loads(r.text)
-
 	nickname = user_info["nickname"]
 
 	# get access token
 	app_head = {
 		'Host':             'api-lp1.znc.srv.nintendo.net',
-		'Accept-Language':  userLang,
-		'User-Agent':       'com.nintendo.znca/1.5.2 (Android/7.1.2)',
 		'Accept':           'application/json',
-		'X-ProductVersion': '1.5.2',
+		'X-ProductVersion': '1.6.1.2',
+		'Accept-Language':  userLang,
 		'Content-Type':     'application/json; charset=utf-8',
+		'User-Agent':       'com.nintendo.znca/1.6.1.2 (Android/13.3.1)',
 		'Connection':       'Keep-Alive',
-		'Authorization':    'Bearer',
-		'Content-Length':   '1036',
 		'X-Platform':       'Android',
 		'Accept-Encoding':  'gzip'
 	}
 
 	body = {}
 	try:
-		idToken = id_response["id_token"]
-
-		flapg_response = call_flapg_api(idToken, guid, timestamp)
-		flapg_nso = flapg_response["login_nso"]
-		flapg_app = flapg_response["login_app"]
-
+		idToken = id_response["access_token"]
+		flapg_nso = call_flapg_api(idToken, guid, timestamp, "nso")
 		parameter = {
 			'f':          flapg_nso["f"],
-			'naIdToken':  flapg_nso["p1"],
-			'timestamp':  flapg_nso["p2"],
-			'requestId':  flapg_nso["p3"],
-			'naCountry':  user_info["country"],
+			'language':   user_info["language"],
 			'naBirthday': user_info["birthday"],
-			'language':   user_info["language"]
+			'naCountry':  user_info["country"],
+			'naIdToken':  flapg_nso["p1"],
+			'requestId':  flapg_nso["p3"],
+			'timestamp':  flapg_nso["p2"]
 		}
 	except SystemExit:
 		sys.exit(1)
 	except:
 		print("Error(s) from Nintendo:")
 		print(json.dumps(id_response, indent=2))
-		print(json.dumps(user_info, indent=2))
 		sys.exit(1)
 	body["parameter"] = parameter
 
@@ -204,14 +196,33 @@ def get_cookie(session_token, userLang, ver):
 
 	# get splatoon access token
 	try:
+		idToken = splatoon_token["result"]["webApiServerCredential"]["accessToken"]
+		flapg_app = call_flapg_api(idToken, guid, timestamp, "app")
+		parameter = {
+			'f':          flapg_app["f"],
+			'language':   user_info["language"],
+			'naBirthday': user_info["birthday"],
+			'naCountry':  user_info["country"],
+			'naIdToken':  flapg_app["p1"],
+			'requestId':  flapg_app["p3"],
+			'timestamp':  flapg_app["p2"]
+		}
+	except SystemExit:
+		sys.exit(1)
+	except:
+		print("Error from Nintendo (in Account/Login step):")
+		print(json.dumps(flapg_nso, indent=2))
+		sys.exit(1)
+
+	try:
 		app_head = {
 			'Host':             'api-lp1.znc.srv.nintendo.net',
-			'User-Agent':       'com.nintendo.znca/1.5.2 (Android/7.1.2)',
+			'User-Agent':       'com.nintendo.znca/1.6.1.2 (Android/7.1.2)',
 			'Accept':           'application/json',
-			'X-ProductVersion': '1.5.2',
+			'X-ProductVersion': '1.6.1.2',
 			'Content-Type':     'application/json; charset=utf-8',
 			'Connection':       'Keep-Alive',
-			'Authorization':    'Bearer {}'.format(splatoon_token["result"]["webApiServerCredential"]["accessToken"]),
+			'Authorization':    'Bearer {}'.format(idToken),
 			'Content-Length':   '37',
 			'X-Platform':       'Android',
 			'Accept-Encoding':  'gzip'
@@ -248,7 +259,7 @@ def get_cookie(session_token, userLang, ver):
 			'X-IsAnalyticsOptedIn':    'false',
 			'Connection':              'keep-alive',
 			'DNT':                     '0',
-			'User-Agent':              'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36',
+			'User-Agent':              'Mozilla/5.0 (iPhone; CPU iPhone OS 13_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148', 
 			'X-Requested-With':        'com.nintendo.znca'
 		}
 	except:
@@ -303,7 +314,7 @@ def get_hash_from_s2s_api(id_token, timestamp):
 
 		sys.exit(1)
 
-def call_flapg_api(id_token, guid, timestamp):
+def call_flapg_api(id_token, guid, timestamp, type):
 	'''Passes in headers to the flapg API (Android emulator) and fetches the response.'''
 
 	try:
@@ -312,11 +323,11 @@ def call_flapg_api(id_token, guid, timestamp):
 			'x-time':  str(timestamp),
 			'x-guid':  guid,
 			'x-hash':  get_hash_from_s2s_api(id_token, timestamp),
-			'x-ver':   '2',
-			'x-iid':   ''.join([random.choice(string.ascii_letters + string.digits) for n in range(8)])
+			'x-ver':   '3',
+			'x-iid':   type 
 		}
-		api_response = requests.get("https://flapg.com/ika2/api/login", headers=api_app_head)
-		f = json.loads(api_response.text)
+		api_response = requests.get("https://flapg.com/ika2/api/login?public", headers=api_app_head)
+		f = json.loads(api_response.text)["result"]
 		return f
 	except:
 		try: # if api_response never gets set
