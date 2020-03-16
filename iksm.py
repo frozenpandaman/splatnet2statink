@@ -59,7 +59,7 @@ def log_in(ver):
 	print("\nMake sure you have fully read the \"Cookie generation\" section of the readme before proceeding. To manually input a cookie instead, enter \"skip\" at the prompt below.")
 	print("\nNavigate to this URL in your browser:")
 	print(post_login)
-	print("Log in, right click the \"Select this person\" button, copy the link address, and paste it below:")
+	print("Log in, right click the \"Select this account\" button, copy the link address, and paste it below:")
 	while True:
 		try:
 			use_account_url = input("")
@@ -199,7 +199,7 @@ def get_cookie(session_token, userLang, ver):
 
 	r = requests.post(url, headers=app_head, json=body)
 	splatoon_token = json.loads(r.text)
-	
+
 	try:
 		idToken = splatoon_token["result"]["webApiServerCredential"]["accessToken"]
 		flapg_app = call_flapg_api(idToken, guid, timestamp, "app")
