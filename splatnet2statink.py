@@ -948,7 +948,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	## SPLATNET DATA ##
 	###################
 	payload["private_note"] = "Battle #{}".format(bn)
-	payload["splatnet_number"] = bn
+	payload["splatnet_number"] = int(bn)
 	if mode == "league":
 		payload["my_team_id"] = results[i]["tag_id"]
 		payload["league_point"] = results[i]["league_point"]
