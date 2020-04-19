@@ -102,7 +102,7 @@ See the **[API documentation wiki page](https://github.com/frozenpandaman/splatn
 
 Users who decide against automatic cookie generation via their computer may instead generate/retrieve `iksm_session` cookies from the SplatNet app.
 
-In this case, users must obtain their cookie from their phone by intercepting their device's web traffic and inputting it into splatnet2statink when prompted (or manually adding it to `config.txt`). Follow the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions) to obtain and configure your cookie manually. To opt to manually acquire your cookie, enter "skip" when prompted to enter the "Select this person" URL.
+In this case, users must obtain their cookie from their phone by intercepting their device's web traffic and inputting it into splatnet2statink when prompted (or manually adding it to `config.txt`). Follow the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions) to obtain and configure your cookie manually. To opt to manually acquire your cookie, enter "skip" when prompted to enter the "Select this account" URL.
 
 ## License
 
