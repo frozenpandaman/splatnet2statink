@@ -219,9 +219,9 @@ def set_language():
 def check_for_updates():
 	'''Checks the version of the script against the latest version in the repo and updates dbs.py.'''
 
-	latest_script = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/splatnet2statink.py")
-	new_version = re.search(r'= "([\d.]*)"', latest_script.text).group(1)
 	try:
+		latest_script = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/splatnet2statink.py")
+		new_version = re.search(r'= "([\d.]*)"', latest_script.text).group(1)
 		update_available = StrictVersion(new_version) != StrictVersion(A_VERSION)
 		if update_available:
 			print("There is a new version (v{}) available.".format(new_version), end='')
