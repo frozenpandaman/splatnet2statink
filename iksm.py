@@ -1,5 +1,5 @@
 #   iksm.py
-#   Copyright (C) 2017-2020  eli fessler, clovervidia
+#   Copyright (C) 2017-2020 eli fessler, clovervidia
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
