@@ -2,3 +2,6 @@ requests
 msgpack-python
 future
 pillow
+pandas
+openpyxl
+numpy

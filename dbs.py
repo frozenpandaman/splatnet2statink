@@ -150,6 +150,298 @@ weapons = {
 	20030: 'kuma_slosher'           # Grizzco Slosher
 }
 
+weapons_en = {
+	0:    'Sploosh-o-matic',
+	1:    'Neo Sploosh-o-matic',               # Neo Sploosh-o-matic
+	2:    'Sploosh-o-matic 7',                 # Sploosh-o-matic 7
+	10:   'Splattershot Jr.',                 # Splattershot Jr.
+	11:   'Custom Splattershot Jr.',                 # Custom Splattershot Jr.
+	12:   'Kensa Splattershot Jr.',                 # Kensa Splattershot Jr.
+	20:   'Splash-o-matic',                  # Splash-o-matic
+	21:   'Neo Splash-o-matic',              # Neo Splash-o-matic
+	30:   'Aerospray MG',          # Aerospray MG
+	31:   'Aerospray RG',          # Aerospray RG
+	32:   'Aerospray PG',          # Aerospray PG
+	40:   'Splattershot',               # Splattershot
+	41:   'Tentatek Splattershot',       # Tentatek Splattershot
+	42:   'Kensa Splattershot',        # Kensa Splattershot
+	45:   'Hero Shot Replica',    # Hero Shot Replica
+	46:   'Octo Shot Replica',    # Octo Shot Replica
+	50:   '.52 Gal',                  # .52 Gal
+	51:   '.52 Gal Deco',             # .52 Gal Deco
+	52:   'Kensa .52 Gal',           # Kensa .52 Gal
+	60:   'N-ZAP \'85',                 # N-ZAP '85
+	61:   'N-ZAP \'89',                 # N-ZAP '89
+	62:   'N-ZAP \'83',                 # N-ZAP '83
+	70:   'Splattershot Pro',                  # Splattershot Pro
+	71:   'Forge Splattershot Pro',          # Forge Splattershot Pro
+	72:   'Kensa Splattershot Pro',           # Kensa Splattershot Pro
+	80:   '.96 Gal',                  # .96 Gal
+	81:   '.96 Gal Deco',             # .96 Gal Deco
+	90:   'Jet Squelcher',             # Jet Squelcher
+	91:   'Custom Jet Squelcher',      # Custom Jet Squelcher
+	200:  'Luna Blaster',                   # Luna Blaster
+	201:  'Luna Blaster Neo',               # Luna Blaster Neo
+	202:  'Kensa Luna Blaster',            # Kensa Luna Blaster
+	210:  'Blaster',             # Blaster
+	211:  'Custom Blaster',      # Custom Blaster
+	215:  'Hero Blaster Replica',    # Hero Blaster Replica
+	220:  'Range Blaster',            # Range Blaster
+	221:  'Custom Range Blaster',     # Custom Range Blaster
+	222:  'Grim Range Blaster',      # Grim Range Blaster
+	230:  'Clash Blaster',           # Clash Blaster
+	231:  'Clash Blaster Neo',       # Clash Blaster Neo
+	240:  'Rapid Blaster',                  # Rapid Blaster
+	241:  'Rapid Blaster Deco',             # Rapid Blaster Deco
+	242:  'Kensa Rapid Blaster',           # Kensa Rapid Blaster
+	250:  'Rapid Blaster Pro',            # Rapid Blaster Pro
+	251:  'Rapid Blaster Pro Deco',       # Rapid Blaster Pro Deco
+	300:  'L-3 Nozzlenose',              # L-3 Nozzlenose
+	301:  'L-3 Nozzlenose D',            # L-3 Nozzlenose D
+	302:  'Kensa L-3 Nozzlenose',       # Kensa L-3 Nozzlenose
+	310:  'H-3 Nozzlenose',              # H-3 Nozzlenose
+	311:  'H-3 Nozzlenose D',            # H-3 Nozzlenose D
+	312:  'Cherry H-3 Nozzlenose',       # Cherry H-3 Nozzlenose
+	400:  'Squeezer',           # Squeezer
+	401:  'Foil Squeezer',      # Foil Squeezer
+	1000: 'Carbon Roller',                 # Carbon Roller
+	1001: 'Carbon Roller Deco',            # Carbon Roller Deco
+	1010: 'Splat Roller',            # Splat Roller
+	1011: 'Krak-On Splat Roller',    # Krak-On Splat Roller
+	1012: 'Kensa Splat Roller',     # Kensa Splat Roller
+	1015: 'Hero Roller Replica',     # Hero Roller Replica
+	1020: 'Dynamo Roller',                 # Dynamo Roller
+	1021: 'Gold Dynamo Roller',           # Gold Dynamo Roller
+	1022: 'Kensa Dynamo Roller',          # Kensa Dynamo Roller
+	1030: 'Flingza Roller',         # Flingza Roller
+	1031: 'Foil Flingza Roller',    # Foil Flingza Roller
+	1100: 'Inkbrush',                  # Inkbrush
+	1101: 'Inkbrush Nouveau',              # Inkbrush Nouveau
+	1102: 'Permanent Inkbrush',        # Permanent Inkbrush
+	1110: 'Octobrush',                # Octobrush
+	1111: 'Octobrush Nouveau',            # Octobrush Nouveau
+	1112: 'Kensa Octobrush',         # Kensa Octobrush
+	1115: 'Herobrush Replica',      # Herobrush Replica
+	2000: 'Classic Squiffer',            # Classic Squiffer
+	2001: 'New Squiffer',            # New Squiffer
+	2002: 'Fresh Squiffer',            # Fresh Squiffer
+	2010: 'Splat Charger',           # Splat Charger
+	2011: 'Firefin Splat Charger',   # Firefin Splat Charger
+	2012: 'Kensa Charger',    # Kensa Charger
+	2015: 'Hero Charger Replica',    # Hero Charger Replica
+	2020: 'Splatterscope',             # Splatterscope
+	2021: 'Firefin Splatterscope',     # Firefin Splatterscope
+	2022: 'Kensa Splatterscope',      # Kensa Splatterscope
+	2030: 'E-liter 4K',                # E-liter 4K
+	2031: 'Custom E-liter 4K',         # Custom E-liter 4K
+	2040: 'E-liter 4K Scope',          # E-liter 4K Scope
+	2041: 'Custom E-liter 4K Scope',   # Custom E-liter 4K Scope
+	2050: 'Bamboozler 14 Mk I',            # Bamboozler 14 Mk I
+	2051: 'Bamboozler 14 Mk II',            # Bamboozler 14 Mk II
+	2052: 'Bamboozler 14 Mk III',            # Bamboozler 14 Mk III
+	2060: 'Goo Tuber',               # Goo Tuber
+	2061: 'Custom Goo Tuber',        # Custom Goo Tuber
+	3000: 'Slosher',          # Slosher
+	3001: 'Slosher Deco',     # Slosher Deco
+	3002: 'Soda Slosher',     # Soda Slosher
+	3005: 'Hero Slosher Replica',    # Hero Slosher Replica
+	3010: 'Tri-Slosher',                 # Tri-Slosher
+	3011: 'Tri-Slosher Nouveau',             # Tri-Slosher Nouveau
+	3020: 'Sloshing Machine',           # Sloshing Machine
+	3021: 'Sloshing Machine Neo',       # Sloshing Machine Neo
+	3022: 'Kensa Sloshing Machine',    # Kensa Sloshing Machine
+	3030: 'Bloblobber',                   # Bloblobber
+	3031: 'Bloblobber Deco',              # Bloblobber Deco
+	3040: 'Explosher',              # Explosher
+	3041: 'Custom Explosher',       # Custom Explosher
+	4000: 'Mini Splatling',           # Mini Splatling
+	4001: 'Zink Mini Splatling',   # Zink Mini Splatling
+	4002: 'Kensa Mini Splatling',    # Kensa Mini Splatling
+	4010: 'Heavy Splatling',          # Heavy Splatling
+	4011: 'Heavy Splatling Deco',     # Heavy Splatling Deco
+	4012: 'Heavy Splatling Remix',    # Heavy Splatling Remix
+	4015: 'Hero Splatling Replica',    # Hero Splatling Replica
+	4020: 'Hydra Splatling',                  # Hydra Splatling
+	4021: 'Custom Hydra Splatling',           # Custom Hydra Splatling
+	4030: 'Ballpoint Splatling',         # Ballpoint Splatling
+	4031: 'Ballpoint Splatling Nouveau',     # Ballpoint Splatling Nouveau
+	4040: 'Nautilus 47',             # Nautilus 47
+	4041: 'Nautilus 79',             # Nautilus 79
+	5000: 'Dapple Dualies',               # Dapple Dualies
+	5001: 'Dapple Dualies Nouveau',           # Dapple Dualies Nouveau
+	5002: 'Clear Dapple Dualies',         # Clear Dapple Dualies
+	5010: 'Splat Dualies',               # Splat Dualies
+	5011: 'Enperry Splat Dualies',       # Enperry Splat Dualies
+	5012: 'Kensa Splat Dualies',        # Kensa Splat Dualies
+	5015: 'Hero Dualie Replicas',   # Hero Dualie Replicas
+	5020: 'Glooga Dualies',              # Glooga Dualies
+	5021: 'Glooga Dualies Deco',         # Glooga Dualies Deco
+	5022: 'Kensa Glooga Dualies',       # Kensa Glooga Dualies
+	5030: 'Dualie Squelchers',            # Dualie Squelchers
+	5031: 'Custom Dualie Squelchers',     # Custom Dualie Squelchers
+	5040: 'Dark Tetra Dualies',       # Dark Tetra Dualies
+	5041: 'Light Tetra Dualies',       # Light Tetra Dualies
+	6000: 'Splat Brella',            # Splat Brella
+	6001: 'Sorella Brella',    # Sorella Brella
+	6005: 'Hero Brella Replica',    # Hero Brella Replica
+	6010: 'Tenta Brella',         # Tenta Brella
+	6011: 'Tenta Sorella Brella', # Tenta Sorella Brella
+	6012: 'Tenta Camo Brella',    # Tenta Camo Brella
+	6020: 'Undercover Brella',              # Undercover Brella
+	6021: 'Undercover Sorella Brella',      # Undercover Sorella Brella
+	6022: 'Kensa Undercover Brella',       # Kensa Undercover Brella
+	20000: 'Grizzco Blaster',          # Grizzco Blaster
+	20010: 'Grizzco Brella',           # Grizzco Brella
+	20020: 'Grizzco Charger',          # Grizzco Charger
+	20030: 'Grizzco Slosher'           # Grizzco Slosher
+}
+
+weapons_de = {
+	0:    'Sploosh-o-matic',
+	1:    'Neo Sploosh-o-matic',               # Neo Sploosh-o-matic
+	2:    'Sploosh-o-matic 7',                 # Sploosh-o-matic 7
+	10:   'Splattershot Jr.',                 # Splattershot Jr.
+	11:   'Custom Splattershot Jr.',                 # Custom Splattershot Jr.
+	12:   'Kensa Splattershot Jr.',                 # Kensa Splattershot Jr.
+	20:   'Splash-o-matic',                  # Splash-o-matic
+	21:   'Neo Splash-o-matic',              # Neo Splash-o-matic
+	30:   'Aerospray MG',          # Aerospray MG
+	31:   'Aerospray RG',          # Aerospray RG
+	32:   'Aerospray PG',          # Aerospray PG
+	40:   'Splattershot',               # Splattershot
+	41:   'Tentatek Splattershot',       # Tentatek Splattershot
+	42:   'Kensa Splattershot',        # Kensa Splattershot
+	45:   'Hero Shot Replica',    # Hero Shot Replica
+	46:   'Octo Shot Replica',    # Octo Shot Replica
+	50:   '.52 Gal',                  # .52 Gal
+	51:   '.52 Gal Deco',             # .52 Gal Deco
+	52:   'Kensa .52 Gal',           # Kensa .52 Gal
+	60:   'N-ZAP \'85',                 # N-ZAP '85
+	61:   'N-ZAP \'89',                 # N-ZAP '89
+	62:   'N-ZAP \'83',                 # N-ZAP '83
+	70:   'Splattershot Pro',                  # Splattershot Pro
+	71:   'Forge Splattershot Pro',          # Forge Splattershot Pro
+	72:   'Kensa Splattershot Pro',           # Kensa Splattershot Pro
+	80:   '.96 Gal',                  # .96 Gal
+	81:   '.96 Gal Deco',             # .96 Gal Deco
+	90:   'Jet Squelcher',             # Jet Squelcher
+	91:   'Custom Jet Squelcher',      # Custom Jet Squelcher
+	200:  'Luna Blaster',                   # Luna Blaster
+	201:  'Luna Blaster Neo',               # Luna Blaster Neo
+	202:  'Kensa Luna Blaster',            # Kensa Luna Blaster
+	210:  'Blaster',             # Blaster
+	211:  'Custom Blaster',      # Custom Blaster
+	215:  'Hero Blaster Replica',    # Hero Blaster Replica
+	220:  'Range Blaster',            # Range Blaster
+	221:  'Custom Range Blaster',     # Custom Range Blaster
+	222:  'Grim Range Blaster',      # Grim Range Blaster
+	230:  'Clash Blaster',           # Clash Blaster
+	231:  'Clash Blaster Neo',       # Clash Blaster Neo
+	240:  'Rapid Blaster',                  # Rapid Blaster
+	241:  'Rapid Blaster Deco',             # Rapid Blaster Deco
+	242:  'Kensa Rapid Blaster',           # Kensa Rapid Blaster
+	250:  'Rapid Blaster Pro',            # Rapid Blaster Pro
+	251:  'Rapid Blaster Pro Deco',       # Rapid Blaster Pro Deco
+	300:  'L-3 Nozzlenose',              # L-3 Nozzlenose
+	301:  'L-3 Nozzlenose D',            # L-3 Nozzlenose D
+	302:  'Kensa L-3 Nozzlenose',       # Kensa L-3 Nozzlenose
+	310:  'H-3 Nozzlenose',              # H-3 Nozzlenose
+	311:  'H-3 Nozzlenose D',            # H-3 Nozzlenose D
+	312:  'Cherry H-3 Nozzlenose',       # Cherry H-3 Nozzlenose
+	400:  'Squeezer',           # Squeezer
+	401:  'Foil Squeezer',      # Foil Squeezer
+	1000: 'Carbon Roller',                 # Carbon Roller
+	1001: 'Carbon Roller Deco',            # Carbon Roller Deco
+	1010: 'Splat Roller',            # Splat Roller
+	1011: 'Krak-On Splat Roller',    # Krak-On Splat Roller
+	1012: 'Kensa Splat Roller',     # Kensa Splat Roller
+	1015: 'Hero Roller Replica',     # Hero Roller Replica
+	1020: 'Dynamo Roller',                 # Dynamo Roller
+	1021: 'Gold Dynamo Roller',           # Gold Dynamo Roller
+	1022: 'Kensa Dynamo Roller',          # Kensa Dynamo Roller
+	1030: 'Flingza Roller',         # Flingza Roller
+	1031: 'Foil Flingza Roller',    # Foil Flingza Roller
+	1100: 'Inkbrush',                  # Inkbrush
+	1101: 'Inkbrush Nouveau',              # Inkbrush Nouveau
+	1102: 'Permanent Inkbrush',        # Permanent Inkbrush
+	1110: 'Octobrush',                # Octobrush
+	1111: 'Octobrush Nouveau',            # Octobrush Nouveau
+	1112: 'Kensa Octobrush',         # Kensa Octobrush
+	1115: 'Herobrush Replica',      # Herobrush Replica
+	2000: 'Classic Squiffer',            # Classic Squiffer
+	2001: 'New Squiffer',            # New Squiffer
+	2002: 'Fresh Squiffer',            # Fresh Squiffer
+	2010: 'Splat Charger',           # Splat Charger
+	2011: 'Firefin Splat Charger',   # Firefin Splat Charger
+	2012: 'Kensa Charger',    # Kensa Charger
+	2015: 'Hero Charger Replica',    # Hero Charger Replica
+	2020: 'Splatterscope',             # Splatterscope
+	2021: 'Firefin Splatterscope',     # Firefin Splatterscope
+	2022: 'Kensa Splatterscope',      # Kensa Splatterscope
+	2030: 'E-liter 4K',                # E-liter 4K
+	2031: 'Custom E-liter 4K',         # Custom E-liter 4K
+	2040: 'E-liter 4K Scope',          # E-liter 4K Scope
+	2041: 'Custom E-liter 4K Scope',   # Custom E-liter 4K Scope
+	2050: 'Bamboozler 14 Mk I',            # Bamboozler 14 Mk I
+	2051: 'Bamboozler 14 Mk II',            # Bamboozler 14 Mk II
+	2052: 'Bamboozler 14 Mk III',            # Bamboozler 14 Mk III
+	2060: 'Goo Tuber',               # Goo Tuber
+	2061: 'Custom Goo Tuber',        # Custom Goo Tuber
+	3000: 'Slosher',          # Slosher
+	3001: 'Slosher Deco',     # Slosher Deco
+	3002: 'Soda Slosher',     # Soda Slosher
+	3005: 'Hero Slosher Replica',    # Hero Slosher Replica
+	3010: 'Tri-Slosher',                 # Tri-Slosher
+	3011: 'Tri-Slosher Nouveau',             # Tri-Slosher Nouveau
+	3020: 'Sloshing Machine',           # Sloshing Machine
+	3021: 'Sloshing Machine Neo',       # Sloshing Machine Neo
+	3022: 'Kensa Sloshing Machine',    # Kensa Sloshing Machine
+	3030: 'Bloblobber',                   # Bloblobber
+	3031: 'Bloblobber Deco',              # Bloblobber Deco
+	3040: 'Explosher',              # Explosher
+	3041: 'Custom Explosher',       # Custom Explosher
+	4000: 'Mini Splatling',           # Mini Splatling
+	4001: 'Zink Mini Splatling',   # Zink Mini Splatling
+	4002: 'Kensa Mini Splatling',    # Kensa Mini Splatling
+	4010: 'Heavy Splatling',          # Heavy Splatling
+	4011: 'Heavy Splatling Deco',     # Heavy Splatling Deco
+	4012: 'Heavy Splatling Remix',    # Heavy Splatling Remix
+	4015: 'Hero Splatling Replica',    # Hero Splatling Replica
+	4020: 'Hydra Splatling',                  # Hydra Splatling
+	4021: 'Custom Hydra Splatling',           # Custom Hydra Splatling
+	4030: 'Ballpoint Splatling',         # Ballpoint Splatling
+	4031: 'Ballpoint Splatling Nouveau',     # Ballpoint Splatling Nouveau
+	4040: 'Nautilus 47',             # Nautilus 47
+	4041: 'Nautilus 79',             # Nautilus 79
+	5000: 'Dapple Dualies',               # Dapple Dualies
+	5001: 'Dapple Dualies Nouveau',           # Dapple Dualies Nouveau
+	5002: 'Clear Dapple Dualies',         # Clear Dapple Dualies
+	5010: 'Splat Dualies',               # Splat Dualies
+	5011: 'Enperry Splat Dualies',       # Enperry Splat Dualies
+	5012: 'Kensa Splat Dualies',        # Kensa Splat Dualies
+	5015: 'Hero Dualie Replicas',   # Hero Dualie Replicas
+	5020: 'Glooga Dualies',              # Glooga Dualies
+	5021: 'Glooga Dualies Deco',         # Glooga Dualies Deco
+	5022: 'Kensa Glooga Dualies',       # Kensa Glooga Dualies
+	5030: 'Dualie Squelchers',            # Dualie Squelchers
+	5031: 'Custom Dualie Squelchers',     # Custom Dualie Squelchers
+	5040: 'Dark Tetra Dualies',       # Dark Tetra Dualies
+	5041: 'Light Tetra Dualies',       # Light Tetra Dualies
+	6000: 'Splat Brella',            # Splat Brella
+	6001: 'Sorella Brella',    # Sorella Brella
+	6005: 'Hero Brella Replica',    # Hero Brella Replica
+	6010: 'Tenta Brella',         # Tenta Brella
+	6011: 'Tenta Sorella Brella', # Tenta Sorella Brella
+	6012: 'Tenta Camo Brella',    # Tenta Camo Brella
+	6020: 'Undercover Brella',              # Undercover Brella
+	6021: 'Undercover Sorella Brella',      # Undercover Sorella Brella
+	6022: 'Kensa Undercover Brella',       # Kensa Undercover Brella
+	20000: 'Grizzco Blaster',          # Grizzco Blaster
+	20010: 'Grizzco Brella',           # Grizzco Brella
+	20020: 'Grizzco Charger',          # Grizzco Charger
+	20030: 'Grizzco Slosher'           # Grizzco Slosher
+}
+
 # Stage database
 # https://app.splatoon2.nintendo.net/api/data/stages (needs auth)
 stages = {
@@ -203,29 +495,29 @@ stages = {
 	9999: 'mystery',    # Shifty Station
 
 	# clearly the funniest way to go about doing this
-	'battera':    'Reef',
-	'fujitsubo':  'Fitness',
-	'gangaze':    'Mainstage',
-	'chozame':    'Shipyard',
-	'ama':        'Academy',
-	'kombu':      'Track',
-	'manta':      'Manta',
-	'hokke':      'Port',
-	'tachiuo':    'Towers',
-	'engawa':     'Canal',
-	'mozuku':     'Dome',
-	'bbass':      'Skatepark',
-	'devon':      'Institute',
-	'zatou':      'Mart',
-	'hakofugu':   'Warehouse',
-	'arowana':    'Mall',
-	'mongara':    'Camp',
-	'shottsuru':  'Pit',
-	'ajifry':     'Arena',
-	'otoro':      'Hotel',
-	'sumeshi':    'World',
-	'anchovy':    'Games',
-	'mutsugoro':  'Pavilion',
+	'battera':    'The Reef',
+	'fujitsubo':  'Mussleforge Fitness',
+	'gangaze':    'Starfish Mainstage',
+	'chozame':    'Sturgeon Shipyard',
+	'ama':        'Inkblot Art Academy',
+	'kombu':      'Humpback Pump Track',
+	'manta':      'Manta Maria',
+	'hokke':      'Port Mackerel',
+	'tachiuo':    'Moray Towers',
+	'engawa':     'Snapper Canal',
+	'mozuku':     'Kelp Dome',
+	'bbass':      'Blackbelly Skatepark',
+	'devon':      'Shellendorf Institute',
+	'zatou':      'MakoMart',
+	'hakofugu':   'Walleye Warehouse',
+	'arowana':    'Arowana Mall',
+	'mongara':    'Camp Triggerfish',
+	'shottsuru':  'Piranha Pit',
+	'ajifry':     'Goby Arena',
+	'otoro':      'New Albacore Hotel',
+	'sumeshi':    'Wahoo World',
+	'anchovy':    'Ancho-V Games',
+	'mutsugoro':  'Skipper Pavilion',
 	'mystery':    'Shifty',
 	'mystery_01': 'Shifty: Wayslide',
 	'mystery_02': 'Shifty: S.P.L.A.T.',
@@ -251,6 +543,57 @@ stages = {
 	'mystery_22': 'Shifty: Rolonium',
 	'mystery_23': 'Shifty: Furler',
 	'mystery_24': 'Shifty: Diaries'
+}
+
+stages_de = {
+	0:    'battera',    # The Reef
+	1:    'fujitsubo',  # Musselforge Fitness
+	2:    'gangaze',    # Starfish Mainstage
+	3:    'chozame',    # Sturgeon Shipyard
+	4:    'ama',        # Inkblot Art Academy
+	5:    'kombu',      # Humpback Pump Track
+	6:    'manta',      # Manta Maria
+	7:    'hokke',      # Port Mackerel
+	8:    'tachiuo',    # Moray Towers
+	9:    'engawa',     # Snapper Canal
+	10:   'mozuku',     # Kelp Dome
+	11:   'bbass',      # Blackbelly Skatepark
+	12:   'devon',      # Shellendorf Institute
+	13:   'zatou',      # MakoMart
+	14:   'hakofugu',   # Walleye Warehouse
+	15:   'arowana',    # Arowana Mall
+	16:   'mongara',    # Camp Triggerfish
+	17:   'shottsuru',  # Piranha Pit
+	18:   'ajifry',     # Goby Arena
+	19:   'otoro',      # New Albacore Hotel
+	20:   'sumeshi',    # Wahoo World
+	21:   'anchovy',    # Ancho-V Games
+	22:   'mutsugoro',  # Skipper Pavilion
+	100:  'mystery_04', # Shifty: Windmill House on the Pearlie
+	101:  'mystery_01', # Shifty: Wayslide Cool
+	102:  'mystery_02', # Shifty: The Secret of S.P.L.A.T.
+	103:  'mystery_03', # Shifty: Goosponge
+	105:  'mystery_07', # Shifty: Cannon Fire Pearl
+	106:  'mystery_06', # Shifty: Zone of Glass
+	107:  'mystery_05', # Shifty: Fancy Spew
+	108:  'mystery_09', # Shifty: Grapplink Girl
+	109:  'mystery_10', # Shifty: Zappy Longshocking
+	110:  'mystery_08', # Shifty: The Bunker Games
+	111:  'mystery_11', # Shifty: A Swiftly Tilting Balance
+	112:  'mystery_13', # Shifty: The Switches
+	113:  'mystery_12', # Shifty: Sweet Valley Tentacles
+	114:  'mystery_14', # Shifty: The Bouncey Twins
+	115:  'mystery_15', # Shifty: Railway Chillin'
+	116:  'mystery_16', # Shifty: Gusher Towns
+	117:  'mystery_17', # Shifty: The Maze Dasher
+	118:  'mystery_18', # Shifty: Flooders in the Attic
+	119:  'mystery_19', # Shifty: The Splat in Our Zones
+	120:  'mystery_20', # Shifty: The Ink is Spreading
+	121:  'mystery_21', # Shifty: Bridge to Tentaswitchia
+	122:  'mystery_22', # Shifty: The Chronicles of Rolonium
+	123:  'mystery_23', # Shifty: Furler in the Ashes
+	124 : 'mystery_24', # Shifty: MC.Princess Diaries
+	9999: 'mystery'    # Shifty Station
 }
 
 # Gear database
@@ -897,4 +1240,44 @@ fest_ranks = {
 	2: 'defender',
 	3: 'champion',
 	4: 'king'
+}
+
+# Mode to English
+mode = {
+	"gachi": 'Ranked',
+	"league": 'League',
+	"regular": 'Turf War',
+	"fes": 'Splatfest'
+}
+
+# Mode to German
+mode_de = {
+	"gachi": 'Rang',
+	"league": 'Liga',
+	"regular": 'Revierkampf',
+	"fes": 'Splatfest'
+}
+
+# Rule to English
+rule = {
+	"tower_control": 'Tower Control',
+	"splat_zones": 'Splat Zones',
+	"rainmaker": 'Rainmaker',
+	"clam_blitz": 'Clam Blitz',
+	"turf_war": 'Turf War'
+}
+
+# Rule to German
+rule_de = {
+	"tower_control": 'Turm Kommando',
+	"splat_zones": 'Herrschaft',
+	"rainmaker": 'Goldfisch',
+	"clam_blitz": 'Muschel Chaos',
+	"turf_war": 'Revierkampf'
+}
+
+# Rule to German
+result_de = {
+	"defeat": 'Verloren',
+	"victory": 'Gewonnen'
 }
