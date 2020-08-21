@@ -10,7 +10,7 @@ splatnet2statink is a script that uploads battle data from the SplatNet 2 app ("
 ## Usage
 
 ```
-$ python splatnet2statink.py [-M [N]] [-r] [-s] [-t] [--salmon]
+$ python splatnet2statink.py [-M [N]] [-r] [-s] [-t] [--x] [-e] [--de] [--salmon]
 ```
 
 The `-M` flag runs the script in monitoring mode, uploading new battle results as you play matches. The script checks for new battles every `N` seconds; if no `N` is provided, the script defaults to 300 (5 minutes).
@@ -21,6 +21,12 @@ The `-s` flag blacks out other players' names on the scoreboard result image and
 
 The `-t` flag sends battle data to stat.ink as a dry run, without uploading, for testing/validation purposes.
 
+The `--x` flag can be combined with the above flags to export battle data to an excel file. Currently, for column consistancy, each team from battles on the same day should contain the same four members. Therefore, this flag is useful for exporting data during/ after a single league or private session.
+
+The optional '-e' flag should only be combined with the '--x' flag to set the absolute folder path to which the results export to. For example: -e C:\Users\johnsmith
+
+The optional `--de` flag should only be combined with the '--x' flag to set the export language to German.
+
 The `--salmon` flag updates your Salmon Run profile and allows you to upload jobs (shifts) worked.
 
 Note: You can also execute the script via `./splatnet2statink.py` on macOS and Linux. On Windows, use a backslash.
@@ -30,6 +36,8 @@ Note: You can also execute the script via `./splatnet2statink.py` on macOS and L
 Running `python splatnet2statink.py -M 900` from the command line launches the script in monitoring mode, checking for and uploading battles every 15 minutes.
 
 Running `python splatnet2statink.py --salmon -r` uploads all recent Salmon Run jobs not already present on stat.ink.
+
+Running `python splatnet2statink.py -t --x -e C:\test -ct AA·' exports the battles to an Excel file under the given folder 'test'. It removes all name prefixes that match 'AA·' from the player names in the column headers.
 
 ## Features
 
@@ -48,6 +56,7 @@ Running `python splatnet2statink.py --salmon -r` uploads all recent Salmon Run j
 - [x] Scoreboard stats, player ranking & battle result image upload
 - [x] Salmon Run support – job details/stats & Grizzco Point Card
 - [x] Full support for all available game languages
+- [x] Limited export to excel files
 
 
 ## Setup instructions
