@@ -800,14 +800,22 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, x_flag, de_flag, exp
 	#############
 	if (x_flag):
 		#Build the headers
-		battle_headers = ["Battle ID","Mode","Rule","Result","Stage","Start","End","Elapsed"]
+		battle_headers = ["Battle ID","Mode","Rule","Result","Our Points","Opponents Points","Stage","Date","Start","End","Elapsed","Team/Ranked Power","Opponent Power","Predicted Power"]
+		if (de_flag):
+			battle_headers = ["Kampf ID","Modus","Regeln","Ergebnis","Unsere Punkte","Gegnerische Punkte","Arena","Datum","Anfang","Ende","Länge","Team/Rang Power","Gegner Power","Prognostizierte Power"]
+
 		battle_headers_size = len(battle_headers)
 		top_headers = np.array(["Battle Stats"])
+		if (de_flag):
+			top_headers = np.array(["Kampfstatistiken"])
 		name_sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(11))   
 		name_sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(11))
 		top_headers.resize((battle_headers_size,),refcheck=False)
-		top_headers[battle_headers_size-1] = "Player Stats:"
+		top_headers[battle_headers_size-1] = "Player Stats"
 		player_headers = ["K/A","Kills","Specials","Deaths","Weapon","Turf Inked","ID"]
+		if (de_flag):
+			top_headers[battle_headers_size-1] = "Spielerstatistiken"
+			player_headers = ["E/A","Erledigt","Ultras","Tote","Waffen","Gebiet Färbt","ID"]
 		top_headers.resize((battle_headers_size + (len(player_headers)*len(name_sorted_ally_scoreboard)) + (len(player_headers)*len(name_sorted_enemy_scoreboard)),),refcheck=False)
 		top_headers[top_headers == 0] = ""
     
@@ -822,8 +830,36 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, x_flag, de_flag, exp
 			rule = translate_rule[mystats[1]]
 			result = mystats[2].capitalize()
 			stage = translate_stages[translate_stages[int(payload["stage"][1:])]]
-		battle_row = [battle_number, mode, rule, result, stage, datetime.datetime.fromtimestamp(int(payload["start_at"])).strftime('%I:%M:%S %p').lstrip("0"), datetime.datetime.fromtimestamp(int(payload["end_at"])).strftime('%I:%M:%S %p').lstrip("0"), 
-strftime("%M:%S", gmtime(payload["end_at"]-payload["start_at"])).lstrip("0")]
+
+		team_ranked_power = ""
+		opponent_power = ""
+		predicted_power = ""
+		our_points = ""
+		their_points = ""
+       
+		if mystats[0] == "league":
+			team_ranked_power = payload["league_point"]
+			predicted_power = payload["my_team_estimate_league_point"]
+			opponent_power = payload["his_team_estimate_league_point"]
+			our_points = payload["my_team_count"]
+			their_points = payload["his_team_count"]
+		if mystats[0] == "gachi":
+			team_ranked_power = payload["estimate_gachi_power"] #estimate_x_power team only?
+			our_points = payload["my_team_count"]
+			their_points = payload["his_team_count"]
+		if mystats[0] == "regular":
+			team_ranked_power = payload["freshness"]
+			our_points = payload["my_team_percent"]
+			their_points = payload["his_team_percent"]           
+		if mystats[0] == "fes":
+			team_ranked_power = payload["fest_power"]
+			predicted_power = payload["my_team_estimate_fest_power"]
+			opponent_power = payload["his_team_estimate_fest_power"]
+            
+		elapsed = strftime("%M:%S", gmtime(payload["end_at"]-payload["start_at"])).lstrip("0:")
+        
+		battle_row = [battle_number, mode, rule, result, our_points, their_points, stage, datetime.datetime.fromtimestamp(int(payload["start_at"])).strftime('%d-%m-%y'), datetime.datetime.fromtimestamp(int(payload["start_at"])).strftime('%I:%M:%S %p').lstrip("0"), datetime.datetime.fromtimestamp(int(payload["end_at"])).strftime('%I:%M:%S %p').lstrip("0"), 
+elapsed, team_ranked_power, opponent_power, predicted_power]
 
 		#Form the data for allies
 		for i in range(len(name_sorted_ally_scoreboard)):
@@ -853,7 +889,6 @@ strftime("%M:%S", gmtime(payload["end_at"]-payload["start_at"])).lstrip("0")]
 			top_headers[player_name_header_position] = "Opponent " + str(i+1)
 			for ii in range(len(player_headers)):
 				battle_headers = np.append(battle_headers,player_headers[ii])
-		print(pd.DataFrame(battle_row, battle_headers))
     
 		#Handle the excel file
 		if exportfolder is not None and os.path.exists(exportfolder):
