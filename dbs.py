@@ -1249,7 +1249,8 @@ mode = {
 	"gachi": 'Ranked',
 	"league": 'League',
 	"regular": 'Turf War',
-	"fes": 'Splatfest'
+	"fes": 'Splatfest',
+	"private": 'Private'
 }
 
 # Mode to German
@@ -1257,7 +1258,8 @@ mode_de = {
 	"gachi": 'Rang',
 	"league": 'Liga',
 	"regular": 'Revierkampf',
-	"fes": 'Splatfest'
+	"fes": 'Splatfest',
+	"private": 'Privat'
 }
 
 # Rule to English

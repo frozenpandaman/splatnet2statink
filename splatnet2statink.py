@@ -800,15 +800,24 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, x_flag, de_flag, exp
 	#############
 	if (x_flag):
 		#Build the headers
-		battle_headers = ["Battle ID","Mode","Rule","Result","Stage","Start","End","Elapsed"]
+		battle_headers = ["Battle ID","Mode","Rule","Result","Our Points","Opponents Points","Stage","Date","Start","End","Elapsed","Team/Ranked Power","Opponent Power","Predicted Power"]
+		if (de_flag):
+			battle_headers = ["Kampf ID","Modus","Regeln","Ergebnis","Unsere Punkte","Gegnerische Punkte","Arena","Datum","Anfang","Ende","Länge","Team/Rang Power","Gegner Power","Prognostizierte Power"]
+
 		battle_headers_size = len(battle_headers)
 		top_headers = np.array(["Battle Stats"])
+		if (de_flag):
+			top_headers = np.array(["Kampfstatistiken"])
 		name_sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(11))   
 		name_sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(11))
 		top_headers.resize((battle_headers_size,),refcheck=False)
-		top_headers[battle_headers_size-1] = "Player Stats:"
+		top_headers[battle_headers_size-1] = "Player Stats"
 		player_headers = ["K/A","Kills","Specials","Deaths","Weapon","Turf Inked","ID"]
-		top_headers.resize((battle_headers_size + (len(player_headers)*len(name_sorted_ally_scoreboard)) + (len(player_headers)*len(name_sorted_enemy_scoreboard)),),refcheck=False)
+		player_headers_size = len(player_headers)
+		if (de_flag):
+			top_headers[battle_headers_size-1] = "Spielerstatistiken"
+			player_headers = ["E/A","Erledigt","Ultras","Tote","Waffen","Gebiet Färbt","ID"]
+		top_headers.resize((battle_headers_size + (len(player_headers)*4) + (len(player_headers)*4),),refcheck=False)
 		top_headers[top_headers == 0] = ""
     
 		#Form the data for the battle
@@ -822,10 +831,42 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, x_flag, de_flag, exp
 			rule = translate_rule[mystats[1]]
 			result = mystats[2].capitalize()
 			stage = translate_stages[translate_stages[int(payload["stage"][1:])]]
-		battle_row = [battle_number, mode, rule, result, stage, datetime.datetime.fromtimestamp(int(payload["start_at"])).strftime('%I:%M:%S %p').lstrip("0"), datetime.datetime.fromtimestamp(int(payload["end_at"])).strftime('%I:%M:%S %p').lstrip("0"), 
-strftime("%M:%S", gmtime(payload["end_at"]-payload["start_at"])).lstrip("0")]
+
+		team_ranked_power = ""
+		opponent_power = ""
+		predicted_power = ""
+		our_points = ""
+		their_points = ""
+       
+		if mystats[0] == "league":
+			team_ranked_power = payload["league_point"]
+			predicted_power = payload["my_team_estimate_league_point"]
+			opponent_power = payload["his_team_estimate_league_point"]
+			our_points = payload["my_team_count"]
+			their_points = payload["his_team_count"]
+		if mystats[0] == "gachi":
+			team_ranked_power = payload["estimate_gachi_power"] #estimate_x_power team only?
+			our_points = payload["my_team_count"]
+			their_points = payload["his_team_count"]
+		if mystats[0] == "private":
+			our_points = payload["my_team_count"]
+			their_points = payload["his_team_count"]
+		if mystats[0] == "regular":
+			team_ranked_power = payload["freshness"]
+			our_points = payload["my_team_percent"]
+			their_points = payload["his_team_percent"]           
+		if mystats[0] == "fes":
+			team_ranked_power = payload["fest_power"]
+			predicted_power = payload["my_team_estimate_fest_power"]
+			opponent_power = payload["his_team_estimate_fest_power"]
+            
+		elapsed = strftime("%M:%S", gmtime(payload["end_at"]-payload["start_at"])).lstrip("0:")
+        
+		battle_row = [battle_number, mode, rule, result, our_points, their_points, stage, datetime.datetime.fromtimestamp(int(payload["start_at"])).strftime('%d-%m-%y'), datetime.datetime.fromtimestamp(int(payload["start_at"])).strftime('%I:%M:%S %p').lstrip("0"), datetime.datetime.fromtimestamp(int(payload["end_at"])).strftime('%I:%M:%S %p').lstrip("0"), 
+elapsed, team_ranked_power, opponent_power, predicted_power]
 
 		#Form the data for allies
+		player_names = []
 		for i in range(len(name_sorted_ally_scoreboard)):
 			if (de_flag):
 				weapon = translate_weapons_de[int(name_sorted_ally_scoreboard[i][5][1:])]
@@ -837,23 +878,48 @@ strftime("%M:%S", gmtime(payload["end_at"]-payload["start_at"])).lstrip("0")]
 			if nameprefix is not None and player_name.startswith(nameprefix): #Remove prefix/ clan tag
 				player_name = player_name[len(nameprefix):]
 			player_name_header_position = battle_headers_size + (len(player_headers)*i)
+			if player_name is None:
+				player_name = "Player " + str(i+1)
+			else:
+				player_names.append(player_name)
 			top_headers[player_name_header_position] = player_name
 			for ii in range(len(player_headers)):
 				battle_headers = np.append(battle_headers,player_headers[ii])
-
+ 
+		#Fill in empty player spaces
+		for i in range(4 - len(name_sorted_ally_scoreboard)):
+			player_row =["","","","","",""]
+			battle_row = np.append(battle_row, player_row)
+			position = len(name_sorted_ally_scoreboard)+i
+			player_name = "N/A"
+			player_name_header_position = battle_headers_size + (len(player_headers)*position)
+			top_headers[player_name_header_position] = player_name
+			for ii in range(len(player_headers)):
+				battle_headers = np.append(battle_headers,player_headers[ii])
+                
 		#Form the data for opponents            
 		for i in range(len(name_sorted_enemy_scoreboard)):
 			if (de_flag):
-				weapon = translate_weapons_de[int(name_sorted_ally_scoreboard[i][5][1:])]
+				weapon = translate_weapons_de[int(name_sorted_enemy_scoreboard[i][5][1:])]
 			else:
-				weapon = translate_weapons_en[int(name_sorted_ally_scoreboard[i][5][1:])]
+				weapon = translate_weapons_en[int(name_sorted_enemy_scoreboard[i][5][1:])]
 			player_row = [name_sorted_enemy_scoreboard[i][1],name_sorted_enemy_scoreboard[i][2],name_sorted_enemy_scoreboard[i][3],name_sorted_enemy_scoreboard[i][4],weapon,name_sorted_enemy_scoreboard[i][8],name_sorted_enemy_scoreboard[i][13]]
 			battle_row = np.append(battle_row, player_row)
-			player_name_header_position = battle_headers_size + (len(player_headers)*len(name_sorted_ally_scoreboard)) + (len(player_headers)*i)
+			player_name_header_position = battle_headers_size + (len(player_headers)*len(name_sorted_enemy_scoreboard)) + (len(player_headers)*i)
 			top_headers[player_name_header_position] = "Opponent " + str(i+1)
 			for ii in range(len(player_headers)):
 				battle_headers = np.append(battle_headers,player_headers[ii])
-		print(pd.DataFrame(battle_row, battle_headers))
+
+		#Fill in empty opponent spaces
+		for i in range(4 - len(name_sorted_enemy_scoreboard)):
+			player_row =["","","","","",""]
+			battle_row = np.append(battle_row, player_row)
+			position = len(name_sorted_enemy_scoreboard)+i
+			player_name = "N/A"
+			player_name_header_position = battle_headers_size + (len(player_headers)*position)
+			top_headers[player_name_header_position] = player_name
+			for ii in range(len(player_headers)):
+				battle_headers = np.append(battle_headers,player_headers[ii])
     
 		#Handle the excel file
 		if exportfolder is not None and os.path.exists(exportfolder):
@@ -870,17 +936,22 @@ strftime("%M:%S", gmtime(payload["end_at"]-payload["start_at"])).lstrip("0")]
 			print("Building new workbook")
 			workbook = openpyxl.Workbook()
 			del workbook["Sheet"]
-		#Use date to keep battles together
-		worksheet_name = datetime.datetime.fromtimestamp(int(payload["start_at"])).strftime('%d-%m-%y')
+		#Use data to keep battles together
+		worksheet_name = datetime.datetime.fromtimestamp(int(payload["start_at"])).strftime('%d-%m-%y') + "-" + mode
+		if mystats[0] == "league" or  mystats[0] == "gachi" :            
+			worksheet_name = worksheet_name + "-" + rule
+#		if mystats[0] == "league" or mystats[0] == "private" or mystats[0] == "fes": #Names are anoyminised when not invited friends?
+		for i in range(len(player_names)):
+			worksheet_name = worksheet_name + "-" + player_names[i]
 		if worksheet_name in workbook.sheetnames:
 			worksheet = workbook[worksheet_name]
 		else:
 			worksheet = workbook.create_sheet(worksheet_name, 0)
 			worksheet.append(top_headers.tolist())
 			worksheet.append(battle_headers.tolist())
-			for i in range(len(name_sorted_ally_scoreboard)):
-				player_name_header_position = battle_headers_size + (len(player_headers)*i) + 1
-				worksheet.merge_cells(start_row=1, start_column=player_name_header_position, end_row=1, end_column=player_name_header_position+battle_headers_size-2)
+#			for i in range(len(name_sorted_ally_scoreboard)):
+#				player_name_header_position = battle_headers_size + (len(player_headers)*i) + 1
+#				worksheet.merge_cells(start_row=1, start_column=player_name_header_position, end_row=1, end_column=player_name_header_position+player_headers_size)
 		isAlreadyWritten = False
 		for value in worksheet.iter_rows(max_col=1, values_only=True):
 			if battle_number == value[0]:
@@ -888,6 +959,19 @@ strftime("%M:%S", gmtime(payload["end_at"]-payload["start_at"])).lstrip("0")]
 				isAlreadyWritten = True
 		if not isAlreadyWritten:
 			worksheet.append(battle_row.tolist())
+			last_row = worksheet[worksheet.max_row]
+			for cell in last_row:
+				try:
+					int(cell.value)
+					cell.number_format = "#,##0.00"
+				except ValueError:
+					try:
+						float(cell.value)
+						cell.number_format = "#,##0.00"
+					except ValueError:
+						cell.value
+				except TypeError:
+					cell.value
 			workbook.save(excel_file_path)
 		workbook.close()
 
