@@ -14,6 +14,8 @@ from past.utils import old_div
 import os.path, argparse, sys
 import requests, json, time, datetime, random, re
 import msgpack, uuid
+
+import excelInfo
 import iksm, dbs, salmonrun
 import numpy as np
 import openpyxl
@@ -92,21 +94,13 @@ app_head = {
 }
 
 translate_weapons = dbs.weapons
-translate_weapons_en = dbs.weapons_en
-translate_weapons_de = dbs.weapons_de
 translate_stages = dbs.stages
-translate_stages_de = dbs.stages_de
 translate_profile_color = dbs.profile_colors
 translate_fest_rank = dbs.fest_ranks
 translate_headgear = dbs.headgears
 translate_clothing = dbs.clothes
 translate_shoes = dbs.shoes
 translate_ability = dbs.abilities
-translate_mode = dbs.mode
-translate_mode_de = dbs.mode_de
-translate_rule = dbs.rule
-translate_rule_de = dbs.rule_de
-translate_result_de = dbs.result_de
 
 
 def custom_key_exists(key, checkiftrue=False):
@@ -296,15 +290,11 @@ def main():
 						help="don't post scoreboard result image")
 	parser.add_argument("-t", required=False, action="store_true",
 						help="dry run for testing (won't post to stat.ink)")
-	parser.add_argument("--x", required=False, action="store_true",
+	parser.add_argument("-X", dest="Y", required=False, nargs="*", action="store",
 						help="writes to excel, defaults to English")
-	parser.add_argument("--de", required=False, action="store_true",
-						help="writes the excel in German, use with the --x flag")
 	parser.add_argument("--salmon", required=False, action="store_true",
 						help="uploads salmon run shifts")
 	parser.add_argument("-i", dest="filename", required=False, help=argparse.SUPPRESS)
-	parser.add_argument("-e", dest="exportfolder", required=False, help=argparse.SUPPRESS)
-	parser.add_argument("-ct", dest="nameprefix", required=False, help=argparse.SUPPRESS)
 
 	parser_result = parser.parse_args()
 
@@ -312,28 +302,10 @@ def main():
 	is_t = parser_result.t
 	is_r = parser_result.r
 	filename = parser_result.filename
-	global exportfolder
-	exportfolder = parser_result.exportfolder
-	global nameprefix
-	nameprefix = parser_result.nameprefix
 	salmon = parser_result.salmon
-	is_x = parser_result.x
-	is_de = parser_result.de
 
 	salmon_and_not_r = True if salmon and len(sys.argv) == 3 and "-r" not in sys.argv else False
 	salmon_and_more = True if salmon and len(sys.argv) > 3 else False
-
-	if exportfolder and not is_x:
-		print("Can only use -e flag together with --x. Exiting")
-		sys.exit(1)
-
-	if nameprefix and not is_x:
-		print("Can only use -ct flag together with --x. Exiting")
-		sys.exit(1)
-
-	if is_de and not is_x:
-		print("Can only use --de flag together with --x. Exiting")
-		sys.exit(1)
 
 	if salmon_and_not_r or salmon_and_more:
 		print("Can only use --salmon flag alone or with -r. Exiting.")
@@ -354,7 +326,20 @@ def main():
 	else:
 		m_value = -1
 
-	return m_value, is_s, is_t, is_r, filename, salmon, is_x, is_de
+	x_array = parser_result.Y
+
+	if x_array != None:
+		if len(x_array) > excelInfo.MAX_ARGS_AMOUNT:
+			print("Arguments to X exceed the maximum allowed")
+			sys.exit(1)
+		for x in x_array:
+			try:
+				str(x)
+			except ValueError:
+				print("Arguments to X must be strings")
+				sys.exit(1)
+
+	return m_value, is_s, is_t, is_r, filename, salmon, x_array
 
 
 def load_results(calledby=""):
@@ -395,7 +380,7 @@ def load_results(calledby=""):
 	return results
 
 
-def populate_battles(s_flag, t_flag, x_flag, de_flag, r_flag, debug):
+def populate_battles(s_flag, t_flag, x_array, r_flag, debug):
 	'''Populates the battles list with SplatNet battles. Optionally uploads unuploaded battles.'''
 
 	results = load_results("populate")
@@ -424,7 +409,7 @@ def populate_battles(s_flag, t_flag, x_flag, de_flag, r_flag, debug):
 				if not printed:
 					printed = True
 					print("Previously-unuploaded battles detected. Uploading now...")
-				post_battle(0, [result], s_flag, t_flag, x_flag, de_flag, -1,
+				post_battle(0, [result], s_flag, t_flag, x_array, -1,
 							True if i == 0 else False, debug, False)
 	print(battles)
 	if r_flag and not printed:
@@ -433,12 +418,12 @@ def populate_battles(s_flag, t_flag, x_flag, de_flag, r_flag, debug):
 	return battles
 
 
-def monitor_battles(s_flag, t_flag, x_flag, de_flag, r_flag, secs, debug):
+def monitor_battles(s_flag, t_flag, x_array, r_flag, secs, debug):
 	'''Monitors JSON for changes/new battles and uploads them.'''
 
 	results = load_results("monitor")  # make sure we can do it first. if error, throw it before main process
 
-	battles = populate_battles(s_flag, t_flag, x_flag, de_flag, r_flag, debug)
+	battles = populate_battles(s_flag, t_flag, x_array, r_flag, debug)
 	wins, losses, splatfest_wins, splatfest_losses, mirror_matches = [0] * 5  # init all to 0
 
 	# main process
@@ -485,7 +470,7 @@ def monitor_battles(s_flag, t_flag, x_flag, de_flag, r_flag, secs, debug):
 					battles.append(int(result["battle_number"]))
 					# if custom key prevents uploading, we deal with that in post_battle
 					# i will be 0 if most recent battle out of those since last posting
-					post_battle(0, [result], s_flag, t_flag, x_flag, de_flag, secs,
+					post_battle(0, [result], s_flag, t_flag, x_array, secs,
 								True if i == 0 else False, debug, True)
 	except KeyboardInterrupt:
 		print("\nChecking to see if there are unuploaded battles before exiting...")
@@ -518,7 +503,7 @@ def monitor_battles(s_flag, t_flag, x_flag, de_flag, r_flag, secs, debug):
 						mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), fullname)
 						print("New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl))
 					battles.append(int(result["battle_number"]))
-					post_battle(0, [result], s_flag, t_flag, x_flag, de_flag, exportfolder, nameprefix, secs, True if i == 0 else False, debug, True)
+					post_battle(0, [result], s_flag, t_flag, x_array, exportfolder, nameprefix, secs, True if i == 0 else False, debug, True)
 		if foundany:
 			print("Successfully uploaded remaining battles.")
 		else:
@@ -587,7 +572,7 @@ def get_num_battles():
 			return n, results
 
 
-def set_scoreboard(payload, battle_number, mystats, s_flag, x_flag, de_flag,
+def set_scoreboard(payload, battle_number, mystats, s_flag, x_array,
 				   battle_payload=None):
 	'''Returns a new payload with the players key (scoreboard) present.'''
 
@@ -823,36 +808,42 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, x_flag, de_flag,
 	if not debug:  # we should already have our original json if we're using debug mode
 		payload["splatnet_json"] = battledata
 
-	if x_flag:
-		export_to_excel(ally_scoreboard, battle_number, de_flag, enemy_scoreboard, mystats, payload)
+	if x_array is not None:
+		export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, mystats, payload)
 
 	return payload  # return modified payload w/ players key
 
 
-def export_to_excel(ally_scoreboard, battle_number, de_flag, enemy_scoreboard, mystats, payload):
+def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, mystats, payload):
+	# radsutton
 	# Build the headers
-	battle_headers = ["Battle ID", "Mode", "Rule", "Result", "Our Points", "Opponents Points", "Stage", "Date",
-					  "Start", "End", "Elapsed", "Team/Ranked Power", "Opponent Power", "Predicted Power"]
-	if de_flag:
-		battle_headers = ["Kampf ID", "Modus", "Regeln", "Ergebnis", "Unsere Punkte", "Gegnerische Punkte", "Arena",
-						  "Datum", "Anfang", "Ende", "Länge", "Team/Rang Power", "Gegner Power",
-						  "Prognostizierte Power"]
+	print(x_array)
+	lang_code = "en"
+	dir_name = os.path.dirname(os.path.abspath(__file__))
+	name_prefix = None
+	teammates = []
 
+	for x in x_array:
+		if x is not None:
+			if x in excelInfo.SUPPORTED_LANGUAGES:
+				lang_code = x
+			elif x.startswith(excelInfo.TAG_PREFIX_IDENTIFIER):
+				name_prefix = x[len(excelInfo.TAG_PREFIX_IDENTIFIER):]
+			elif x is not None and os.path.exists(x):
+				dir_name = x
+			else:
+				teammates.append(x)
+
+	battle_headers = excelInfo.BATTLE_HEADERS[lang_code]
 	battle_headers_size = len(battle_headers)
-	top_headers = np.array(["Battle Stats"])
-	if de_flag:
-		top_headers = np.array(["Kampfstatistiken"])
+	top_headers = np.array(excelInfo.TOP_HEADERS_0[lang_code])
 	name_sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(11))
 	name_sorted_enemy_scoreboard = sorted(enemy_scoreboard, key=itemgetter(11))
 	top_headers.resize((battle_headers_size,), refcheck=False)
-	top_headers[battle_headers_size - 1] = "Player Stats"
-	player_headers = ["K/A", "Kills", "Specials", "Deaths", "Weapon", "Turf Inked", "ID"]
+	top_headers[battle_headers_size - 1] = excelInfo.TOP_HEADERS_1[lang_code]
+	player_headers = excelInfo.PLAYER_HEADERS[lang_code]
 	#player_headers_size = len(player_headers)
-	if de_flag:
-		top_headers[battle_headers_size - 1] = "Spielerstatistiken"
-		player_headers = ["E/A", "Erledigt", "Ultras", "Tote", "Waffen", "Gebiet Färbt", "ID"]
-	top_headers.resize((battle_headers_size + (len(player_headers) * 4) + (len(player_headers) * 4),),
-					   refcheck=False)
+	top_headers.resize((battle_headers_size + (len(player_headers) * 4) + (len(player_headers) * 4),), refcheck=False)
 	top_headers[top_headers == 0] = ""
 
 	team_ranked_power = ""
@@ -908,16 +899,10 @@ def export_to_excel(ally_scoreboard, battle_number, de_flag, enemy_scoreboard, m
 		opponent_power = payload["his_team_estimate_fest_power"]
 
 	# Form the data for the battle
-	if de_flag:
-		translatedMode = translate_mode_de[mode]
-		rule = translate_rule_de[mystats[1]]
-		result = translate_result_de[mystats[2]]
-		stage = translate_stages_de[int(payload["stage"][1:])]
-	else:
-		translatedMode = translate_mode[mode]
-		rule = translate_rule[mystats[1]]
-		result = mystats[2].capitalize()
-		stage = translate_stages[translate_stages[int(payload["stage"][1:])]]
+	translatedMode = excelInfo.MODE[lang_code][mode]
+	rule = excelInfo.RULE[lang_code][mystats[1]]
+	result = excelInfo.RESULT[lang_code][mystats[2]]
+	stage = excelInfo.STAGE[lang_code][int(payload["stage"][1:])]
 
 	elapsed = strftime("%M:%S", gmtime(payload["end_at"] - payload["start_at"])).lstrip("0:")
 
@@ -929,19 +914,19 @@ def export_to_excel(ally_scoreboard, battle_number, de_flag, enemy_scoreboard, m
 
 	# Form the data for allies
 	player_names = []
+	uploader_name = ""
 	for i in range(len(name_sorted_ally_scoreboard)):
-		if de_flag:
-			weapon = translate_weapons_de[int(name_sorted_ally_scoreboard[i][5][1:])]
-		else:
-			weapon = translate_weapons_en[int(name_sorted_ally_scoreboard[i][5][1:])]
+		weapon = excelInfo.WEAPONS[lang_code][int(name_sorted_ally_scoreboard[i][5][1:])]
 		player_row = [name_sorted_ally_scoreboard[i][1], name_sorted_ally_scoreboard[i][2],
 					  name_sorted_ally_scoreboard[i][3], name_sorted_ally_scoreboard[i][4], weapon,
 					  name_sorted_ally_scoreboard[i][8], name_sorted_ally_scoreboard[i][13]]
 		battle_row = np.append(battle_row, player_row)
 		player_name = name_sorted_ally_scoreboard[i][11]
-		if nameprefix is not None and player_name.startswith(nameprefix):  # Remove prefix/ clan tag
-			player_name = player_name[len(nameprefix):]
+		if x_array[2] is not None and player_name.startswith(x_array[2]):  # Remove prefix/ clan tag
+			player_name = player_name[len(x_array[2]):]
 		player_name_header_position = battle_headers_size + (len(player_headers) * i)
+		if name_sorted_ally_scoreboard[i][10] == 1: #is uploader
+			uploader_name = player_name
 		if player_name is None:
 			player_name = "Player " + str(i + 1)
 		else:
@@ -963,10 +948,7 @@ def export_to_excel(ally_scoreboard, battle_number, de_flag, enemy_scoreboard, m
 
 	# Form the data for opponents
 	for i in range(len(name_sorted_enemy_scoreboard)):
-		if de_flag:
-			weapon = translate_weapons_de[int(name_sorted_enemy_scoreboard[i][5][1:])]
-		else:
-			weapon = translate_weapons_en[int(name_sorted_enemy_scoreboard[i][5][1:])]
+		weapon = excelInfo.WEAPONS[lang_code][int(name_sorted_enemy_scoreboard[i][5][1:])]
 		player_row = [name_sorted_enemy_scoreboard[i][1], name_sorted_enemy_scoreboard[i][2],
 					  name_sorted_enemy_scoreboard[i][3], name_sorted_enemy_scoreboard[i][4], weapon,
 					  name_sorted_enemy_scoreboard[i][8], name_sorted_enemy_scoreboard[i][13]]
@@ -989,8 +971,8 @@ def export_to_excel(ally_scoreboard, battle_number, de_flag, enemy_scoreboard, m
 			battle_headers = np.append(battle_headers, player_headers[ii])
 
 	# Handle the excel file
-	if exportfolder is not None and os.path.exists(exportfolder):
-		dir_name = exportfolder
+	if x_array[1] is not None and os.path.exists(x_array[1]):
+		dir_name = x_array[1]
 	else:
 		dir_name = os.path.dirname(os.path.abspath(__file__))
 	base_filename = 'splatoon_results'
@@ -1003,11 +985,19 @@ def export_to_excel(ally_scoreboard, battle_number, de_flag, enemy_scoreboard, m
 		workbook = openpyxl.Workbook()
 		del workbook["Sheet"]
 	# Use data to keep battles together
-	worksheet_name = datetime.datetime.fromtimestamp(int(payload["start_at"])).strftime('%d-%m-%y') + "-" + mode
+	worksheet_name = datetime.datetime.fromtimestamp(int(payload["start_at"])).strftime('%d-%m-%y') + "-" + translatedMode
 	if mode == "ranked solo" or mode == "league pair" or mode == "league team":
 		worksheet_name = worksheet_name + "-" + rule
-	for i in range(len(player_names)):
-		worksheet_name = worksheet_name + "-" + player_names[i]
+	if mode == "league team":
+		for i in range(len(player_names)):
+			worksheet_name = worksheet_name + "-" + player_names[i]
+	else:
+		for i in range(len(player_names)): #TODO: only use primary one (or two if possible) players for not League
+			try:
+				if player_names[i] == uploader_name:
+					worksheet_name = worksheet_name + "-" + player_names[i]
+			except:
+				pass
 	if worksheet_name in workbook.sheetnames:
 		worksheet = workbook[worksheet_name]
 	else:
@@ -1042,7 +1032,7 @@ def export_to_excel(ally_scoreboard, battle_number, de_flag, enemy_scoreboard, m
 
 
 # https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md
-def post_battle(i, results, s_flag, t_flag, x_flag, de_flag, m_flag, sendgears, debug,
+def post_battle(i, results, s_flag, t_flag, x_array, m_flag, sendgears, debug,
 				ismonitor=False):
 	'''Uploads battle #i from the provided results dictionary.'''
 
@@ -1368,9 +1358,9 @@ def post_battle(i, results, s_flag, t_flag, x_flag, de_flag, m_flag, sendgears, 
 		mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked,
 				   title_before, principal_id, star_rank, gender, species]
 		if filename == None:
-			payload = set_scoreboard(payload, bn, mystats, s_flag, x_flag, de_flag)
+			payload = set_scoreboard(payload, bn, mystats, s_flag, x_array)
 		else:
-			payload = set_scoreboard(payload, bn, mystats, s_flag, x_flag, de_flag, results[0])
+			payload = set_scoreboard(payload, bn, mystats, s_flag, x_array, results[0])
 
 	##################
 	## IMAGE RESULT ##
@@ -1552,19 +1542,19 @@ def blackout(image_result_content, players):
 
 
 if __name__ == "__main__":
-	m_value, is_s, is_t, is_r, filename, salmon, is_x, is_de = main()
+	m_value, is_s, is_t, is_r, filename, salmon, x_array, = main()
 	if salmon:  # salmon run mode
 		salmonrun.upload_salmon_run(A_VERSION, YOUR_COOKIE, API_KEY, app_head, is_r)
 	else:  # normal mode
 		if is_s:
 			from PIL import Image, ImageDraw
 		if m_value != -1:  # m flag exists
-			monitor_battles(is_s, is_t, is_x, is_de, is_r, m_value, debug)
+			monitor_battles(is_s, is_t, x_array, is_r, m_value, debug)
 		elif is_r:  # r flag exists without m, so run only the recent battle upload
-			populate_battles(is_s, is_t, is_x, is_de, is_r, debug)
+			populate_battles(is_s, is_t, x_array, is_r, debug)
 		else:
 			n, results = get_num_battles()
 			for i in reversed(range(n)):
-				post_battle(i, results, is_s, is_t, is_x, is_de, m_value, True if i == 0 else False, debug)
+				post_battle(i, results, is_s, is_t, x_array, m_value, True if i == 0 else False, debug)
 			if debug:
 				print("")

@@ -545,59 +545,6 @@ stages = {
 	'mystery_24': 'Shifty: Diaries'
 }
 
-stages_de = {
-	0:    'Korallenviertel',            # The Reef
-	1:    'Molluskelbude',              # Musselforge Fitness
-	2:    'Seeigel-Rockbühne',          # Starfish Mainstage
-	3:    'Störwerft',                  # Sturgeon Shipyard
-	4:    'Perlmutt-Akademie',          # Inkblot Art Academy
-	5:    'Buckelwal-Piste',            # Humpback Pump Track
-	6:    'Manta Mari',                 # Manta Maria
-	7:    'Heilbutt-Hafen',             # Port Mackerel
-	8:    'Muränentürme',               # Moray Towers
-	9:    'Grätenkanal',                # Snapper Canal
-	10:   'Tümmlerkuppel',              # Kelp Dome
-	11:   'Punkasius-Skatepark',        # Blackbelly Skatepark
-	12:   'Abyssal-Museum',             # Shellendorf Institute
-	13:   'Cetacea Market',             # MakoMart
-	14:   'Kofferfisch-Lager',          # Walleye Warehouse
-	15:   'Arowana Center',             # Arowana Mall
-	16:   'Camp Schützenfisch',         # Camp Triggerfish
-	17:   'Steinköhler-Grube',          # Piranha Pit
-	18:   'Backfisch-Stadion',          # Goby Arena
-	19:   'Hotel Neothun',              # New Albacore Hotel
-	20:   'Flunder-Funpark',            # Wahoo World
-	21:   'Anchobit Games HQ',          # Ancho-V Games
-	22:   'Grundel-Pavillon',           # Skipper Pavilion
-        
-	100:  'Shifty: Windmill House on the Pearlie',  # Shifty: Windmill House on the Pearlie
-	101:  'Shifty: Wayslide Cool',                  # Shifty: Wayslide Cool
-	102:  'Shifty: The Secret of S.P.L.A.T.',       # Shifty: The Secret of S.P.L.A.T.
-	103:  'Shifty: Goosponge',                      # Shifty: Goosponge
-	105:  'Shifty: Cannon Fire Pearl',              # Shifty: Cannon Fire Pearl
-	106:  'Shifty: Zone of Glass',                  # Shifty: Zone of Glass
-	107:  'Shifty: Fancy Spew',                     # Shifty: Fancy Spew
-	108:  'Shifty: Grapplink Girl',                 # Shifty: Grapplink Girl
-	109:  'Shifty: Zappy Longshocking',             # Shifty: Zappy Longshocking
-	110:  'Shifty: The Bunker Games',               # Shifty: The Bunker Games
-	111:  'hifty: A Swiftly Tilting Balance',       # Shifty: A Swiftly Tilting Balance
-	112:  'Shifty: The Switches',                   # Shifty: The Switches
-	113:  'Shifty: Sweet Valley Tentacles',         # Shifty: Sweet Valley Tentacles
-	114:  'Shifty: The Bouncey Twins',              # Shifty: The Bouncey Twins
-	115:  'Shifty: Railway ChillinShifty',          # Shifty: Railway Chillin
-	116:  'Shifty: Gusher Towns',                   # Shifty: Gusher Towns
-	117:  'Shifty: The Maze Dasher',                # Shifty: The Maze Dasher
-	118:  'Shifty: Flooders in the Attic',          # Shifty: Flooders in the Attic
-	119:  'Shifty: The Splat in Our Zones',         # Shifty: The Splat in Our Zones
-	120:  'Shifty: The Ink is Spreading',           # Shifty: The Ink is Spreading
-	121:  'Shifty: Bridge to Tentaswitchia',        # Shifty: Bridge to Tentaswitchia
-	122:  'Shifty: The Chronicles of Rolonium',     # Shifty: The Chronicles of Rolonium
-	123:  'Shifty: Furler in the Ashe',             # Shifty: Furler in the Ashes
-	124:  'Shifty: MC.Princess Diaries',            # Shifty: MC.Princess Diaries
-	9999: 'Shifty Station'                          # Shifty Station
-
-}
-
 # Gear database
 # https://stat.ink/api-info/gear2-headgear
 # https://stat.ink/api-info/gear2-clothing
@@ -1242,46 +1189,4 @@ fest_ranks = {
 	2: 'defender',
 	3: 'champion',
 	4: 'king'
-}
-
-# Mode to English
-mode = {
-	"gachi": 'Ranked',
-	"league": 'League',
-	"regular": 'Turf War',
-	"fes": 'Splatfest',
-	"private": 'Private'
-}
-
-# Mode to German
-mode_de = {
-	"gachi": 'Rang',
-	"league": 'Liga',
-	"regular": 'Revierkampf',
-	"fes": 'Splatfest',
-	"private": 'Privat'
-}
-
-# Rule to English
-rule = {
-	"tower_control": 'Tower Control',
-	"splat_zones": 'Splat Zones',
-	"rainmaker": 'Rainmaker',
-	"clam_blitz": 'Clam Blitz',
-	"turf_war": 'Turf War'
-}
-
-# Rule to German
-rule_de = {
-	"tower_control": 'Turm Kommando',
-	"splat_zones": 'Herrschaft',
-	"rainmaker": 'Goldfisch',
-	"clam_blitz": 'Muschel Chaos',
-	"turf_war": 'Revierkampf'
-}
-
-# Rule to German
-result_de = {
-	"defeat": 'Verloren',
-	"victory": 'Gewonnen'
 }
