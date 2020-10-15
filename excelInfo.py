@@ -1,6 +1,6 @@
 # Contains values facilitating export to excel
 TAG_PREFIX_IDENTIFIER = "$CT_"
-MAX_ARGS_AMOUNT = 7
+MAX_ARGS_AMOUNT = 13
 SUPPORTED_LANGUAGES = ["de", "en"]
 BATTLE_HEADERS = {
     "en": ["Battle ID", "Mode", "Rule", "Result", "Our Points", "Opponents Points", "Stage", "Date",
@@ -19,6 +19,14 @@ TOP_HEADERS_0 = {
 TOP_HEADERS_1 = {
     "en": "Player Stats",
     "de": "Spielerstatistiken"
+}
+PLAYER = {
+    "en": "Player ",
+    "de": "Spieler "
+}
+OPPONENT = {
+    "en": "Opponent ",
+    "de": "Gegner "
 }
 MODE = {
     "en": {
