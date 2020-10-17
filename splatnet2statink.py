@@ -1005,7 +1005,7 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
     excel_file_path = os.path.join(dir_name, excelInfo.FILE_NAME)
     try:
         workbook = openpyxl.load_workbook(filename=excel_file_path)
-    except:
+    except FileNotFoundError:
         print("Building new workbook")
         workbook = openpyxl.Workbook()
         # workbook.mime_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -1060,7 +1060,17 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
             border_column = border_column + len(excelInfo.PLAYER_HEADERS[lang_code])
 
         worksheet.append(battle_row.tolist())
-        # last_row = worksheet[worksheet.max_row]
+        last_row = worksheet[worksheet.max_row]
+        for cell in last_row:
+            try:
+                int(cell.value)
+                cell.number_format = excelInfo.CELL_NUMBER_FORMAT[lang_code]
+            except ValueError:
+                cell.value
+            except TypeError:
+                cell.value
+
+
         # for cell in last_row:
         #     try:
         #         int(cell.value)
