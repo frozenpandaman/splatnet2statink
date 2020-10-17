@@ -19,6 +19,7 @@ import excelInfo
 import iksm, dbs, salmonrun
 import numpy as np
 import openpyxl
+import openpyxl.utils.cell as util_cell
 from time import strftime, gmtime
 from io import BytesIO
 from operator import itemgetter
@@ -825,18 +826,17 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
     name_prefix = None
     teammates = []
 
-    for border_column in x_array:
-        if border_column is not None:
-            if border_column in excelInfo.SUPPORTED_LANGUAGES:
-                lang_code = border_column
-            elif border_column.startswith(excelInfo.TAG_PREFIX_IDENTIFIER):
-                name_prefix = border_column[len(excelInfo.TAG_PREFIX_IDENTIFIER):]
-            elif border_column is not None and os.path.exists(border_column):
-                dir_name = border_column
+    for arg in x_array:
+        if arg is not None:
+            if arg in excelInfo.SUPPORTED_LANGUAGES:
+                lang_code = arg
+            elif arg.startswith(excelInfo.TAG_PREFIX_IDENTIFIER):
+                name_prefix = arg[len(excelInfo.TAG_PREFIX_IDENTIFIER):]
+            elif arg is not None and os.path.exists(arg):
+                dir_name = arg
             else:
-                teammates.append(border_column)
+                teammates.append(arg)
 
-    uploader_name = ""
     orderList = [None] * len(ally_scoreboard)
     remainingList = []
     battle_headers = excelInfo.BATTLE_HEADERS[lang_code]
@@ -846,8 +846,8 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
     for i in range(len(name_sorted_ally_scoreboard)):
         player_name = name_sorted_ally_scoreboard[i][11]
         if name_sorted_ally_scoreboard[i][10] == 1:  # is uploader
-            uploader_name = player_name
-        if player_name == uploader_name or name_is_player(teammates, player_name):
+            teammates.append(player_name)
+        if name_is_player(teammates, player_name):
             for ii in range(len(orderList)):
                 if orderList[ii] == None:
                     orderList[ii] = i
@@ -948,12 +948,15 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
         if x_array[2] is not None and player_name.startswith(x_array[2]):  # Remove prefix/ clan tag
             player_name = player_name[len(x_array[2]):]
         player_name_header_position = battle_headers_size + (len(player_headers) * i)
-        if name_sorted_ally_scoreboard[i][10] == 1:  # is uploader
-            uploader_name = player_name
-        if player_name is None or \
-                (mode != "league team" and mode != "private" and mode != "ranked solo"
-                 and mode != "splatfest pro / solo" and not name_is_player(teammates, player_name)):
+        if player_name is None:
             player_name = excelInfo.PLAYER[lang_code] + str(i + 1)
+        else:
+            if mode == "ranked solo" or mode == "splatfest pro / solo":
+                if not name_is_player(teammates, player_name):
+                    player_name = excelInfo.PLAYER[lang_code] + str(i + 1)
+            else:
+                if mode != "league team" and mode != "private" and not name_is_player(teammates, player_name):
+                    player_name = excelInfo.PLAYER[lang_code] + str(i + 1)
         player_names.append(player_name)
         top_headers[player_name_header_position] = player_name
         for ii in range(len(player_headers)):
@@ -999,15 +1002,13 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
         dir_name = x_array[1]
     else:
         dir_name = os.path.dirname(os.path.abspath(__file__))
-    base_filename = 'splatoon_results'
-    filename_suffix = '.xlsx'
-    excel_file_path = os.path.join(dir_name, base_filename + filename_suffix)
+    excel_file_path = os.path.join(dir_name, excelInfo.FILE_NAME)
     try:
         workbook = openpyxl.load_workbook(filename=excel_file_path)
     except:
         print("Building new workbook")
         workbook = openpyxl.Workbook()
-        #workbook.mime_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        # workbook.mime_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         del workbook["Sheet"]
     # Use data to keep battles together
     worksheet_name = datetime.datetime.fromtimestamp(int(payload["start_at"])).strftime(
@@ -1020,11 +1021,16 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
     else:
         if mode != "ranked solo" or mode != "splatfest pro / solo":
             for i in range(len(player_names)):
-                if player_names[i] == uploader_name or name_is_player(teammates, player_names[i]):
+                if name_is_player(teammates, player_names[i]):
                     worksheet_name = worksheet_name + "-" + player_names[i]
     if worksheet_name in workbook.sheetnames:
         worksheet = workbook[worksheet_name]
     else:
+        # stat_sheet = workbook.copy_worksheet(workbook[excelInfo.TEMPLATE_SHEET_NAME])
+        # stat_sheet.title = worksheet_name + "_display"
+        # for row in stat_sheet.iter_rows(min_row=3, max_col=stat_sheet.max_column, max_row=stat_sheet.max_row):
+        #     for cell in row:
+        #         cell.value = cell.value.replace(excelInfo.TEMPLATE_SHEET_NAME, worksheet_name)
         worksheet = workbook.create_sheet(worksheet_name, 0)
         worksheet.append(top_headers.tolist())
         worksheet.append(battle_headers.tolist())
@@ -1034,10 +1040,10 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
             bottom=openpyxl.styles.Side(style="thin", color="00000000"))
         border_column = len(excelInfo.BATTLE_HEADERS[lang_code]) + 1
         while border_column < worksheet.max_column:
-            cell1 = worksheet[openpyxl.utils.cell._get_column_letter(border_column) + str(1)]
-            cell2 = worksheet[openpyxl.utils.cell._get_column_letter(border_column) + str(2)]
+            cell1 = worksheet[util_cell._get_column_letter(border_column) + str(1)]
+            cell2 = worksheet[util_cell._get_column_letter(border_column) + str(2)]
             cell1.border = openpyxl.styles.Border(left=openpyxl.styles.Side(style="thin", color="00000000"),
-                                                bottom=openpyxl.styles.Side(style="thin", color="00000000"))
+                                                  bottom=openpyxl.styles.Side(style="thin", color="00000000"))
             cell2.border = openpyxl.styles.Border(left=openpyxl.styles.Side(style="thin", color="00000000"),
                                                   bottom=openpyxl.styles.Side(style="thin", color="00000000"))
             border_column = border_column + len(excelInfo.PLAYER_HEADERS[lang_code])
@@ -1049,7 +1055,7 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
     if not is_already_written:
         border_column = len(excelInfo.BATTLE_HEADERS[lang_code]) + 1
         while border_column < worksheet.max_column:
-            col = worksheet.column_dimensions[openpyxl.utils.cell._get_column_letter(border_column)]
+            col = worksheet.column_dimensions[util_cell._get_column_letter(border_column)]
             col.border = openpyxl.styles.Border(left=openpyxl.styles.Side(style="thin", color="00000000"))
             border_column = border_column + len(excelInfo.PLAYER_HEADERS[lang_code])
 
@@ -1072,8 +1078,9 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
         diff_style = openpyxl.styles.differential.DifferentialStyle(fill=grey_background)
         rule = openpyxl.formatting.Rule(type="expression", dxf=diff_style)
         rule.formula = ["MOD(ROW(),2)=0"]
-        final_cell = openpyxl.utils.cell._get_column_letter(worksheet.max_column) + str(worksheet.max_row)
+        final_cell = util_cell._get_column_letter(worksheet.max_column) + str(worksheet.max_row)
         worksheet.conditional_formatting.add("A1:" + final_cell, rule)
+
         workbook.save(excel_file_path)
     workbook.close()
 

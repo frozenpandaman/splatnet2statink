@@ -1,6 +1,9 @@
 # Contains values facilitating export to excel
 TAG_PREFIX_IDENTIFIER = "$CT_"
 MAX_ARGS_AMOUNT = 13
+NUMBER_COLUMNS = []
+FILE_NAME = "splatoon_results.xlsx"
+TEMPLATE_SHEET_NAME = "stat"
 SUPPORTED_LANGUAGES = ["de", "en"]
 BATTLE_HEADERS = {
     "en": ["Battle ID", "Mode", "Rule", "Result", "Our Points", "Opponents Points", "Stage", "Date",
