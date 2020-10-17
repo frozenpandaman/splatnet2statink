@@ -67,7 +67,7 @@ Running `python splatnet2statink.py -t --x -e C:\test -ct AA·' exports the batt
 
 2. If you're on Windows, install [Git](https://git-scm.com/download) (pre-installed on macOS).
 
-3. Download the script from the command line (macOS: Terminal; Windows: Command Prompt/PowerShell) by running `git clone https://github.com/frozenpandaman/splatnet2statink.git`.
+3. Download the script from the command line (macOS: Terminal; Windows: Command Prompt/PowerShell) by running `git clone https://github.com/radsutton/splatnet2statink.git`.
 
 4. Navigate to the newly-created directory (`cd splatnet2statink/`) and install the required Python libraries by running `pip install -r requirements.txt`. On Windows, you may have to use `python -m pip` instead.
 
@@ -78,6 +78,8 @@ Running `python splatnet2statink.py -t --x -e C:\test -ct AA·' exports the batt
 6. You will then be asked to navigate to a specific URL on Nintendo.com, log in, and follow simple instructions to obtain your `session_token`; this will be used to generate an `iksm_session` cookie. If you are opting against automatic cookie generation, enter "skip" for this step, at which point you will be asked to manually input your `iksm_session` cookie instead (see the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions)).
 
     This cookie (used to access your SplatNet battle results) along with your stat.ink API key and language will automatically be saved into `config.txt` for you. You're now ready to upload battles!
+    
+7. For easy Excel exports on Windows, copy the .cmd files to somewhere convenient like your desktop and replace USER with your Windows user.
 
 Have any questions, issues, or suggestions? Feel free to message me on [Twitter](https://twitter.com/frozenpandaman) or create an [issue](https://github.com/frozenpandaman/splatnet2statink/issues) here.
 
