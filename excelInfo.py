@@ -5,6 +5,10 @@ NUMBER_COLUMNS = []
 FILE_NAME = "splatoon_results.xlsx"
 TEMPLATE_SHEET_NAME = "stat"
 SUPPORTED_LANGUAGES = ["de", "en"]
+CELL_NUMBER_FORMAT = {
+    "en": "#,##0.00",
+    "de": "#.##0,00"
+}
 BATTLE_HEADERS = {
     "en": ["Battle ID", "Mode", "Rule", "Result", "Our Points", "Opponents Points", "Stage", "Date",
            "Start", "End", "Elapsed", "Team/Ranked Power", "Opponent Power", "Predicted Power"],
