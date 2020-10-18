@@ -7,13 +7,21 @@ TEMPLATE_SHEET_NAME = "stat"
 SUPPORTED_LANGUAGES = ["de", "en"]
 CELL_NUMBER_FORMAT = {
     "en": "#,##0.00",
+    "de": "#.##0.00"
+}
+CELL_DECIMAL_FORMAT = {
+    "en": "#,##0.00",
     "de": "#.##0,00"
 }
+INT_COLUMNS = {"A", "E", "F", "M", "N", "O", "P", "Q", "R", "T", "V", "W", "X", "Y", "AA", "AC", "AD", "AE", "AF", "AH",
+ "AJ", "AK", "AL", "AM", "AO", "AQ", "AR", "AS", "AT", "AV", "AX", "AY", "AZ", "BA", "BC", "BE", "BF", "BG", "BH", "BJ",
+  "BL", "BM", "BN", "BO", "BQ"}
+FLOAT_COLUMNS = {"L"}
 BATTLE_HEADERS = {
     "en": ["Battle ID", "Mode", "Rule", "Result", "Our Points", "Opponents Points", "Stage", "Date",
-           "Start", "End", "Elapsed", "Team/Ranked Power", "Opponent Power", "Predicted Power"],
+           "Start", "End", "Elapsed", "Team/Ranked Power", "Opponent Power", "Predicted"],
     "de": ["Kampf ID", "Modus", "Regeln", "Ergebnis", "Unsere Punkte", "Gegnerische Punkte", "Arena",
-           "Datum", "Anfang", "Ende", "Länge", "Team/Rang Power", "Gegner Power", "Prognostizierte Power"]
+           "Datum", "Anfang", "Ende", "Länge", "Team/Rang Power", "Gegner Power", "Prognostizierte"]
 }
 PLAYER_HEADERS = {
     "en": ["K/A", "Kills", "Specials", "Deaths", "Weapon", "Turf Inked", "ID"],
