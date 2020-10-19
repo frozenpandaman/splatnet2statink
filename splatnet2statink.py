@@ -1062,49 +1062,21 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
             print("Battle #" + battle_number + " already written")
             is_already_written = True
     if not is_already_written:
-        border_column = len(excelInfo.BATTLE_HEADERS[lang_code]) + 1
-        while border_column < worksheet.max_column:
-            col = worksheet.column_dimensions[util_cell._get_column_letter(border_column)]
-            col.border = openpyxl.styles.Border(left=openpyxl.styles.Side(style="thin", color="00000000"))
-            border_column = border_column + len(excelInfo.PLAYER_HEADERS[lang_code])
-
         worksheet.append(battle_row.tolist())
         last_row = str(worksheet.max_row)
-        # for column in excelInfo.INT_COLUMNS:
-        #     cell = worksheet[column + last_row]
-        #     try:
-        #         int(cell.value)
-        #         cell.number_format = excelInfo.CELL_NUMBER_FORMAT[lang_code]
-        #     except ValueError:
-        #         print("Formatting failed for " + column + last_row)
-        #     except TypeError:
-        #         print("Formatting failed for " + column + last_row)
 
-        # for column in excelInfo.INT_COLUMNS:
-        #     cell = worksheet[column + last_row]
-        #     try:
-        #         if cell.value is not None and not "":
-        #             print(cell.value)
-        #             float(cell.value)
-        #             print("Floated: " + cell.value)
-        #         cell.number_format = excelInfo.CELL_DECIMAL_FORMAT[lang_code]
-        #     except ValueError:
-        #         print("Formatting failed for cell " + column + last_row)
-        #     except TypeError:
-        #         print("Formatting failed for cell" + column + last_row)
+        grey_background = openpyxl.styles.PatternFill(bgColor="dddddd")
+        diff_style = openpyxl.styles.differential.DifferentialStyle(fill=grey_background)
+        rule = openpyxl.formatting.Rule(type="expression", dxf=diff_style)
+        rule.formula = ["MOD(ROW(),2)=0"]
+        final_cell = util_cell._get_column_letter(worksheet.max_column) + last_row
+        worksheet.conditional_formatting.add("A1:" + final_cell, rule)
 
-        # for cell in last_row:
-        #     try:
-        #         int(cell.value)
-        #         cell.number_format = "#,##0.00"
-        #     except ValueError:
-        #         try:
-        #             float(cell.value)
-        #             cell.number_format = "#,##0.00"
-        #         except ValueError:
-        #             cell.value
-        #     except TypeError:
-        #         cell.value
+        border_column = len(excelInfo.BATTLE_HEADERS[lang_code]) + 1
+        while border_column < worksheet.max_column:
+            column_cell = worksheet[util_cell._get_column_letter(border_column) + last_row]
+            column_cell.border = openpyxl.styles.Border(left=openpyxl.styles.Side(style="thin", color="00000000"))
+            border_column = border_column + len(excelInfo.PLAYER_HEADERS[lang_code])
 
         for column in excelInfo.INT_COLUMNS:
             cell = worksheet[column + last_row]
@@ -1113,13 +1085,6 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
         for column in excelInfo.FLOAT_COLUMNS:
             cell = worksheet[column + last_row]
             cell.number_format = excelInfo.CELL_DECIMAL_FORMAT[lang_code]
-
-        grey_background = openpyxl.styles.PatternFill(bgColor="dddddd")
-        diff_style = openpyxl.styles.differential.DifferentialStyle(fill=grey_background)
-        rule = openpyxl.formatting.Rule(type="expression", dxf=diff_style)
-        rule.formula = ["MOD(ROW(),2)=0"]
-        final_cell = util_cell._get_column_letter(worksheet.max_column) + str(worksheet.max_row)
-        worksheet.conditional_formatting.add("A1:" + final_cell, rule)
 
         workbook.save(excel_file_path)
     workbook.close()
