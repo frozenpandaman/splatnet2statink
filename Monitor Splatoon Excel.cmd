@@ -1,1 +1,1 @@
-python C:\Users\USER\splatnet2statink\splatnet2statink.py -M -X C:\Users\USER\splatoon de
+python C:\Users\USER\splatnet2statink\splatnet2statink.py -M -X C:\Users\USER\splatoon
