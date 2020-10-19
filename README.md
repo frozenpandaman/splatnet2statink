@@ -10,7 +10,7 @@ splatnet2statink is a script that uploads battle data from the SplatNet 2 app ("
 ## Usage
 
 ```
-$ python splatnet2statink.py [-M [N]] [-r] [-s] [-t] [--salmon]
+$ python splatnet2statink.py [-M [N]] [-r] [-s] [-t] [-X [Y]] [--salmon]
 ```
 
 The `-M` flag runs the script in monitoring mode, uploading new battle results as you play matches. The script checks for new battles every `N` seconds; if no `N` is provided, the script defaults to 300 (5 minutes).
@@ -21,6 +21,8 @@ The `-s` flag blacks out other players' names on the scoreboard result image and
 
 The `-t` flag sends battle data to stat.ink as a dry run, without uploading, for testing/validation purposes.
 
+The `-X` flag can be combined with the above flags to export battle data to an Excel file. Y is a series of arguments containing any of the following values. Language code defaults to 'en' but supports 'de'. An export folder location can be specified, defaults to the location of the program. Prefixes to remove from player names are defined starting with $CT_. Player names (whole names not necessary) can be given for League Duo and Splatfest Team teammates.
+
 The `--salmon` flag updates your Salmon Run profile and allows you to upload jobs (shifts) worked.
 
 Note: You can also execute the script via `./splatnet2statink.py` on macOS and Linux. On Windows, use a backslash.
@@ -30,6 +32,8 @@ Note: You can also execute the script via `./splatnet2statink.py` on macOS and L
 Running `python splatnet2statink.py -M 900` from the command line launches the script in monitoring mode, checking for and uploading battles every 15 minutes.
 
 Running `python splatnet2statink.py --salmon -r` uploads all recent Salmon Run jobs not already present on stat.ink.
+
+Running `python splatnet2statink.py -t -X C:\test de $CT_AA* JaneSmith JohnSmith` exports the battles to an Excel file under the given folder 'test'. It removes all name prefixes that match 'AA*' from the player names in the column headers. League Duo and Splatfest Team matches with players' names that contain JaneSmith and/or JohnSmith get their own sheet with named columns.
 
 ## Features
 
@@ -48,6 +52,7 @@ Running `python splatnet2statink.py --salmon -r` uploads all recent Salmon Run j
 - [x] Scoreboard stats, player ranking & battle result image upload
 - [x] Salmon Run support – job details/stats & Grizzco Point Card
 - [x] Full support for all available game languages
+- [x] Export to Excel files in English and German
 
 
 ## Setup instructions
@@ -58,7 +63,7 @@ Running `python splatnet2statink.py --salmon -r` uploads all recent Salmon Run j
 
 2. If you're on Windows, install [Git](https://git-scm.com/download) (pre-installed on macOS).
 
-3. Download the script from the command line (macOS: Terminal; Windows: Command Prompt/PowerShell) by running `git clone https://github.com/frozenpandaman/splatnet2statink.git`.
+3. Download the script from the command line (macOS: Terminal; Windows: Command Prompt/PowerShell) by running `git clone https://github.com/radsutton/splatnet2statink.git`.
 
 4. Navigate to the newly-created directory (`cd splatnet2statink/`) and install the required Python libraries by running `pip install -r requirements.txt`. On Windows, you may have to use `python -m pip` instead.
 
@@ -69,6 +74,8 @@ Running `python splatnet2statink.py --salmon -r` uploads all recent Salmon Run j
 6. You will then be asked to navigate to a specific URL on Nintendo.com, log in, and follow simple instructions to obtain your `session_token`; this will be used to generate an `iksm_session` cookie. If you are opting against automatic cookie generation, enter "skip" for this step, at which point you will be asked to manually input your `iksm_session` cookie instead (see the [mitmproxy instructions](https://github.com/frozenpandaman/splatnet2statink/wiki/mitmproxy-instructions)).
 
     This cookie (used to access your SplatNet battle results) along with your stat.ink API key and language will automatically be saved into `config.txt` for you. You're now ready to upload battles!
+    
+7. For easy Excel exports on Windows, copy the .cmd files to somewhere convenient like your desktop and replace USER with your Windows user.
 
 Have any questions, issues, or suggestions? Feel free to message me on [Twitter](https://twitter.com/frozenpandaman) or create an [issue](https://github.com/frozenpandaman/splatnet2statink/issues) here.
 
