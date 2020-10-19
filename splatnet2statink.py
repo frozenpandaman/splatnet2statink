@@ -837,6 +837,7 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
             else:
                 teammates.append(arg)
 
+    excel_file_path = os.path.join(dir_name, excelInfo.FILE_NAME)
     orderList = [None] * len(ally_scoreboard)
     remainingList = []
     battle_headers = excelInfo.BATTLE_HEADERS[lang_code]
@@ -846,17 +847,19 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
     for i in range(len(name_sorted_ally_scoreboard)):
         player_name = name_sorted_ally_scoreboard[i][11]
         if name_sorted_ally_scoreboard[i][10] == 1:  # is uploader
+            if name_prefix is not None and player_name.startswith(name_prefix):  # Remove prefix/ clan tag
+                player_name = player_name[len(name_prefix):]
             teammates.append(player_name)
         if name_is_player(teammates, player_name):
             for ii in range(len(orderList)):
-                if orderList[ii] == None:
+                if orderList[ii] is None:
                     orderList[ii] = i
                     break
         else:
             remainingList.append(i)
     for i in range(len(remainingList)):
         for ii in range(len(orderList)):
-            if orderList[ii] == None:
+            if orderList[ii] is None:
                 orderList[ii] = remainingList[i]
                 break
 
@@ -866,7 +869,6 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
     top_headers.resize((battle_headers_size,), refcheck=False)
     top_headers[battle_headers_size - 1] = excelInfo.TOP_HEADERS_1[lang_code]
     player_headers = excelInfo.PLAYER_HEADERS[lang_code]
-    # player_headers_size = len(player_headers)
     top_headers.resize((battle_headers_size + (len(player_headers) * 4) + (len(player_headers) * 4),), refcheck=False)
     top_headers[top_headers == 0] = ""
 
@@ -885,9 +887,13 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
 
     elif payload["lobby"] == "standard" and payload["mode"] == "gachi":  # ranked solo
         mode = "ranked solo"
-        team_ranked_power = payload["estimate_gachi_power"]  # estimate_x_power team only?
+        team_ranked_power = payload["estimate_gachi_power"]
+        if team_ranked_power is None and payload["x_power_after"]:
+            team_ranked_power = payload["x_power_after"]
         our_points = payload["my_team_count"]
         their_points = payload["his_team_count"]
+        if payload["estimate_x_power"]:
+            opponent_power = payload["estimate_x_power"]
 
     elif payload["lobby"] == "squad_2" and payload["mode"] == "gachi":  # league pair
         mode = "league pair"
@@ -922,6 +928,14 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
         predicted_power = payload["my_team_estimate_fest_power"]
         opponent_power = payload["his_team_estimate_fest_power"]
 
+    if predicted_power == "":
+        predicted_power = int(0)
+
+    if team_ranked_power is not None:
+        team_ranked_power = float(team_ranked_power)
+    else:
+        team_ranked_power = float(0)
+
     # Form the data for the battle
     translated_mode = excelInfo.MODE[lang_code][mode]
     rule = excelInfo.RULE[lang_code][mystats[1]]
@@ -930,23 +944,23 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
 
     elapsed = strftime("%M:%S", gmtime(payload["end_at"] - payload["start_at"])).lstrip("0:")
 
-    battle_row = [battle_number, translated_mode, rule, result, our_points, their_points, stage,
+    battle_row = [int(battle_number), translated_mode, rule, result, int(our_points), int(their_points), stage,
                   datetime.datetime.fromtimestamp(int(payload["start_at"])).strftime('%d-%m-%y'),
                   datetime.datetime.fromtimestamp(int(payload["start_at"])).strftime('%H:%M:%S').lstrip("0"),
                   datetime.datetime.fromtimestamp(int(payload["end_at"])).strftime('%H:%M:%S').lstrip("0"),
-                  elapsed, team_ranked_power, opponent_power, predicted_power]
+                  elapsed, team_ranked_power, int(opponent_power), int(predicted_power)]
 
     # Form the data for allies
     player_names = []
     for i in range(len(name_sorted_ally_scoreboard)):
         weapon = excelInfo.WEAPONS[lang_code][int(name_sorted_ally_scoreboard[i][5][1:])]
-        player_row = [name_sorted_ally_scoreboard[i][1], name_sorted_ally_scoreboard[i][2],
-                      name_sorted_ally_scoreboard[i][3], name_sorted_ally_scoreboard[i][4], weapon,
-                      name_sorted_ally_scoreboard[i][8], name_sorted_ally_scoreboard[i][13]]
+        player_row = [int(name_sorted_ally_scoreboard[i][1]), int(name_sorted_ally_scoreboard[i][2]),
+                      int(name_sorted_ally_scoreboard[i][3]), int(name_sorted_ally_scoreboard[i][4]), weapon,
+                      int(name_sorted_ally_scoreboard[i][8]), name_sorted_ally_scoreboard[i][13]]
         battle_row = np.append(battle_row, player_row)
         player_name = name_sorted_ally_scoreboard[i][11]
-        if x_array[2] is not None and player_name.startswith(x_array[2]):  # Remove prefix/ clan tag
-            player_name = player_name[len(x_array[2]):]
+        if name_prefix is not None and player_name.startswith(name_prefix):  # Remove prefix/ clan tag
+            player_name = player_name[len(name_prefix):]
         player_name_header_position = battle_headers_size + (len(player_headers) * i)
         if player_name is None:
             player_name = excelInfo.PLAYER[lang_code] + str(i + 1)
@@ -998,11 +1012,6 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
             battle_headers = np.append(battle_headers, player_headers[ii])
 
     # Handle the excel file
-    if x_array[1] is not None and os.path.exists(x_array[1]):
-        dir_name = x_array[1]
-    else:
-        dir_name = os.path.dirname(os.path.abspath(__file__))
-    excel_file_path = os.path.join(dir_name, excelInfo.FILE_NAME)
     try:
         workbook = openpyxl.load_workbook(filename=excel_file_path)
     except FileNotFoundError:
@@ -1053,43 +1062,29 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
             print("Battle #" + battle_number + " already written")
             is_already_written = True
     if not is_already_written:
-        border_column = len(excelInfo.BATTLE_HEADERS[lang_code]) + 1
-        while border_column < worksheet.max_column:
-            col = worksheet.column_dimensions[util_cell._get_column_letter(border_column)]
-            col.border = openpyxl.styles.Border(left=openpyxl.styles.Side(style="thin", color="00000000"))
-            border_column = border_column + len(excelInfo.PLAYER_HEADERS[lang_code])
-
         worksheet.append(battle_row.tolist())
-        last_row = worksheet[worksheet.max_row]
-        for cell in last_row:
-            try:
-                int(cell.value)
-                cell.number_format = excelInfo.CELL_NUMBER_FORMAT[lang_code]
-            except ValueError:
-                cell.value
-            except TypeError:
-                cell.value
-
-
-        # for cell in last_row:
-        #     try:
-        #         int(cell.value)
-        #         cell.number_format = "#,##0.00"
-        #     except ValueError:
-        #         try:
-        #             float(cell.value)
-        #             cell.number_format = "#,##0.00"
-        #         except ValueError:
-        #             cell.value
-        #     except TypeError:
-        #         cell.value
+        last_row = str(worksheet.max_row)
 
         grey_background = openpyxl.styles.PatternFill(bgColor="dddddd")
         diff_style = openpyxl.styles.differential.DifferentialStyle(fill=grey_background)
         rule = openpyxl.formatting.Rule(type="expression", dxf=diff_style)
         rule.formula = ["MOD(ROW(),2)=0"]
-        final_cell = util_cell._get_column_letter(worksheet.max_column) + str(worksheet.max_row)
+        final_cell = util_cell._get_column_letter(worksheet.max_column) + last_row
         worksheet.conditional_formatting.add("A1:" + final_cell, rule)
+
+        border_column = len(excelInfo.BATTLE_HEADERS[lang_code]) + 1
+        while border_column < worksheet.max_column:
+            column_cell = worksheet[util_cell._get_column_letter(border_column) + last_row]
+            column_cell.border = openpyxl.styles.Border(left=openpyxl.styles.Side(style="thin", color="00000000"))
+            border_column = border_column + len(excelInfo.PLAYER_HEADERS[lang_code])
+
+        for column in excelInfo.INT_COLUMNS:
+            cell = worksheet[column + last_row]
+            cell.number_format = excelInfo.CELL_NUMBER_FORMAT[lang_code]
+
+        for column in excelInfo.FLOAT_COLUMNS:
+            cell = worksheet[column + last_row]
+            cell.number_format = excelInfo.CELL_DECIMAL_FORMAT[lang_code]
 
         workbook.save(excel_file_path)
     workbook.close()
