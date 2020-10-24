@@ -790,7 +790,6 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, x_array, battle_payl
 def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, mystats, payload):
     # radsutton
     # Build the headers
-    print(x_array)
     lang_code = "en"
     dir_name = os.path.dirname(os.path.abspath(__file__))
     name_prefix = None
@@ -1005,6 +1004,7 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
             for i in range(len(player_names)):
                 if name_is_player(teammates, player_names[i]):
                     worksheet_name = worksheet_name + "-" + player_names[i]
+    print("Exporting battle to spreadsheet")
     if worksheet_name in workbook.sheetnames:
         worksheet = workbook[worksheet_name]
     else:
