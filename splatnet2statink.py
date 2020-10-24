@@ -901,7 +901,10 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
     if predicted_power == "":
         predicted_power = int(0)
 
-    if team_ranked_power is not None:
+    if opponent_power == "":
+        opponent_power = int(0)
+
+    if team_ranked_power is not None and team_ranked_power != "":
         team_ranked_power = float(team_ranked_power)
     else:
         team_ranked_power = float(0)
