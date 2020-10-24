@@ -997,7 +997,7 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
         '%d-%m-%y') + "-" + translated_mode
     if mode == "ranked solo" or mode == "league pair" or mode == "league team":
         worksheet_name = worksheet_name + "-" + rule
-    if mode == "league team":
+    if mode == "league team" or mode == "private":
         for i in range(len(player_names)):
             worksheet_name = worksheet_name + "-" + player_names[i]
     else:
