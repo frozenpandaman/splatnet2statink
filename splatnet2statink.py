@@ -450,7 +450,7 @@ def monitor_battles(s_flag, t_flag, x_array, r_flag, secs, debug):
                     battles.append(int(result["battle_number"]))
                     # if custom key prevents uploading, we deal with that in post_battle
                     # i will be 0 if most recent battle out of those since last posting
-                    post_battle(0, [result], s_flag, t_flag, secs, True if i == 0 else False, debug, True)
+                    post_battle(0, [result], s_flag, t_flag, x_array, secs, True if i == 0 else False, debug, True)
     except KeyboardInterrupt:
         print("\nChecking to see if there are unuploaded battles before exiting...")
         data = load_json(False) # so much repeated code
@@ -482,7 +482,7 @@ def monitor_battles(s_flag, t_flag, x_array, r_flag, secs, debug):
                         mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), fullname)
                         print("New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl))
                     battles.append(int(result["battle_number"]))
-                    post_battle(0, [result], s_flag, t_flag, secs, True if i == 0 else False, debug, True)
+                    post_battle(0, [result], s_flag, t_flag, x_array, secs, True if i == 0 else False, debug, True)
         if foundany:
             print("Successfully uploaded remaining battles.")
         else:
