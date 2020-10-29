@@ -882,8 +882,15 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
 
     elif payload["lobby"] == "private" and payload["mode"] == "private":  # private battle
         mode = "private"
-        our_points = payload["my_team_count"]
-        their_points = payload["his_team_count"]
+        if "my_team_count" in payload:
+            our_points = payload["my_team_count"]
+        else:
+            our_points = payload["my_team_percent"]
+
+        if "his_team_count" in payload:
+            their_points = payload["his_team_count"]
+        else:
+            their_points = payload["his_team_percent"]
 
     elif payload["lobby"] == "fest_pro" and payload["mode"] == "fest":  # splatfest pro / solo
         mode = "splatfest pro / solo"
