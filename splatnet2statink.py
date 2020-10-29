@@ -1004,7 +1004,6 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
             for i in range(len(player_names)):
                 if name_is_player(teammates, player_names[i]):
                     worksheet_name = worksheet_name + "-" + player_names[i]
-    print("Exporting battle to spreadsheet")
     if worksheet_name in workbook.sheetnames:
         worksheet = workbook[worksheet_name]
     else:
@@ -1035,6 +1034,7 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
             print("Battle #" + battle_number + " already written")
             is_already_written = True
     if not is_already_written:
+        print("Exporting battle to spreadsheet")
         worksheet.append(battle_row.tolist())
         last_row = str(worksheet.max_row)
 
@@ -1058,6 +1058,9 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
         for column in excelInfo.FLOAT_COLUMNS:
             cell = worksheet[column + last_row]
             cell.number_format = excelInfo.CELL_DECIMAL_FORMAT[lang_code]
+
+            if lang_code == "de":
+                cell.value = str(cell.value).replace('.', ',')
 
         workbook.save(excel_file_path)
     workbook.close()
