@@ -897,12 +897,16 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
         team_ranked_power = payload["fest_power"]
         predicted_power = payload["my_team_estimate_fest_power"]
         opponent_power = payload["his_team_estimate_fest_power"]
+        our_points = payload["my_team_percent"]
+        their_points = payload["his_team_percent"]
 
     elif payload["lobby"] == "fest_normal" and payload["mode"] == "fest":  # splatfest normal / team
         mode = "splatfest normal / team"
         team_ranked_power = payload["fest_power"]
         predicted_power = payload["my_team_estimate_fest_power"]
         opponent_power = payload["his_team_estimate_fest_power"]
+        our_points = payload["my_team_percent"]
+        their_points = payload["his_team_percent"]
 
     if predicted_power == "":
         predicted_power = int(0)
