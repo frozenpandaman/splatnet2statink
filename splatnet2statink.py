@@ -857,7 +857,7 @@ def export_to_excel(ally_scoreboard, battle_number, x_array, enemy_scoreboard, m
     elif payload["lobby"] == "standard" and payload["mode"] == "gachi":  # ranked solo
         mode = "ranked solo"
         team_ranked_power = payload["estimate_gachi_power"]
-        if team_ranked_power is None and ["x_power_after"] in payload:
+        if team_ranked_power is None and "x_power_after" in payload:
             team_ranked_power = payload["x_power_after"]
         our_points = payload["my_team_count"]
         their_points = payload["his_team_count"]
