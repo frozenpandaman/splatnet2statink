@@ -313,14 +313,16 @@ def main():
             try:
                 e = str(parser_result.N[1])
             except ValueError:
-                print("Second argument can only be e")
+                print("Second argument can only be 'e'")
                 sys.exit(1)
             if e != "e":
-                print("Second argument can only be e")
+                print("Second argument can only be 'e'")
                 sys.exit(1)
             isExtra = True
     else:
         m_value = -1
+
+    m_array = [m_value, isExtra]
 
     x_array = parser_result.Y
 
@@ -335,7 +337,7 @@ def main():
                 print("Arguments to X must be strings")
                 sys.exit(1)
 
-    return m_value, is_s, is_t, is_r, filename, salmon, x_array
+    return m_array, is_s, is_t, is_r, filename, salmon, x_array
 
 
 def load_results(calledby=""):
@@ -411,8 +413,10 @@ def populate_battles(s_flag, t_flag, x_array, r_flag, debug):
 
     return battles
 
-def monitor_battles(s_flag, t_flag, x_array, r_flag, secs, debug):
+def monitor_battles(s_flag, t_flag, x_array, r_flag, m_array, debug):
     '''Monitors JSON for changes/new battles and uploads them.'''
+
+    secs = m_array[0]
 
     results = load_results("monitor") # make sure we can do it first. if error, throw it before main process
 
@@ -455,9 +459,64 @@ def monitor_battles(s_flag, t_flag, x_array, r_flag, secs, debug):
                                 splatfest_losses += 1
                         if splatfest_match and mirror_match:
                             mirror_matches += 1
+
                         fullname = result["stage"]["name"]
                         mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), fullname)
                         print("New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl))
+                        if m_array[1]:
+                            lobby = result["game_mode"]["key"]
+                            team_ranked_power = None
+                            predicted_power = None
+                            opponent_power = None
+                            our_points = None
+                            their_points = None
+                            kills = str(result["player_result"]["kill_count"])
+                            assists = str(result["player_result"]["assist_count"])
+                            specials = str(result["player_result"]["special_count"])
+                            deaths = str(result["player_result"]["death_count"])
+                            desc = worl + " battle. K:" + kills + ", A:" + assists + ", D:" + deaths + ", S:" + specials
+
+                            if lobby == "regular":  # turf war
+                                team_ranked_power = result["win_meter"]
+                                our_points = result["my_team_percentage"]
+                                their_points = result["other_team_percentage"]
+                            elif lobby == "gachi":  # ranked solo
+                                team_ranked_power = result["estimate_gachi_power"]
+                                if team_ranked_power is None and "x_power" in result:
+                                    team_ranked_power = result["x_power"]
+                                our_points = result["my_team_count"]
+                                their_points = result["other_team_count"]
+                                if "estimate_x_power" in result:
+                                    opponent_power = result["estimate_x_power"]
+                            elif lobby == "league_pair" or lobby == "league_team":  # league pair or team
+                                team_ranked_power = result["league_point"]
+                                predicted_power = result["my_estimate_league_point"]
+                                opponent_power = result["other_estimate_league_point"]
+                                our_points = result["my_team_count"]
+                                their_points = result["other_team_count"]
+                            elif lobby == "private":  # private battle
+                                if "my_team_count" in result:
+                                    our_points = result["my_team_count"]
+                                    their_points = result["other_team_count"]
+                                else:
+                                    our_points = result["my_team_percentage"]
+                                    their_points = result["other_team_percentage"]
+                            elif lobby == "fes_solo" or lobby == "fes_team":  # splatfest pro / solo or  normal / team
+                                team_ranked_power = result["fes_power"]
+                                predicted_power = result["my_estimate_fes_power"]
+                                opponent_power = result["other_estimate_fes_power"]
+                                our_points = result["my_team_percentage"]
+                                their_points = result["other_team_percentage"]
+
+                            if team_ranked_power is not None:
+                                desc = desc + ", Power:" + str(team_ranked_power)
+                            if opponent_power is not None:
+                                desc = desc + ", Opponent:" + str(opponent_power)
+                            if predicted_power is not None:
+                                desc = desc + ", Predicted:" + str(predicted_power)
+                            desc = desc + ", R:" + str(our_points) + ":" + str(their_points)
+                            print(desc)
+
                     battles.append(int(result["battle_number"]))
                     # if custom key prevents uploading, we deal with that in post_battle
                     # i will be 0 if most recent battle out of those since last posting
@@ -492,7 +551,59 @@ def monitor_battles(s_flag, t_flag, x_array, r_flag, secs, debug):
                         fullname = result["stage"]["name"]
                         mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), fullname)
                         print("New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl))
-                        #TODO: Extra info here
+                        if m_array[1]:
+                            lobby = result["game_mode"]["key"]
+                            team_ranked_power = None
+                            predicted_power = None
+                            opponent_power = None
+                            our_points = None
+                            their_points = None
+                            kills = str(result["player_result"]["kill_count"])
+                            assists = str(result["player_result"]["assist_count"])
+                            specials = str(result["player_result"]["special_count"])
+                            deaths = str(result["player_result"]["death_count"])
+                            desc = worl + " battle. K:" + kills + ", A:" + assists + ", D:" + deaths + ", S:" + specials
+
+                            if lobby == "regular":  # turf war
+                                team_ranked_power = result["win_meter"]
+                                our_points = result["my_team_percentage"]
+                                their_points = result["other_team_percentage"]
+                            elif lobby == "gachi":  # ranked solo
+                                team_ranked_power = result["estimate_gachi_power"]
+                                if team_ranked_power is None and "x_power" in result:
+                                    team_ranked_power = result["x_power"]
+                                our_points = result["my_team_count"]
+                                their_points = result["other_team_count"]
+                                if "estimate_x_power" in result:
+                                    opponent_power = result["estimate_x_power"]
+                            elif lobby == "league_pair" or lobby == "league_team":  # league pair or team
+                                team_ranked_power = result["league_point"]
+                                predicted_power = result["my_estimate_league_point"]
+                                opponent_power = result["other_estimate_league_point"]
+                                our_points = result["my_team_count"]
+                                their_points = result["other_team_count"]
+                            elif lobby == "private":  # private battle
+                                if "my_team_count" in result:
+                                    our_points = result["my_team_count"]
+                                    their_points = result["other_team_count"]
+                                else:
+                                    our_points = result["my_team_percentage"]
+                                    their_points = result["other_team_percentage"]
+                            elif lobby == "fes_solo" or lobby == "fes_team":  # splatfest pro / solo or  normal / team
+                                team_ranked_power = result["fes_power"]
+                                predicted_power = result["my_estimate_fes_power"]
+                                opponent_power = result["other_estimate_fes_power"]
+                                our_points = result["my_team_percentage"]
+                                their_points = result["other_team_percentage"]
+
+                            if team_ranked_power is not None:
+                                desc = desc + ", Power:" + str(team_ranked_power)
+                            if opponent_power is not None:
+                                desc = desc + ", Opponent:" + str(opponent_power)
+                            if predicted_power is not None:
+                                desc = desc + ", Predicted:" + str(predicted_power)
+                            desc = desc + ", R:" + str(our_points) + ":" + str(their_points)
+                            print(desc)
                     battles.append(int(result["battle_number"]))
                     post_battle(0, [result], s_flag, t_flag, x_array, secs, True if i == 0 else False, debug, True)
         if foundany:
@@ -1602,19 +1713,19 @@ def blackout(image_result_content, players):
     return scoreboard
 
 if __name__ == "__main__":
-    m_value, is_s, is_t, is_r, filename, salmon, x_array, = main()
+    m_array, is_s, is_t, is_r, filename, salmon, x_array, = main()
     if salmon: # salmon run mode
         salmonrun.upload_salmon_run(A_VERSION, YOUR_COOKIE, API_KEY, app_head, is_r)
     else: # normal mode
         if is_s:
             from PIL import Image, ImageDraw
-        if m_value != -1: # m flag exists
-            monitor_battles(is_s, is_t, x_array, is_r, m_value, debug)
+        if m_array[0] != -1: # m flag exists
+            monitor_battles(is_s, is_t, x_array, is_r, m_array, debug)
         elif is_r: # r flag exists without m, so run only the recent battle upload
             populate_battles(is_s, is_t, x_array, is_r, debug)
         else:
             n, results = get_num_battles()
             for i in reversed(range(n)):
-                post_battle(i, results, is_s, is_t, x_array, m_value, True if i == 0 else False, debug)
+                post_battle(i, results, is_s, is_t, x_array, m_array[0], True if i == 0 else False, debug)
             if debug:
                 print("")
