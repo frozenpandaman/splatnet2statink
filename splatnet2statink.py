@@ -268,8 +268,8 @@ def main():
     set_language()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-M", dest="N", required=False, nargs="?", action="store",
-                        help="monitoring mode; pull data every N secs (default: 300)", const=300)
+    parser.add_argument("-M", dest="N", required=False, nargs="*", action="store",
+                        help="monitoring mode; pull data every N secs (default: 300)")
     parser.add_argument("-r", required=False, action="store_true",
                         help="retroactively post unuploaded battles")
     parser.add_argument("-s", required=False, action="store_true",
@@ -298,7 +298,7 @@ def main():
 
     if parser_result.N != None:
         try:
-            m_value = int(parser_result.N)
+            m_value = int(parser_result.N[0])
         except ValueError:
             print("Number provided must be an integer. Exiting.")
             sys.exit(1)
@@ -308,6 +308,17 @@ def main():
         elif m_value < 60:
                 print("Minimum number of seconds in monitoring mode is 60. Exiting.")
                 sys.exit(1)
+        isExtra = False
+        if 1 < len(parser_result.N):
+            try:
+                e = str(parser_result.N[1])
+            except ValueError:
+                print("Second argument can only be e")
+                sys.exit(1)
+            if e != "e":
+                print("Second argument can only be e")
+                sys.exit(1)
+            isExtra = True
     else:
         m_value = -1
 
@@ -481,6 +492,7 @@ def monitor_battles(s_flag, t_flag, x_array, r_flag, secs, debug):
                         fullname = result["stage"]["name"]
                         mapname = translate_stages.get(translate_stages.get(int(result["stage"]["id"]), ""), fullname)
                         print("New battle result detected at {}! ({}, {})".format(datetime.datetime.fromtimestamp(int(result["start_time"])).strftime('%I:%M:%S %p').lstrip("0"), mapname, worl))
+                        #TODO: Extra info here
                     battles.append(int(result["battle_number"]))
                     post_battle(0, [result], s_flag, t_flag, x_array, secs, True if i == 0 else False, debug, True)
         if foundany:
