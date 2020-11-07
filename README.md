@@ -13,7 +13,7 @@ splatnet2statink is a script that uploads battle data from the SplatNet 2 app ("
 $ python splatnet2statink.py [-M [N]] [-r] [-s] [-t] [-X [Y]] [--salmon]
 ```
 
-The `-M` flag runs the script in monitoring mode, uploading new battle results as you play matches. The script checks for new battles every `N` seconds; if no `N` is provided, the script defaults to 300 (5 minutes).
+The `-M` flag runs the script in monitoring mode, uploading new battle results as you play matches. The script checks for new battles every `N` seconds; if no `N` is provided, the script defaults to 300 (5 minutes). The letter 'e' can also be optionally provided to print more battle information to the console.
 
 The `-r` flag uploads any recent battle records present on SplatNet 2 that haven't been uploaded to stat.ink.
 
@@ -29,7 +29,7 @@ Note: You can also execute the script via `./splatnet2statink.py` on macOS and L
 
 ### Example usage
 
-Running `python splatnet2statink.py -M 900` from the command line launches the script in monitoring mode, checking for and uploading battles every 15 minutes.
+Running `python splatnet2statink.py -M 900 e` from the command line launches the script in monitoring mode, checking for and uploading battles every 15 minutes. Information is provided about the battles.
 
 Running `python splatnet2statink.py --salmon -r` uploads all recent Salmon Run jobs not already present on stat.ink.
 
@@ -49,6 +49,7 @@ Running `python splatnet2statink.py -t -X C:\test de $CT_AA* JaneSmith JohnSmith
   - [x] Species (Inkling or Octoling)
 - [x] Gear/ability recognition, gear & user profile image upload
 - [x] Monitoring for new battle results in real-time
+- [x] Summary of battle results in real-time
 - [x] Scoreboard stats, player ranking & battle result image upload
 - [x] Salmon Run support – job details/stats & Grizzco Point Card
 - [x] Full support for all available game languages
