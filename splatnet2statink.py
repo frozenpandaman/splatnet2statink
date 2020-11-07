@@ -537,7 +537,7 @@ def monitor_battles(s_flag, t_flag, x_array, r_flag, m_array, debug):
                                 desc = desc + ", Opponent:" + str(opponent_power)
                             if predicted_power is not None:
                                 desc = desc + ", Predicted:" + str(predicted_power)
-                            desc = desc + ", R:" + str(our_points) + ":" + str(their_points)
+                            desc = desc + ", R:" + str(our_points) + "/" + str(their_points)
                             print(desc)
 
                     battles.append(int(result["battle_number"]))
@@ -625,7 +625,7 @@ def monitor_battles(s_flag, t_flag, x_array, r_flag, m_array, debug):
                                 desc = desc + ", Opponent:" + str(opponent_power)
                             if predicted_power is not None:
                                 desc = desc + ", Predicted:" + str(predicted_power)
-                            desc = desc + ", R:" + str(our_points) + ":" + str(their_points)
+                            desc = desc + ", R:" + str(our_points) + "/" + str(their_points)
                             print(desc)
                     battles.append(int(result["battle_number"]))
                     post_battle(0, [result], s_flag, t_flag, x_array, secs, True if i == 0 else False, debug, True)
