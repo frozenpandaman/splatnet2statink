@@ -269,7 +269,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-M", dest="N", required=False, nargs="*", action="store",
-                        help="monitoring mode; pull data every N secs (default: 300)")
+                        help="monitoring mode; pull data every N secs (default: 300), extra description with e")
     parser.add_argument("-r", required=False, action="store_true",
                         help="retroactively post unuploaded battles")
     parser.add_argument("-s", required=False, action="store_true",
@@ -296,33 +296,56 @@ def main():
         print("Can only use --salmon flag alone or with -r. Exiting.")
         sys.exit(1)
 
-    if parser_result.N != None:
-        try:
-            m_value = int(parser_result.N[0])
-        except ValueError:
-            print("Number provided must be an integer. Exiting.")
-            sys.exit(1)
-        if m_value < 0:
-                print("No.")
-                sys.exit(1)
-        elif m_value < 60:
-                print("Minimum number of seconds in monitoring mode is 60. Exiting.")
-                sys.exit(1)
-        isExtra = False
-        if 1 < len(parser_result.N):
+    m_value = -1
+    is_extra = False
+    if parser_result.N is not None:
+        if 0 == len(parser_result.N):
+            m_value = 300
+        else:
             try:
-                e = str(parser_result.N[1])
+                m_value = int(parser_result.N[0])
+                if m_value < 0:
+                    print("No.")
+                    sys.exit(1)
+                elif m_value < 60:
+                    print("Minimum number of seconds in monitoring mode is 60. Exiting.")
+                    sys.exit(1)
             except ValueError:
-                print("Second argument can only be 'e'")
-                sys.exit(1)
-            if e != "e":
-                print("Second argument can only be 'e'")
-                sys.exit(1)
-            isExtra = True
-    else:
-        m_value = -1
+                try:
+                    e = str(parser_result.N[0])
+                    if e != "e":
+                        print("Argument can only be 'e'")
+                        sys.exit(1)
+                    else:
+                        is_extra = True
+                except ValueError:
+                    print("Argument can only be 'e' or an integer")
+                    sys.exit(1)
+            if 1 < len(parser_result.N):
+                try:
+                    m_value = int(parser_result.N[1])
+                    if m_value < 0:
+                        print("No.")
+                        sys.exit(1)
+                    elif m_value < 60:
+                        print("Minimum number of seconds in monitoring mode is 60. Exiting.")
+                        sys.exit(1)
+                except ValueError:
+                    try:
+                        e = str(parser_result.N[1])
+                        if e != "e":
+                            print("Argument can only be 'e'")
+                            sys.exit(1)
+                        else:
+                            is_extra = True
+                    except ValueError:
+                        print("Argument can only be 'e' or an integer")
+                        sys.exit(1)
+            else:
+                if is_extra:
+                    m_value = 300
 
-    m_array = [m_value, isExtra]
+    m_array = [m_value, is_extra]
 
     x_array = parser_result.Y
 
