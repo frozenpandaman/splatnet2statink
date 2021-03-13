@@ -270,10 +270,10 @@ def get_hash_from_s2s_api(id_token, timestamp):
 	'''Passes an id_token and timestamp to the s2s API and fetches the resultant hash from the response.'''
 
 	# check to make sure we're allowed to contact the API. stop spamming my web server pls
-	config_file = open(config_path, "r")
-	config_data = json.load(config_file)
-	config_file.close()
-	try:
+	try: # may not exist on first run
+		config_file = open(config_path, "r")
+		config_data = json.load(config_file)
+		config_file.close()
 		num_errors = config_data["api_errors"]
 	except:
 		num_errors = 0
