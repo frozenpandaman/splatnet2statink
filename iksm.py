@@ -81,7 +81,7 @@ def get_session_token(session_token_code, auth_code_verifier):
 	'''Helper function for log_in().'''
 
 	app_head = {
-		'User-Agent':      'OnlineLounge/1.9.0 NASDKAPI Android',
+		'User-Agent':      'OnlineLounge/1.10.1 NASDKAPI Android',
 		'Accept-Language': 'en-US',
 		'Accept':          'application/json',
 		'Content-Type':    'application/x-www-form-urlencoded',
@@ -119,7 +119,7 @@ def get_cookie(session_token, userLang, ver):
 		'Content-Length':  '439',
 		'Accept':          'application/json',
 		'Connection':      'Keep-Alive',
-		'User-Agent':      'OnlineLounge/1.9.0 NASDKAPI Android'
+		'User-Agent':      'OnlineLounge/1.10.1 NASDKAPI Android'
 	}
 
 	body = {
@@ -136,7 +136,7 @@ def get_cookie(session_token, userLang, ver):
 	# get user info
 	try:
 		app_head = {
-			'User-Agent':      'OnlineLounge/1.9.0 NASDKAPI Android',
+			'User-Agent':      'OnlineLounge/1.10.1 NASDKAPI Android',
 			'Accept-Language': userLang,
 			'Accept':          'application/json',
 			'Authorization':   'Bearer {}'.format(id_response["access_token"]),
@@ -160,9 +160,9 @@ def get_cookie(session_token, userLang, ver):
 	app_head = {
 		'Host':             'api-lp1.znc.srv.nintendo.net',
 		'Accept-Language':  userLang,
-		'User-Agent':       'com.nintendo.znca/1.9.0 (Android/7.1.2)',
+		'User-Agent':       'com.nintendo.znca/1.10.1 (Android/7.1.2)',
 		'Accept':           'application/json',
-		'X-ProductVersion': '1.9.0',
+		'X-ProductVersion': '1.10.1',
 		'Content-Type':     'application/json; charset=utf-8',
 		'Connection':       'Keep-Alive',
 		'Authorization':    'Bearer',
@@ -212,9 +212,9 @@ def get_cookie(session_token, userLang, ver):
 	try:
 		app_head = {
 			'Host':             'api-lp1.znc.srv.nintendo.net',
-			'User-Agent':       'com.nintendo.znca/1.9.0 (Android/7.1.2)',
+			'User-Agent':       'com.nintendo.znca/1.10.1 (Android/7.1.2)',
 			'Accept':           'application/json',
-			'X-ProductVersion': '1.9.0',
+			'X-ProductVersion': '1.10.1',
 			'Content-Type':     'application/json; charset=utf-8',
 			'Connection':       'Keep-Alive',
 			'Authorization':    'Bearer {}'.format(splatoon_token["result"]["webApiServerCredential"]["accessToken"]),
@@ -270,10 +270,10 @@ def get_hash_from_s2s_api(id_token, timestamp):
 	'''Passes an id_token and timestamp to the s2s API and fetches the resultant hash from the response.'''
 
 	# check to make sure we're allowed to contact the API. stop spamming my web server pls
-	config_file = open(config_path, "r")
-	config_data = json.load(config_file)
-	config_file.close()
-	try:
+	try: # may not exist on first run
+		config_file = open(config_path, "r")
+		config_data = json.load(config_file)
+		config_file.close()
 		num_errors = config_data["api_errors"]
 	except:
 		num_errors = 0
