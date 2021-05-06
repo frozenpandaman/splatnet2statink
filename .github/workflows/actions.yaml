@@ -4,10 +4,9 @@ on:
   push:
     tags:
       - "v*"
-
 jobs:
-  windows-build:
-    runs-on: windows-latest
+  Windows-build:
+    runs-on: Windows-latest
     steps:
       - name: Checkout commit
         uses: actions/checkout@master
@@ -23,7 +22,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: build
-        run: pyinstaller splatnet2statink.py --onefile --icon=s2s.ico
+        run: pyinstaller splatnet2statink.py --onefile
 
       - name: upload
         uses: actions/upload-artifact@v1
@@ -83,12 +82,19 @@ jobs:
   #         path: dist/splatnet2statink
 
   release:
-    # needs: [ubuntu-build, macOS-build, windows-build]
+    # needs: [ubuntu-build, macOS-build, Windows-build]
     # runs-on: ubuntu-latest
-    needs: [windows-build]
+    needs: [Windows-build]
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set version
+        id: version
+        run: |
+          REPOSITORY=$(echo ${{ github.repository }} | sed -e "s#.*/##")
+          VERSION=$(echo ${{ github.ref }} | sed -e "s#refs/tags/##g")
+          echo ::set-output name=version::$VERSION
+          echo ::set-output name=filename::$REPOSITORY-$VERSION
       # - name: Download Linux
       #   uses: actions/download-artifact@v1
       #   with:
@@ -120,7 +126,7 @@ jobs:
         #   tar -C splatnet2statink-macos -pczvf splatnet2statink-macos.tar.gz splatnet2statink
         #   tar -C splatnet2statink-linux -pczvf splatnet2statink-linux.tar.gz splatnet2statink
         #   zip --junk-paths splatnet2statink-Windows ./splatnet2statink-Windows/splatnet2statink.exe
-        run: zip --junk-paths splatnet2statink-${{ github.ref }}Windows ./splatnet2statink-Windows/splatnet2statink.exe
+        run: zip --junk-paths splatnet2statink-Windows ./splatnet2statink-Windows/splatnet2statink.exe
       # - name: Append Binary
       #   uses: actions/upload-release-asset@v1
       #   env:
@@ -147,6 +153,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./splatnet2statink-${{ github.ref }}-Windows.zip
-          asset_name: splatnet2statink-${{ github.ref }}-Windows.zip
+          asset_path: ./splatnet2statink-Windows.zip
+          asset_name: splatnet2statink-${{ steps.version.outputs.version }}-Windows.zip
           asset_content_type: application/zip
