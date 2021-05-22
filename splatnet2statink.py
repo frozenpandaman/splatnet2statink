@@ -817,18 +817,18 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, x_array, battle_payl
         my_stats.append("no") # 17
     ally_scoreboard.append(my_stats)
 
-	# scoreboard sort order: sort_score (or turf inked), k+a, specials, deaths (more = better), kills, nickname
-	# discussion: https://github.com/frozenpandaman/splatnet2statink/issues/6
-	if rule != "turf_war":
-		if s_flag:
-			sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 3, 4, 2), reverse=True)
-		else:
-			sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 3, 4, 2, 11), reverse=True)
-	else:
-		if s_flag:
-			sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(8, 1, 3, 4, 2), reverse=True)
-		else:
-			sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(8, 1, 3, 4, 2, 11), reverse=True)
+    # scoreboard sort order: sort_score (or turf inked), k+a, specials, deaths (more = better), kills, nickname
+    # discussion: https://github.com/frozenpandaman/splatnet2statink/issues/6
+    if rule != "turf_war":
+        if s_flag:
+            sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 3, 4, 2), reverse=True)
+        else:
+            sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(0, 1, 3, 4, 2, 11), reverse=True)
+    else:
+        if s_flag:
+            sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(8, 1, 3, 4, 2), reverse=True)
+        else:
+            sorted_ally_scoreboard = sorted(ally_scoreboard, key=itemgetter(8, 1, 3, 4, 2, 11), reverse=True)
 
     for n in range(len(sorted_ally_scoreboard)):
         if sorted_ally_scoreboard[n][10] == 1: # if it's me, position in sorted list is my rank in team
