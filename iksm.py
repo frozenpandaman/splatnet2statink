@@ -8,6 +8,7 @@ import uuid, time, random, string
 
 session = requests.Session()
 version = "unknown"
+nsoapp_version = "1.12.0"
 
 # place config.txt in same directory as script (bundled or not)
 if getattr(sys, 'frozen', False):
@@ -81,7 +82,7 @@ def get_session_token(session_token_code, auth_code_verifier):
 	'''Helper function for log_in().'''
 
 	app_head = {
-		'User-Agent':      'OnlineLounge/1.12.0 NASDKAPI Android',
+		'User-Agent':      'OnlineLounge/' + nsoapp_version + ' NASDKAPI Android',
 		'Accept-Language': 'en-US',
 		'Accept':          'application/json',
 		'Content-Type':    'application/x-www-form-urlencoded',
@@ -119,7 +120,7 @@ def get_cookie(session_token, userLang, ver):
 		'Content-Length':  '439',
 		'Accept':          'application/json',
 		'Connection':      'Keep-Alive',
-		'User-Agent':      'OnlineLounge/1.12.0 NASDKAPI Android'
+		'User-Agent':      'OnlineLounge/' + nsoapp_version + ' NASDKAPI Android'
 	}
 
 	body = {
@@ -136,7 +137,7 @@ def get_cookie(session_token, userLang, ver):
 	# get user info
 	try:
 		app_head = {
-			'User-Agent':      'OnlineLounge/1.12.0 NASDKAPI Android',
+			'User-Agent':      'OnlineLounge/' + nsoapp_version + ' NASDKAPI Android',
 			'Accept-Language': userLang,
 			'Accept':          'application/json',
 			'Authorization':   'Bearer {}'.format(id_response["access_token"]),
@@ -160,9 +161,9 @@ def get_cookie(session_token, userLang, ver):
 	app_head = {
 		'Host':             'api-lp1.znc.srv.nintendo.net',
 		'Accept-Language':  userLang,
-		'User-Agent':       'com.nintendo.znca/1.12.0 (Android/7.1.2)',
+		'User-Agent':       'com.nintendo.znca/' + nsoapp_version + ' (Android/7.1.2)',
 		'Accept':           'application/json',
-		'X-ProductVersion': '1.12.0',
+		'X-ProductVersion': nsoapp_version,
 		'Content-Type':     'application/json; charset=utf-8',
 		'Connection':       'Keep-Alive',
 		'Authorization':    'Bearer',
@@ -212,9 +213,9 @@ def get_cookie(session_token, userLang, ver):
 	try:
 		app_head = {
 			'Host':             'api-lp1.znc.srv.nintendo.net',
-			'User-Agent':       'com.nintendo.znca/1.12.0 (Android/7.1.2)',
+			'User-Agent':       'com.nintendo.znca/' + nsoapp_version + ' (Android/7.1.2)',
 			'Accept':           'application/json',
-			'X-ProductVersion': '1.12.0',
+			'X-ProductVersion': nsoapp_version,
 			'Content-Type':     'application/json; charset=utf-8',
 			'Connection':       'Keep-Alive',
 			'Authorization':    'Bearer {}'.format(splatoon_token["result"]["webApiServerCredential"]["accessToken"]),
