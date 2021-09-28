@@ -8,7 +8,7 @@ import uuid, time, random, string
 
 session = requests.Session()
 version = "unknown"
-nsoapp_version = "1.12.0"
+nsoapp_version = "1.13.0"
 
 # place config.txt in same directory as script (bundled or not)
 if getattr(sys, 'frozen', False):
