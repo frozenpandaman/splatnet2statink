@@ -17,7 +17,8 @@ import msgpack, uuid
 import iksm, dbs, salmonrun
 from io import BytesIO
 from operator import itemgetter
-from distutils.version import StrictVersion
+# from distutils.version import StrictVersion
+from packaging import version
 from subprocess import call
 # PIL/Pillow imported at bottom
 
@@ -222,7 +223,7 @@ def check_for_updates():
 	try:
 		latest_script = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/splatnet2statink.py")
 		new_version = re.search(r'= "([\d.]*)"', latest_script.text).group(1)
-		update_available = StrictVersion(new_version) != StrictVersion(A_VERSION)
+		update_available = version.parse(new_version) != version.parse(A_VERSION)
 		if update_available:
 			print("There is a new version (v{}) available.".format(new_version), end='')
 			if os.path.isdir(".git"): # git user
