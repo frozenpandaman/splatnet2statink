@@ -17,11 +17,14 @@ import msgpack, uuid
 import iksm, dbs, salmonrun
 from io import BytesIO
 from operator import itemgetter
-from distutils.version import StrictVersion
+try:
+	from packaging import version
+except ModuleNotFoundError as e:
+	version = None
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.5.13"
+A_VERSION = "1.6.0"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -219,12 +222,15 @@ def set_language():
 def check_for_updates():
 	'''Checks the version of the script against the latest version in the repo and updates dbs.py.'''
 
+	if version is None:
+		print("\n!! Unable to check for updates due to a new dependency in v1.6.0.")
+		print("!! Please re-run `pip install -r requirements.txt` (see readme for details). \n")
 	try:
 		latest_script = requests.get("https://raw.githubusercontent.com/frozenpandaman/splatnet2statink/master/splatnet2statink.py")
 		new_version = re.search(r'= "([\d.]*)"', latest_script.text).group(1)
-		update_available = StrictVersion(new_version) != StrictVersion(A_VERSION)
+		update_available = version.parse(new_version) != version.parse(A_VERSION)
 		if update_available:
-			print("There is a new version (v{}) available.".format(new_version), end='')
+			print("\nThere is a new version (v{}) available.".format(new_version), end='')
 			if os.path.isdir(".git"): # git user
 				update_now = input("\nWould you like to update now? [Y/n] ")
 				if update_now == "" or update_now[0].lower() == "y":
@@ -235,7 +241,7 @@ def check_for_updates():
 					print("Successfully updated to v{}. Please restart splatnet2statink.".format(new_version))
 					return True
 				else:
-					print("Remember to update later with \"git pull\" to get the latest version.\n")
+					print("Remember to update later with `git pull` to get the latest version.\n")
 			else: # non-git user
 				print(" Visit the site below to update:\nhttps://github.com/frozenpandaman/splatnet2statink\n")
 				# dbs_freshness = time.time() - os.path.getmtime("dbs.py")
@@ -250,7 +256,7 @@ def check_for_updates():
 							local_db.close()
 					except: # if we can't open the file
 						pass # then we don't modify the database
-	except: # if there's a problem connecting to github
+	except: # if there's a problem connecting to github - or can't access 'version' if 'packaging' not installed
 		pass # then we assume there's no update available
 
 def main():
