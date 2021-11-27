@@ -1,1 +1,0 @@
-python C:\Users\USER\splatnet2statink\splatnet2statink.py -t -X C:\Users\USER\splatnet2statink

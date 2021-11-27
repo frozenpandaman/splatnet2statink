@@ -64,7 +64,7 @@ Running `python splatnet2statink.py -t -X C:\test de $CT_AA* JaneSmith JohnSmith
 
 2. If you're on Windows, install [Git](https://git-scm.com/download) (pre-installed on macOS).
 
-3. Download the script from the command line (macOS: Terminal; Windows: Command Prompt/PowerShell) by running `git clone https://github.com/radsutton/splatnet2statink.git`.
+3. Download the script from the command line (macOS: Terminal; Windows: Command Prompt/PowerShell) by running `git clone https://github.com/frozenpandaman/splatnet2statink.git`.
 
 4. Navigate to the newly-created directory (`cd splatnet2statink/`) and install the required Python libraries by running `pip install -r requirements.txt`. On Windows, you may have to use `python -m pip install -r requirements.txt` instead.
 
