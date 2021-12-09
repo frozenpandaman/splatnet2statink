@@ -24,7 +24,7 @@ except ModuleNotFoundError as e:
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.6.0"
+A_VERSION = "1.7.0"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -76,7 +76,7 @@ else:
 if "app_user_agent" in config_data:
 	app_user_agent = str(config_data["app_user_agent"])
 else:
-	app_user_agent = 'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36'
+	app_user_agent = 'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Mobile Safari/537.36'
 
 app_head = {
 	'Host': 'app.splatoon2.nintendo.net',

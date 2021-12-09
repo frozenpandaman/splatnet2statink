@@ -5,10 +5,17 @@ from builtins import input
 import requests, json, re, sys
 import os, base64, hashlib
 import uuid, time, random, string
+from bs4 import BeautifulSoup
 
 session = requests.Session()
 version = "unknown"
 nsoapp_version = "1.13.2"
+
+# structure:
+# log_in() -> get_session_token()
+# get_cookie() -> call_flapg_api() -> get_hash_from_s2s_api()
+# enter_cookie()
+# get_nsoapp_version()
 
 # place config.txt in same directory as script (bundled or not)
 if getattr(sys, 'frozen', False):
@@ -16,6 +23,15 @@ if getattr(sys, 'frozen', False):
 elif __file__:
 	app_path = os.path.dirname(__file__)
 config_path = os.path.join(app_path, "config.txt")
+
+def get_nsoapp_version():
+	'''Fetches the current Nintendo Switch Online app version from the Google Play Store.'''
+
+	page = requests.get("https://play.google.com/store/apps/details?id=com.nintendo.znca&hl=en")
+	soup = BeautifulSoup(page.text, 'html.parser')
+	elts = soup.find_all("span", {"class": "htlgb"})
+	ver = elts[7].get_text().strip()
+	return ver
 
 def log_in(ver):
 	'''Logs in to a Nintendo Account and returns a session_token.'''
@@ -35,7 +51,7 @@ def log_in(ver):
 		'Connection':                'keep-alive',
 		'Cache-Control':             'max-age=0',
 		'Upgrade-Insecure-Requests': '1',
-		'User-Agent':                'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36',
+		'User-Agent':                'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Mobile Safari/537.36',
 		'Accept':                    'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8n',
 		'DNT':                       '1',
 		'Accept-Encoding':           'gzip,deflate,br',
@@ -81,6 +97,8 @@ def log_in(ver):
 def get_session_token(session_token_code, auth_code_verifier):
 	'''Helper function for log_in().'''
 
+	nsoapp_version = get_nsoapp_version()
+
 	app_head = {
 		'User-Agent':      'OnlineLounge/' + nsoapp_version + ' NASDKAPI Android',
 		'Accept-Language': 'en-US',
@@ -105,6 +123,8 @@ def get_session_token(session_token_code, auth_code_verifier):
 
 def get_cookie(session_token, userLang, ver):
 	'''Returns a new cookie provided the session_token.'''
+
+	nsoapp_version = get_nsoapp_version()
 
 	global version
 	version = ver
@@ -255,7 +275,7 @@ def get_cookie(session_token, userLang, ver):
 			'X-IsAnalyticsOptedIn':    'false',
 			'Connection':              'keep-alive',
 			'DNT':                     '0',
-			'User-Agent':              'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36',
+			'User-Agent':              'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Mobile Safari/537.36',
 			'X-Requested-With':        'com.nintendo.znca'
 		}
 	except:
