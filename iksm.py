@@ -27,11 +27,15 @@ config_path = os.path.join(app_path, "config.txt")
 def get_nsoapp_version():
 	'''Fetches the current Nintendo Switch Online app version from the Google Play Store.'''
 
-	page = requests.get("https://play.google.com/store/apps/details?id=com.nintendo.znca&hl=en")
-	soup = BeautifulSoup(page.text, 'html.parser')
-	elts = soup.find_all("span", {"class": "htlgb"})
-	ver = elts[7].get_text().strip()
-	return ver
+	global nsoapp_version
+	try:
+		page = requests.get("https://play.google.com/store/apps/details?id=com.nintendo.znca&hl=en")
+		soup = BeautifulSoup(page.text, 'html.parser')
+		elts = soup.find_all("span", {"class": "htlgb"})
+		ver = elts[7].get_text().strip()
+		return ver
+	except:
+		return nsoapp_version
 
 def log_in(ver):
 	'''Logs in to a Nintendo Account and returns a session_token.'''
