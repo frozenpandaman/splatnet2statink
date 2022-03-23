@@ -24,7 +24,7 @@ except ModuleNotFoundError as e:
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.7.0"
+A_VERSION = "1.7.1"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
