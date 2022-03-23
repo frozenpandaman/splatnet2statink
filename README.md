@@ -62,7 +62,7 @@ Running `python splatnet2statink.py --salmon -r` uploads all recent Salmon Run j
 
 4. Navigate to the newly-created directory (`cd splatnet2statink/`) and install the required Python libraries by running `pip install -r requirements.txt`. On Windows, you may have to use `python -m pip` instead.
 
-5. Running the script for the first time will prompt you to enter your stat.ink API key, which can be found in your [profile settings](https://stat.ink/profile). If you're using the app in a language other than English, you may enter your [language code](https://github.com/frozenpandaman/splatnet2statink/wiki/languages) (locale) as well.
+5. Running the script for the first time will prompt you to enter your stat.ink API key/token, which can be found in your [profile settings](https://stat.ink/profile). If you're using the app in a language other than English, you may enter your [language code](https://github.com/frozenpandaman/splatnet2statink/wiki/languages) (locale) as well.
 
 **NOTE: Read the "Cookie generation" section below before proceeding. [→](#cookie-generation)**
 
