@@ -533,15 +533,8 @@ def get_num_battles():
 		else:
 			return n, results
 
-def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None):
+def set_scoreboard(payload, battle_number, mystats, s_flag, battledata):
 	'''Returns a new payload with the players key (scoreboard) present.'''
-
-	if battle_payload != None:
-		battledata = battle_payload
-	else:
-		url = "https://app.splatoon2.nintendo.net/api/results/{}".format(battle_number)
-		battle = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
-		battledata = json.loads(battle.text)
 
 	try:
 		battledata["my_team_members"] # only present in battle jsons
@@ -775,15 +768,13 @@ def set_scoreboard(payload, battle_number, mystats, s_flag, battle_payload=None)
 	return payload # return modified payload w/ players key
 
 # https://github.com/fetus-hina/stat.ink/blob/master/doc/api-2/post-battle.md
-def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=False):
-	'''Uploads battle #i from the provided results dictionary.'''
+def prepare_battle_result(i, results, s_flag, sendgears):
+	'''create stat.ink payload for the result.'''
 
 	#############
 	## PAYLOAD ##
 	#############
 	payload = {'agent': 'splatnet2statink', 'agent_version': A_VERSION, 'automated': 'yes'}
-	agent_variables = {'upload_mode': "Monitoring" if ismonitor else "Manual"}
-	payload["agent_variables"] = agent_variables
 	bn = results[i]["battle_number"]
 	ver4 = True if "version" in results[i] and results[i]["version"] >= 4 else False # splatfest only
 	principal_id = results[i]["player_result"]["player"]["principal_id"]
@@ -1098,10 +1089,14 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	################
 	if YOUR_COOKIE != "" or debug: # requires online (or battle json). if no cookie, don't do - will fail
 		mystats = [mode, rule, result, k_or_a, death, special, weapon, level_before, rank_before, turfinked, title_before, principal_id, star_rank, gender, species]
-		if filename == None:
-			payload = set_scoreboard(payload, bn, mystats, s_flag)
+		if filename:
+			battledata = results[0]
 		else:
-			payload = set_scoreboard(payload, bn, mystats, s_flag, results[0])
+			url = "https://app.splatoon2.nintendo.net/api/results/{}".format(bn)
+			battle = requests.get(url, headers=app_head, cookies=dict(iksm_session=YOUR_COOKIE))
+			battledata = json.loads(battle.text)
+
+		payload = set_scoreboard(payload, bn, mystats, s_flag, battledata)
 
 	##################
 	## IMAGE RESULT ##
@@ -1196,6 +1191,18 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		payload["gears"]["clothing"]["secondary_abilities"].append(translate_ability.get(int(clothing_subs[j]), ""))
 		payload["gears"]["shoes"]["secondary_abilities"].append(translate_ability.get(int(shoes_subs[j]), ""))
 
+
+	return payload
+
+
+def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=False):
+	'''Uploads battle #i from the provided results dictionary.'''
+
+	payload = prepare_battle_result(i, results, s_flag, sendgears)
+
+	agent_variables = {'upload_mode': "Monitoring" if ismonitor else "Manual"}
+	payload["agent_variables"] = agent_variables
+
 	#############
 	## DRY RUN ##
 	#############
@@ -1210,7 +1217,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 		print(json.dumps(payload).replace("'", "\'"))
 	# adding support for a custom key? add to custom_key_exists() method, and
 	# to "main process" section of monitor_battles, too. and the docs/wiki page of course
-	elif lobby == "private" and custom_key_exists("ignore_private", True):
+	elif payload["lobby"] == "private" and custom_key_exists("ignore_private", True):
 		if m_flag != -1: # monitoring mode
 			pass
 		else:
