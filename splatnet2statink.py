@@ -1303,3 +1303,7 @@ if __name__ == "__main__":
 				post_battle(i, results, is_s, is_t, m_value, True if i == 0 else False, debug)
 			if debug:
 				print("")
+else:
+    # This script is called as dependency
+    m_value, is_s, is_t, is_r, filename, salmon = 600, True, False, False, "", False
+    from PIL import Image, ImageDraw
