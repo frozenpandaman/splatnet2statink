@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 session = requests.Session()
 version = "unknown"
-nsoapp_version = "2.0.0"
+nsoapp_version = "2.1.1"
 
 # structure:
 # log_in() -> get_session_token()
@@ -29,10 +29,10 @@ def get_nsoapp_version():
 
 	global nsoapp_version
 	try:
-		page = requests.get("https://play.google.com/store/apps/details?id=com.nintendo.znca&hl=en")
+		page = requests.get("https://apps.apple.com/us/app/nintendo-switch-online/id1234806557")
 		soup = BeautifulSoup(page.text, 'html.parser')
-		elts = soup.find_all("span", {"class": "htlgb"})
-		ver = elts[7].get_text().strip()
+		elt = soup.find("p", {"class": "whats-new__latest__version"})
+		ver = elt.get_text().replace("Version ","").strip()
 		return ver
 	except:
 		return nsoapp_version
