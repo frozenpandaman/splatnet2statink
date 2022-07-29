@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 session = requests.Session()
 version = "unknown"
-nsoapp_version = "2.1.1"
+nsoapp_version = "2.2.0"
 
 # structure:
 # log_in() -> get_session_token()
@@ -25,7 +25,7 @@ elif __file__:
 config_path = os.path.join(app_path, "config.txt")
 
 def get_nsoapp_version():
-	'''Fetches the current Nintendo Switch Online app version from the Google Play Store.'''
+	'''Fetches the current Nintendo Switch Online app version from the Apple App Store.'''
 
 	global nsoapp_version
 	try:
