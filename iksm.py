@@ -13,7 +13,7 @@ nsoapp_version = "2.2.0"
 
 # structure:
 # log_in() -> get_session_token()
-# get_cookie() -> call_flapg_api() -> get_hash_from_s2s_api()
+# get_cookie() -> call_imink_api() -> f
 # enter_cookie()
 # get_nsoapp_version()
 
@@ -133,7 +133,7 @@ def get_cookie(session_token, userLang, ver):
 	global version
 	version = ver
 
-	timestamp = int(time.time())
+	timestamp = str(int(time.time()))
 	guid = str(uuid.uuid4())
 
 	app_head = {
@@ -200,13 +200,13 @@ def get_cookie(session_token, userLang, ver):
 	try:
 		idToken = id_response["access_token"]
 
-		flapg_nso = call_flapg_api(idToken, guid, timestamp, "nso")
+		f = call_imink_api(idToken, guid, timestamp, 1)
 
 		parameter = {
-			'f':          flapg_nso["f"],
-			'naIdToken':  flapg_nso["p1"],
-			'timestamp':  flapg_nso["p2"],
-			'requestId':  flapg_nso["p3"],
+			'f':          f,
+			'naIdToken':  idToken,
+			'timestamp':  timestamp,
+			'requestId':  guid,
 			'naCountry':  user_info["country"],
 			'naBirthday': user_info["birthday"],
 			'language':   user_info["language"]
@@ -227,7 +227,7 @@ def get_cookie(session_token, userLang, ver):
 
 	try:
 		idToken = splatoon_token["result"]["webApiServerCredential"]["accessToken"]
-		flapg_app = call_flapg_api(idToken, guid, timestamp, "app")
+		f = call_imink_api(idToken, guid, timestamp, 2)
 	except:
 		print("Error from Nintendo (in Account/Login step):")
 		print(json.dumps(splatoon_token, indent=2))
@@ -255,10 +255,10 @@ def get_cookie(session_token, userLang, ver):
 	body = {}
 	parameter = {
 		'id':                5741031244955648,
-		'f':                 flapg_app["f"],
-		'registrationToken': flapg_app["p1"],
-		'timestamp':         flapg_app["p2"],
-		'requestId':         flapg_app["p3"]
+		'f':                 f,
+		'registrationToken': idToken,
+		'timestamp':         timestamp,
+		'requestId':         guid,
 	}
 	body["parameter"] = parameter
 
@@ -291,72 +291,29 @@ def get_cookie(session_token, userLang, ver):
 	r = requests.get(url, headers=app_head)
 	return nickname, r.cookies["iksm_session"]
 
-def get_hash_from_s2s_api(id_token, timestamp):
-	'''Passes an id_token and timestamp to the s2s API and fetches the resultant hash from the response.'''
-
-	# check to make sure we're allowed to contact the API. stop spamming my web server pls
-	try: # may not exist on first run
-		config_file = open(config_path, "r")
-		config_data = json.load(config_file)
-		config_file.close()
-		num_errors = config_data["api_errors"]
-	except:
-		num_errors = 0
-
-	if num_errors >= 5:
-		print("Too many errors received from the splatnet2statink API. Further requests have been blocked until the \"api_errors\" line is manually removed from config.txt. If this issue persists, please contact @frozenpandaman on Twitter/GitHub for assistance.")
-		sys.exit(1)
-
-	# proceed normally
-	try:
-		api_app_head = { 'User-Agent': "splatnet2statink/{}".format(version) }
-		api_body = { 'naIdToken': id_token, 'timestamp': timestamp }
-		api_response = requests.post("https://elifessler.com/s2s/api/gen2", headers=api_app_head, data=api_body)
-		return json.loads(api_response.text)["hash"]
-	except:
-		print("Error from the splatnet2statink API:\n{}".format(json.dumps(json.loads(api_response.text), indent=2)))
-
-		# add 1 to api_errors in config
-		config_file = open(config_path, "r")
-		config_data = json.load(config_file)
-		config_file.close()
-		try:
-			num_errors = config_data["api_errors"]
-		except:
-			num_errors = 0
-		num_errors += 1
-		config_data["api_errors"] = num_errors
-
-		config_file = open(config_path, "w") # from write_config()
-		config_file.seek(0)
-		config_file.write(json.dumps(config_data, indent=4, sort_keys=True, separators=(',', ': ')))
-		config_file.close()
-
-		sys.exit(1)
-
-def call_flapg_api(id_token, guid, timestamp, type):
-	'''Passes in headers to the flapg API (Android emulator) and fetches the response.'''
+def call_imink_api(id_token, guid, timestamp, step):
+	'''Passes in parameters to the imink API and fetches the response (f token).'''
 
 	try:
-		api_app_head = {
-			'x-token': id_token,
-			'x-time':  str(timestamp),
-			'x-guid':  guid,
-			'x-hash':  get_hash_from_s2s_api(id_token, timestamp),
-			'x-ver':   '3',
-			'x-iid':   type
+		api_head = {
+			'User-Agent':   'splatnet2statink/{}'.format(version),
+			'Content-Type': 'application/json; charset=utf-8'
 		}
-		api_response = requests.get("https://flapg.com/ika2/api/login?public", headers=api_app_head)
-		f = json.loads(api_response.text)["result"]
+		api_body = {
+			'timestamp':   timestamp,
+			'requestId':   guid,
+			'hashMethod':  str(step),
+			'token':       id_token
+		}
+		api_response = requests.post("https://api.imink.app/f", data=json.dumps(api_body), headers=api_head)
+		f = json.loads(api_response.text)["f"]
 		return f
 	except:
 		try: # if api_response never gets set
 			if api_response.text:
-				print(u"Error from the flapg API:\n{}".format(json.dumps(json.loads(api_response.text), indent=2, ensure_ascii=False)))
-			elif api_response.status_code == requests.codes.not_found:
-				print("Error from the flapg API: Error 404 (offline or incorrect headers).")
+				print(u"Error from the imink API:\n{}".format(json.dumps(json.loads(api_response.text), indent=2, ensure_ascii=False)))
 			else:
-				print("Error from the flapg API: Error {}.".format(api_response.status_code))
+				print("Error from the imink API: Error {}.".format(api_response.status_code))
 		except:
 			pass
 		sys.exit(1)
