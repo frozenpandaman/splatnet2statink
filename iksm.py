@@ -133,9 +133,6 @@ def get_cookie(session_token, userLang, ver):
 	global version
 	version = ver
 
-	timestamp = time.time_ns() // 1000000
-	guid = str(uuid.uuid4())
-
 	app_head = {
 		'Host':            'accounts.nintendo.com',
 		'Accept-Encoding': 'gzip',
@@ -200,13 +197,13 @@ def get_cookie(session_token, userLang, ver):
 	try:
 		idToken = id_response["access_token"]
 
-		f = call_imink_api(idToken, guid, timestamp, 1)
+		f = call_imink_api(idToken, 1)
 
 		parameter = {
-			'f':          f,
+			'f':          f["f"],
 			'naIdToken':  idToken,
-			'timestamp':  timestamp,
-			'requestId':  guid,
+			'timestamp':  f["timestamp"],
+			'requestId':  f["request_id"],
 			'naCountry':  user_info["country"],
 			'naBirthday': user_info["birthday"],
 			'language':   user_info["language"]
@@ -227,7 +224,7 @@ def get_cookie(session_token, userLang, ver):
 
 	try:
 		idToken = splatoon_token["result"]["webApiServerCredential"]["accessToken"]
-		f = call_imink_api(idToken, guid, timestamp, 2)
+		f = call_imink_api(idToken, 2)
 	except:
 		print("Error from Nintendo (in Account/Login step):")
 		print(json.dumps(splatoon_token, indent=2))
@@ -255,10 +252,10 @@ def get_cookie(session_token, userLang, ver):
 	body = {}
 	parameter = {
 		'id':                5741031244955648,
-		'f':                 f,
-		'registrationToken': idToken,
-		'timestamp':         timestamp - 1000, # temp fix
-		'requestId':         guid,
+		'f':                 f["f"],
+		'registrationToken': '',
+		'timestamp':         f["timestamp"],
+		'requestId':         f["request_id"],
 	}
 	body["parameter"] = parameter
 
@@ -291,7 +288,7 @@ def get_cookie(session_token, userLang, ver):
 	r = requests.get(url, headers=app_head)
 	return nickname, r.cookies["iksm_session"]
 
-def call_imink_api(id_token, guid, timestamp, step):
+def call_imink_api(id_token, step):
 	'''Passes in parameters to the imink API and fetches the response (f token).'''
 
 	try:
@@ -300,13 +297,11 @@ def call_imink_api(id_token, guid, timestamp, step):
 			'Content-Type': 'application/json; charset=utf-8'
 		}
 		api_body = {
-			'timestamp':   str(timestamp),
-			'requestId':   guid,
-			'hashMethod':  str(step),
+			'hash_method': str(step),
 			'token':       id_token
 		}
 		api_response = requests.post("https://api.imink.app/f", data=json.dumps(api_body), headers=api_head)
-		f = json.loads(api_response.text)["f"]
+		f = json.loads(api_response.text)
 		return f
 	except:
 		try: # if api_response never gets set
