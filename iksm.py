@@ -133,7 +133,7 @@ def get_cookie(session_token, userLang, ver):
 	global version
 	version = ver
 
-	timestamp = str(int(time.time()))
+	timestamp = time.time_ns() // 1000000
 	guid = str(uuid.uuid4())
 
 	app_head = {
@@ -257,7 +257,7 @@ def get_cookie(session_token, userLang, ver):
 		'id':                5741031244955648,
 		'f':                 f,
 		'registrationToken': idToken,
-		'timestamp':         timestamp,
+		'timestamp':         timestamp - 1000, # temp fix
 		'requestId':         guid,
 	}
 	body["parameter"] = parameter
@@ -300,7 +300,7 @@ def call_imink_api(id_token, guid, timestamp, step):
 			'Content-Type': 'application/json; charset=utf-8'
 		}
 		api_body = {
-			'timestamp':   timestamp,
+			'timestamp':   str(timestamp),
 			'requestId':   guid,
 			'hashMethod':  str(step),
 			'token':       id_token
