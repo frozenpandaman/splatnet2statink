@@ -219,7 +219,7 @@ def get_cookie(session_token, userLang, ver):
 		sys.exit(1)
 	body["parameter"] = parameter
 
-	url = "https://api-lp1.znc.srv.nintendo.net/v1/Account/Login"
+	url = "https://api-lp1.znc.srv.nintendo.net/v3/Account/Login"
 
 	r = requests.post(url, headers=app_head, json=body)
 	splatoon_token = json.loads(r.text)
