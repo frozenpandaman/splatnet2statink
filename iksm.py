@@ -198,7 +198,7 @@ def get_cookie(session_token, userLang, ver):
 
 	body = {}
 	try:
-		idToken = id_response["access_token"]
+		idToken = id_response["id_token"]
 		f, uuid, timestamp = call_imink_api(idToken, 1)
 
 		parameter = {
