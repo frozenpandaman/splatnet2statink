@@ -7,6 +7,8 @@ splatnet2statink is a script that uploads battle data from the SplatNet 2 app ("
 
 (zh) 中文版的安装说明在[这里](https://cowlevel.net/article/1927016)。
 
+Looking to track your _Splatoon 3_ gameplay? See **[s3s](https://github.com/frozenpandaman/s3s)**.
+
 ## Usage
 
 ```
@@ -88,7 +90,7 @@ For splatnet2statink to work, a cookie known as `iksm_session` is required to ac
 
 ### Automatic
 
-Automatic cookie generation involves making a *secure request to a non-Nintendo servers with minimal, non-identifying information*. We aim to be 100% transparent about this and provide in-depth information on security and privacy below. Users who feel uncomfortable with this may opt to manually acquire their cookie instead.
+Automatic cookie generation involves making a *secure request to a non-Nintendo server with minimal, non-identifying information*. We aim to be 100% transparent about this and provide in-depth information on security and privacy below. Users who feel uncomfortable with this may opt to manually acquire their cookie instead.
 
 The v1.1.0 update to the Nintendo Switch Online app, released in September 2017, introduced the requirement of a [message authentication code](https://en.wikipedia.org/wiki/Message_authentication_code) (known as `f`), thereby complicating the ability to generate cookies within the script. After figuring out the [key](https://en.wikipedia.org/wiki/Key_\(cryptography\)) previously used to generate `f` tokens, the calculation method was changed in September 2018's v1.4.1 update, heavily obfuscating the new process. As a workaround, an Android server was set up to emulate the app and to generate `f` tokens, which can then be sent to Nintendo to generate `iksm_session` cookies.
 
