@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 session = requests.Session()
 version = "unknown"
-nsoapp_version = "2.2.0"
+nsoapp_version = "2.3.0"
 
 # structure:
 # log_in() -> get_session_token()
