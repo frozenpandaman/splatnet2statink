@@ -296,7 +296,7 @@ def call_imink_api(id_token, step):
 		}
 		api_body = {
 			'token':       id_token,
-			'hashMethod':  step
+			'hash_method':  step
 		}
 		api_response = requests.post("https://api.imink.app/f", data=json.dumps(api_body), headers=api_head)
 		resp = json.loads(api_response.text)
