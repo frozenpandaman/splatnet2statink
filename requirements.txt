@@ -1,6 +1,6 @@
-bs4
-requests
-msgpack-python
-future
-pillow
-packaging
+beautifulsoup4~=4.11.1
+requests~=2.28.1
+msgpack-python~=0.5.6
+future~=0.18.2
+pillow~=9.4.0
+packaging~=22.0
