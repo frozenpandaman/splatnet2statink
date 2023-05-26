@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 session = requests.Session()
 version = "unknown"
-nsoapp_version = "2.5.0"
+nsoapp_version = "2.5.1"
 
 # structure:
 # log_in() -> get_session_token()
@@ -176,6 +176,7 @@ def get_cookie(session_token, userLang, ver):
 	user_info = json.loads(r.text)
 
 	nickname = user_info["nickname"]
+	na_id    = user_info["id"]
 
 	# get access token
 	app_head = {
@@ -195,7 +196,7 @@ def get_cookie(session_token, userLang, ver):
 	body = {}
 	try:
 		idToken = id_response["id_token"]
-		f, uuid, timestamp = call_imink_api(idToken, 1)
+		f, uuid, timestamp = call_imink_api(idToken, 1, na_id)
 
 		parameter = {
 			'f':          f,
@@ -221,8 +222,9 @@ def get_cookie(session_token, userLang, ver):
 	splatoon_token = json.loads(r.text)
 
 	try:
-		idToken = splatoon_token["result"]["webApiServerCredential"]["accessToken"]
-		f, uuid, timestamp = call_imink_api(idToken, 2)
+		idToken       = splatoon_token["result"]["webApiServerCredential"]["accessToken"]
+		coral_user_id = splatoon_token["result"]["user"]["id"]
+		f, uuid, timestamp = call_imink_api(idToken, 2, na_id, coral_user_id)
 	except:
 		print("Error from Nintendo (in Account/Login step):")
 		print(json.dumps(splatoon_token, indent=2))
@@ -286,8 +288,8 @@ def get_cookie(session_token, userLang, ver):
 	r = requests.get(url, headers=app_head)
 	return nickname, r.cookies["iksm_session"]
 
-def call_imink_api(id_token, step):
-	'''Passes in an naIdToken to the imink API and fetches the response (comprised of an f token, UUID, and timestamp).'''
+def call_imink_api(id_token, step, na_id, coral_user_id=None):
+	'''Passes naIdToken & user ID to the imink API and fetches the response (f token, UUID, timestamp).'''
 
 	try:
 		api_head = {
@@ -296,8 +298,12 @@ def call_imink_api(id_token, step):
 		}
 		api_body = {
 			'token':       id_token,
-			'hash_method':  step
+			'hash_method': step,
+			'na_id':       na_id
 		}
+		if step == 2 and coral_user_id is not None:
+			api_body["coral_user_id"] = coral_user_id
+
 		api_response = requests.post("https://api.imink.app/f", data=json.dumps(api_body), headers=api_head)
 		resp = json.loads(api_response.text)
 
