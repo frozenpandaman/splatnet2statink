@@ -76,7 +76,7 @@ else:
 if "app_user_agent" in config_data:
 	app_user_agent = str(config_data["app_user_agent"])
 else:
-	app_user_agent = 'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Mobile Safari/537.36'
+	app_user_agent = 'Mozilla/5.0 (Linux; Android 14; Pixel 7a Build/UQ1A.240105.004; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/120.0.6099.230 Mobile Safari/537.36'
 
 app_head = {
 	'Host': 'app.splatoon2.nintendo.net',

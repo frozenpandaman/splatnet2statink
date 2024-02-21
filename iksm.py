@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 session = requests.Session()
 version = "unknown"
-nsoapp_version = "2.7.0"
+nsoapp_version = "2.8.1"
 
 # structure:
 # log_in() -> get_session_token()
@@ -55,7 +55,7 @@ def log_in(ver):
 		'Connection':                'keep-alive',
 		'Cache-Control':             'max-age=0',
 		'Upgrade-Insecure-Requests': '1',
-		'User-Agent':                'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Mobile Safari/537.36',
+		'User-Agent':                'Mozilla/5.0 (Linux; Android 14; Pixel 7a) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.230 Mobile Safari/537.36',
 		'Accept':                    'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8n',
 		'DNT':                       '1',
 		'Accept-Encoding':           'gzip,deflate,br',
@@ -140,7 +140,7 @@ def get_cookie(session_token, userLang, ver):
 		'Content-Length':  '439',
 		'Accept':          'application/json',
 		'Connection':      'Keep-Alive',
-		'User-Agent':      'OnlineLounge/' + nsoapp_version + ' NASDKAPI Android'
+		'User-Agent':      'Dalvik/2.1.0 (Linux; U; Android 14; Pixel 7a Build/UQ1A.240105.004)'
 	}
 
 	body = {
@@ -157,7 +157,7 @@ def get_cookie(session_token, userLang, ver):
 	# get user info
 	try:
 		app_head = {
-			'User-Agent':      'OnlineLounge/' + nsoapp_version + ' NASDKAPI Android',
+			'User-Agent':      'NASDKAPI; Android',
 			'Accept-Language': userLang,
 			'Accept':          'application/json',
 			'Authorization':   'Bearer {}'.format(id_response["access_token"]),
@@ -182,7 +182,7 @@ def get_cookie(session_token, userLang, ver):
 	app_head = {
 		'Host':             'api-lp1.znc.srv.nintendo.net',
 		'Accept-Language':  userLang,
-		'User-Agent':       'com.nintendo.znca/' + nsoapp_version + ' (Android/7.1.2)',
+		'User-Agent':       'com.nintendo.znca/' + nsoapp_version + ' (Android/14)',
 		'Accept':           'application/json',
 		'X-ProductVersion': nsoapp_version,
 		'Content-Type':     'application/json; charset=utf-8',
@@ -234,7 +234,7 @@ def get_cookie(session_token, userLang, ver):
 	try:
 		app_head = {
 			'Host':             'api-lp1.znc.srv.nintendo.net',
-			'User-Agent':       'com.nintendo.znca/' + nsoapp_version + ' (Android/7.1.2)',
+			'User-Agent':       'com.nintendo.znca/' + nsoapp_version + ' (Android/14)',
 			'Accept':           'application/json',
 			'X-ProductVersion': nsoapp_version,
 			'Content-Type':     'application/json; charset=utf-8',
@@ -275,8 +275,8 @@ def get_cookie(session_token, userLang, ver):
 			'Accept-Language':         userLang,
 			'X-IsAnalyticsOptedIn':    'false',
 			'Connection':              'keep-alive',
-			'DNT':                     '0',
-			'User-Agent':              'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Mobile Safari/537.36',
+			'DNT':                     '1',
+			'User-Agent':              'Mozilla/5.0 (Linux; Android 14; Pixel 7a Build/UQ1A.240105.004; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/120.0.6099.230 Mobile Safari/537.36',
 			'X-Requested-With':        'com.nintendo.znca'
 		}
 	except:
