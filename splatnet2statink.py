@@ -24,7 +24,7 @@ except ModuleNotFoundError as e:
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.8.5"
+A_VERSION = "1.8.6"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -1239,12 +1239,12 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 					print("Battle uploaded to {}".format(headerloc))
 		else: # error of some sort
 			if t_flag:
-				print("Battle #{} - message from server:".format(i+1))
+				print("Battle #{} - message from stat.ink:".format(i+1))
 			else:
 				if not ismonitor and len(results) > 1:
-					print("Error uploading battle #{}. Message from server:".format(i+1))
+					print("Error uploading battle #{}. Message from stat.ink:".format(i+1))
 				else: # monitoring mode
-					print("Error uploading battle. Message from server:")
+					print("Error uploading battle. Message from stat.ink:")
 			print(postbattle.content.decode("utf-8"))
 			if not t_flag and i != 0: # don't prompt for final battle
 				cont = input('Continue? [Y/n] ')

@@ -7,9 +7,12 @@ import os, base64, hashlib, urllib
 import uuid, time, random, string
 from bs4 import BeautifulSoup
 
+USE_OLD_NSOAPP_VER = False
+
+version             = "unknown"
+nsoapp_version      = "unknown"
+nsoapp_ver_fallback = "2.10.1"
 session = requests.Session()
-version = "unknown"
-nsoapp_version = "2.10.1"
 
 # structure:
 # log_in() -> get_session_token()
@@ -24,18 +27,42 @@ elif __file__:
 	app_path = os.path.dirname(__file__)
 config_path = os.path.join(app_path, "config.txt")
 
+
 def get_nsoapp_version():
-	'''Fetches the current Nintendo Switch Online app version from the Apple App Store.'''
+	'''Fetches the current Nintendo Switch Online app version from f API or the Apple App Store and sets it globally.'''
+
+	if USE_OLD_NSOAPP_VER:
+		return nsoapp_ver_fallback
 
 	global nsoapp_version
-	try:
-		page = requests.get("https://apps.apple.com/us/app/nintendo-switch-online/id1234806557")
-		soup = BeautifulSoup(page.text, 'html.parser')
-		elt = soup.find("p", {"class": "whats-new__latest__version"})
-		ver = elt.get_text().replace("Version ","").strip()
-		return ver
-	except:
+	if nsoapp_version != "unknown": # already set
 		return nsoapp_version
+	else:
+		try: # try to get NSO version from f API
+			f_conf_url = "https://api.imink.app/config"
+			f_conf_header = {'User-Agent': 'splatnet2statink/{}'.format(version)}
+			f_conf_rsp = requests.get(f_conf_url, headers=f_conf_header)
+			f_conf_json = json.loads(f_conf_rsp.text)
+			ver = f_conf_json["nso_version"]
+
+			nsoapp_version = ver
+
+			return nsoapp_version
+		except: # fallback to apple app store
+			try:
+				page = requests.get("https://apps.apple.com/us/app/nintendo-switch-online/id1234806557")
+				soup = BeautifulSoup(page.text, 'html.parser')
+				elt = soup.find("p", {"class": "whats-new__latest__version"})
+				ver = elt.get_text().replace("Version ", "").strip()
+
+				nsoapp_version = ver
+
+				return nsoapp_version
+			except: # error with web request
+				pass
+
+			return nsoapp_ver_fallback
+
 
 def log_in(ver):
 	'''Logs in to a Nintendo Account and returns a session_token.'''
@@ -303,9 +330,12 @@ def call_imink_api(id_token, step, na_id, coral_user_id=None):
 	'''Passes naIdToken & user ID to the imink API and fetches the response (f token, UUID, timestamp).'''
 
 	try:
+		nsoapp_version = get_nsoapp_version()
 		api_head = {
-			'User-Agent':   'splatnet2statink/{}'.format(version),
-			'Content-Type': 'application/json; charset=utf-8'
+			'User-Agent':      'splatnet2statink/{}'.format(version),
+			'Content-Type':    'application/json; charset=utf-8',
+			'X-znca-Platform': 'Android',
+			'X-znca-Version':  nsoapp_version
 		}
 		api_body = {
 			'token':       id_token,
